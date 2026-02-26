@@ -1,0 +1,15 @@
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\bin\Debug\net9.0\infraestructure.deps.json
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\bin\Debug\net9.0\infraestructure.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\bin\Debug\net9.0\infraestructure.pdb
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\bin\Debug\net9.0\Domain.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\bin\Debug\net9.0\Domain.pdb
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.csproj.AssemblyReference.cache
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.AssemblyInfoInputs.cache
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.AssemblyInfo.cs
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.csproj.CoreCompileInputs.cache
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraest.F27731A2.Up2Date
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\infraestructure.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.pdb
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\infraestructure.dll
