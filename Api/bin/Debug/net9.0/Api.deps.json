@@ -9,12 +9,20 @@
       "Api/1.0.0": {
         "dependencies": {
           "Application": "1.0.0",
+          "Infraestructure": "1.0.0",
           "Microsoft.AspNetCore.OpenApi": "9.0.12",
-          "Swashbuckle.AspNetCore": "10.1.4",
-          "infraestructure": "1.0.0"
+          "Swashbuckle.AspNetCore": "10.1.4"
         },
         "runtime": {
           "Api.dll": {}
+        }
+      },
+      "Dapper/2.1.72": {
+        "runtime": {
+          "lib/net8.0/Dapper.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.1.72.10375"
+          }
         }
       },
       "Microsoft.AspNetCore.OpenApi/9.0.12": {
@@ -29,6 +37,12 @@
         }
       },
       "Microsoft.Extensions.ApiDescription.Server/9.0.0": {},
+      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {},
+      "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        }
+      },
       "Microsoft.OpenApi/2.4.1": {
         "dependencies": {
           "System.Text.Json": "8.0.5"
@@ -37,6 +51,17 @@
           "lib/net8.0/Microsoft.OpenApi.dll": {
             "assemblyVersion": "2.4.1.0",
             "fileVersion": "2.4.1.0"
+          }
+        }
+      },
+      "Npgsql/10.0.1": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0"
+        },
+        "runtime": {
+          "lib/net9.0/Npgsql.dll": {
+            "assemblyVersion": "10.0.1.0",
+            "fileVersion": "10.0.1.0"
           }
         }
       },
@@ -98,12 +123,14 @@
           }
         }
       },
-      "infraestructure/1.0.0": {
+      "Infraestructure/1.0.0": {
         "dependencies": {
-          "Domain": "1.0.0"
+          "Dapper": "2.1.72",
+          "Domain": "1.0.0",
+          "Npgsql": "10.0.1"
         },
         "runtime": {
-          "infraestructure.dll": {
+          "Infraestructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -116,6 +143,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Dapper/2.1.72": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ns4mGqQd9a/MhP8m6w556vVlZIa0/MfUu03zrxjZC/jlr1uVCsUac8bkdB+Fs98Llbd56rRSo1eZH5VVmeGZyw==",
+      "path": "dapper/2.1.72",
+      "hashPath": "dapper.2.1.72.nupkg.sha512"
     },
     "Microsoft.AspNetCore.OpenApi/9.0.12": {
       "type": "package",
@@ -131,12 +165,33 @@
       "path": "microsoft.extensions.apidescription.server/9.0.0",
       "hashPath": "microsoft.extensions.apidescription.server.9.0.0.nupkg.sha512"
     },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+6f2qv2a3dLwd5w6JanPIPs47CxRbnk+ZocMJUhv9NxP88VlOcJYZs9jY+MYSjxvady08bUZn6qgiNh7DadGgg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-g0UfujELzlLbHoVG8kPKVBaW470Ewi+jnptGS9KUi6jcb+k2StujtK3m26DFSGGwQ/+bVgZfsWqNzlP6YOejvw==",
+      "path": "microsoft.extensions.logging.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512"
+    },
     "Microsoft.OpenApi/2.4.1": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-u7QhXCISMQuab3flasb1hoaiERmUqyWsW7tmQODyILoQ7mJV5IRGM+2KKZYo0QUfC13evEOcHAb6TPWgqEQtrw==",
       "path": "microsoft.openapi/2.4.1",
       "hashPath": "microsoft.openapi.2.4.1.nupkg.sha512"
+    },
+    "Npgsql/10.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XyUcxEfqlFomhNTG/ZdGlec+uSOQArKz0Mzz8jYKP/Jj9GM2YabU5CVZtp0yiC4f9hRp+tRZTnHMatJeJ3rwgw==",
+      "path": "npgsql/10.0.1",
+      "hashPath": "npgsql.10.0.1.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/10.1.4": {
       "type": "package",
@@ -183,7 +238,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "infraestructure/1.0.0": {
+    "Infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

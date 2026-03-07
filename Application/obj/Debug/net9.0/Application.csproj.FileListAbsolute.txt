@@ -13,3 +13,4 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Application\obj\Debug\net9.0\Appli
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Application\obj\Debug\net9.0\refint\Application.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Application\obj\Debug\net9.0\Application.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Application\obj\Debug\net9.0\ref\Application.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Application\obj\Debug\net9.0\Application.sourcelink.json

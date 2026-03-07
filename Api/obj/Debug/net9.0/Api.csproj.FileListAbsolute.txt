@@ -39,3 +39,6 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dl
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Dapper.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Npgsql.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.sourcelink.json
