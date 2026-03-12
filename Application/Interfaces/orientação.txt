@@ -1,0 +1,1 @@
+pasta destinada para os as interfaces desta camada
