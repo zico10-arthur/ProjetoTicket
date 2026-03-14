@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Exceptions;
+using System.Net.Mail;
 public class Usuario
 {
     public string Cpf {get; private set;} = string.Empty;
@@ -14,16 +15,19 @@ public class Usuario
 
     public Usuario(string cpf, string nome, string email)
     {
+        ValidarNome(nome);
         ValidarCpf(cpf);
         if (!DigitosSaoValidos(cpf)) throw new CpfInvalido();
+        ValidarEmail(email);
         
         Cpf = cpf;
         Nome = nome;
-        Email = email;
     }
 
     private void ValidarCpf(string cpf)
     {
+        cpf = cpf.Replace(".", "").Replace("-", "");
+
         if (string.IsNullOrWhiteSpace(cpf))
                 throw new CpfVazio();
         
@@ -34,12 +38,7 @@ public class Usuario
                 throw new CpfInvalido();
 
     }
-         public string Formatado =>
-            $"{Cpf[..3]}.{Cpf.Substring(3, 3)}.{Cpf.Substring(6, 3)}-{Cpf.Substring(9, 2)}";
-
-        public override string ToString() => Formatado;
-
-      private static bool DigitosSaoValidos(string cpf)
+    private static bool DigitosSaoValidos(string cpf)
         {
             int soma = 0;
 
@@ -59,6 +58,43 @@ public class Usuario
             return cpf[9] - '0' == digito1 &&
                    cpf[10] - '0' == digito2;
         }
+
+    private void ValidarNome(string nome)
+    {
+        nome = nome.Trim();
+
+         if (string.IsNullOrWhiteSpace(nome))
+            {
+                throw new NomeVazio();
+            }
+        
+         if (nome.Length < 3)
+                throw new NomeInvalido();
+
+            if (!nome.All(c => char.IsLetter(c) || c == ' ' || c == '-' || c == '\''))
+                throw new NomeInvalido();
+            if (nome.All(c => c == nome[0]))
+            {
+                throw new NomeInvalido();
+            }
+    }
+
+    private void ValidarEmail(string email)
+    {
+        email = email.Trim();
+
+        if (string.IsNullOrWhiteSpace(email)) throw new EmailVazio();
+
+        try 
+    {
+        var addr = new MailAddress(email);
+        Email = addr.Address;
+    }
+    catch
+    {
+        throw new EmailInvalido();
+    }
+    }
  
     
 }
