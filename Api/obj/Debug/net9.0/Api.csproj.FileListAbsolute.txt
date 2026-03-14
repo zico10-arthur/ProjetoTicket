@@ -42,3 +42,6 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Dapper.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Npgsql.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.sourcelink.json
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb

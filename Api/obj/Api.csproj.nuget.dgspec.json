@@ -111,6 +111,9 @@
             "projectReferences": {
               "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
                 "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj"
+              },
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
               }
             }
           }
@@ -130,6 +133,12 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[16.1.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

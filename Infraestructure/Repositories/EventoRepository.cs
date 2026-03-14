@@ -1,7 +1,8 @@
 using Dapper;
 using Infrastructure.Database;
-using Infrastructure.Interfaces;
+using Infraestructure;
 using Domain.Entities;
+using Infrastructure.Interfaces;
 
 
 namespace Infraestructure.Repositories;
