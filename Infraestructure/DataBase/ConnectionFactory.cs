@@ -1,4 +1,5 @@
 using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Database;
 
@@ -13,6 +14,6 @@ public class ConnectionFactory
 
     public IDbConnection CreateConnection()
     {
-        return new NpgsqlConnection(_connectionString);
+        return new SqlConnection(_connectionString);
     }
 }
