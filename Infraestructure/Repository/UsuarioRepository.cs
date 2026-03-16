@@ -31,16 +31,20 @@ public class UsuarioRepository : IUsuarioRepository
         });
     }
 
-    public async Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct)
-{
-    using var connection = _factory.CreateConnection();
+    public async Task<Usuario?> BuscarCpfOuEmail(string cpf, string email, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
 
-    const string sql = @"SELECT Cpf, Nome, Email, PerfilId
-                             FROM Usuarios
-                             WHERE Cpf = @Cpf";
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId
+                         FROM Usuarios
+                         WHERE Cpf = @Cpf OR Email = @Email";
 
-    return await connection.QueryFirstOrDefaultAsync<Usuario>(
-        new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
-    );
-}
+        return await connection.QueryFirstOrDefaultAsync<Usuario>(
+        new CommandDefinition(
+            sql,
+            new { Cpf = cpf, Email = email },
+            cancellationToken: ct
+        )
+        );
+    }
 }

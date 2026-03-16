@@ -13,7 +13,7 @@ public class Usuario
 
     public Guid PerfilId {get;private set;}
 
-    public Usuario(string cpf, string nome, string email)
+    public Usuario(string cpf, string nome, string email, Guid perfilid)
     {
         ValidarNome(nome);
         ValidarCpf(cpf);
@@ -22,6 +22,7 @@ public class Usuario
         
         Cpf = cpf;
         Nome = nome;
+        PerfilId = perfilid;
     }
 
     private void ValidarCpf(string cpf)

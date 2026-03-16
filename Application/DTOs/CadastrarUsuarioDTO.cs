@@ -1,0 +1,10 @@
+namespace Application.DTOs;
+
+public class CadastrarUsuarioDTO
+{
+     public string Cpf {get;  set;} = string.Empty;
+
+    public string Nome{get;  set;} = string.Empty;
+
+    public string Email{get;  set;} = string.Empty;
+}
