@@ -18,7 +18,7 @@ public class UsuarioService : IUsuarioService
         Usuario? cpfbuscado = await  _repository.BuscarCpfOuEmail(dto.Cpf, dto.Email, ct);
         if (cpfbuscado != null) throw new UsuarioCadastrado();
 
-        Guid idComprador = Guid.Parse("a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1");
+        Guid idComprador = Guid.Parse("C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3");
         Usuario? novousuario = new Usuario(dto.Cpf, dto.Nome, dto.Email, idComprador);
         _repository.CadastrarUsuario(novousuario);
     }
