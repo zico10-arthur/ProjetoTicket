@@ -1,6 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(typeof(Application.Mappings.EventoProfile));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<Application.Mappings.EventoProfile>());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

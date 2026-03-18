@@ -1699,11 +1699,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+      "projectUniqueName": "c:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
       "projectName": "infraestructure",
-      "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+      "projectPath": "c:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
       "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\obj\\",
+      "outputPath": "c:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",

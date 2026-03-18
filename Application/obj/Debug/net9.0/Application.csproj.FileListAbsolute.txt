@@ -23,3 +23,12 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\Appli
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\Application.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\refint\Application.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\Application.pdb
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\Application.deps.json
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\Application.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\Application.pdb
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\Domain.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\infraestructure.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\Domain.pdb
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\bin\Debug\net9.0\infraestructure.pdb
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\Applicat.44B5EDA2.Up2Date
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Application\obj\Debug\net9.0\ref\Application.dll

@@ -52,14 +52,14 @@ public class EventoRepository : IEventoRepository
     }
 
 
-    public async Task UpdateAsync(Evento evento)
+    public async Task UpdateAsync(Guid id, Evento evento)
     {
         
         using var conn = _connectionFactory.CreateConnection();
 
         await conn.ExecuteAsync(
             "UPDATE dbo.Eventos SET Nome = @Nome, CapacidadeTotal = @CapacidadeTotal, DataEvento = @DataEvento, PrecoPadrao = @PrecoPadrao WHERE id = @Id",
-            evento);
+            new { id, evento.Nome, evento.CapacidadeTotal, evento.DataEvento, evento.PrecoPadrao });
 
     }
 

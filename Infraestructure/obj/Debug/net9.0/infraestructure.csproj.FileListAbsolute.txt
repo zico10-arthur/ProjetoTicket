@@ -25,8 +25,8 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\i
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.AssemblyInfo.cs
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.csproj.CoreCompileInputs.cache
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.sourcelink.json
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraest.F27731A2.Up2Date
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\infraestructure.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraestructure.pdb
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\infraestructure.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraest.B0D41582.Up2Date

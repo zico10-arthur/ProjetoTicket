@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "h7GuppLpQQ0=",
+  "dgSpecHash": "5xtovsYydt4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+  "projectFilePath": "c:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dudsl\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\dudsl\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

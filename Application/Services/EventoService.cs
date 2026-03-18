@@ -24,23 +24,132 @@ public class EventoService
         
         var eventos = await _eventoRepository.GetAllAsync();
 
-        //aqui entra a lógica de negócios
+        if (!eventos.Any())
+        {
+            
+            throw new KeyNotFoundException("Nenhum evento encontrado");
+
+        }
 
         return _mapper.Map<IEnumerable<EventoResponseDTO>>(eventos);
 
     }
 
 
-    
+    public async Task<EventoResponseDTO?> GetByIdAsync(Guid id)
+    {
+        
+        var evento = await _eventoRepository.GetByIdAsync(id);
+
+        if(evento is null)
+        {
+            
+            throw new KeyNotFoundException($"Evento com ID {id} não encontrado");
+
+        }
+
+        return _mapper.Map<EventoResponseDTO?>(evento);
+
+    }
 
 
+    public async Task CreateAsync(EventoRequestDTO eventoDto)
+    {
+
+        if(eventoDto.CapacidadeTotal <= 0)
+        {
+            
+            throw new ArgumentException("Capacidade deve ser maior que zero.");
+
+        } 
+        
+        if(eventoDto.DataEvento <= DateTime.Now)
+        {
+            
+            throw new ArgumentException("A data do evento deve ser futura.");
+
+        } 
+        
+        if(eventoDto.PrecoPadrao <= 0)
+        {
+            
+            throw new ArgumentException("O preço deve ser maior que zero.");
+
+        } 
+        
+
+        var evento = _mapper.Map<Evento>(eventoDto);
+
+        await _eventoRepository.CreateAsync(evento);
+
+    }
 
 
+    public async Task UpdateAsync(Guid id, EventoRequestDTO eventoDto)
+    {
+        
+        var evento = await _eventoRepository.GetByIdAsync(id);
 
 
+        if(evento is null)
+        {
+            
+            throw new KeyNotFoundException($"Evento {id} não encontrado");
+
+        }
+
+        if(eventoDto.CapacidadeTotal <= 0)
+        {
+
+            throw new ArgumentException("Capacidade deve ser maior que zero.");
+
+        }
+
+        if (eventoDto.DataEvento <= DateTime.Now)
+        {
+
+            throw new ArgumentException("A data do evento deve ser futura.");
+
+        }
+
+        if (eventoDto.PrecoPadrao <= 0)
+        {
+
+            throw new ArgumentException("O preço deve ser maior que zero.");
+
+        }
 
 
+        var eventoAtualizado = _mapper.Map<Evento>(eventoDto);
+        await _eventoRepository.UpdateAsync(id, eventoAtualizado);
 
+    }
+
+
+    public async Task DeleteAsync(Guid id)
+    {
+
+        var evento = await _eventoRepository.GetByIdAsync(id);
+
+
+        if (evento is null)
+        {
+
+            throw new KeyNotFoundException($"Evento {id} não encontrado");
+
+        }
+
+        if (evento.DataEvento <= DateTime.Now)
+        {
+            
+            throw new InvalidOperationException("Não é possível deletar um evento que já ocorreu.");
+
+        }
+
+
+        await _eventoRepository.DeleteAsync(id);
+
+    }
 
 
 }
