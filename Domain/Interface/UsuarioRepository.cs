@@ -8,4 +8,6 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarCpfOuEmail(string cpf, string email, CancellationToken ct);
     
+    Task<Usuario?> BuscarId(Guid perfilid, CancellationToken ct);
+
 }

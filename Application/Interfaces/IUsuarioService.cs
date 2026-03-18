@@ -4,5 +4,7 @@ namespace Application.Interfaces;
 
 public interface IUsuarioService
 {
-    Task CadastrarUsuario(CadastrarUsuarioDTO dto, CancellationToken ct);
+    Task CadastrarComprador(CadastrarUsuarioDTO dto, CancellationToken ct);
+
+    Task CadastrarVendedor(CadastrarUsuarioDTO dto, CancellationToken ct, Guid AdminLogado);
 }

@@ -47,4 +47,21 @@ public class UsuarioRepository : IUsuarioRepository
         )
         );
     }
+
+    public async Task<Usuario?> BuscarId(Guid perfilid, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId
+                         FROM Usuarios
+                         WHERE PerfilId = @PerfilId";
+
+        return await connection.QueryFirstOrDefaultAsync<Usuario>(
+        new CommandDefinition(
+            sql,
+            new { PerfilId = perfilid },
+            cancellationToken: ct
+        )
+        );
+    }
 }

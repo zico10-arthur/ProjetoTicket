@@ -8,3 +8,9 @@ public class UsuarioCadastrado : DomainException
     :base("Usuário já cadastrado") {}
 }
 
+public class UsuarioNaoAutorizado : DomainException
+{
+    public UsuarioNaoAutorizado()
+    :base("Apenas administradores podem cadastrar vendedores"){}
+}
+
