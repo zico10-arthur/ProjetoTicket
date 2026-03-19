@@ -6,7 +6,7 @@ using AutoMapper;
 
 namespace Application.Services;
 
-public class EventoService
+public class EventoService : IEventoService
 {
  
     private readonly IEventoRepository _eventoRepository;

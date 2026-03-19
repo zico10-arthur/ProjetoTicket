@@ -10,6 +10,8 @@ public class Evento
 
     public decimal PrecoPadrao {get; private set;}
 
+    public Evento() {}
+
     public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao)
     {
         Nome = nome;

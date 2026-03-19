@@ -10,7 +10,7 @@
         "dependencies": {
           "AutoMapper": "16.1.1",
           "Domain": "1.0.0",
-          "infraestructure": "1.0.0"
+          "Infraestructure": "1.0.0"
         },
         "runtime": {
           "Application.dll": {}
@@ -459,7 +459,7 @@
           }
         }
       },
-      "infraestructure/1.0.0": {
+      "Infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -467,7 +467,8 @@
         },
         "runtime": {
           "Infraestructure.dll": {
-            "fileVersion": "0.0.0.0"
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       }
@@ -736,7 +737,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "infraestructure/1.0.0": {
+    "Infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
