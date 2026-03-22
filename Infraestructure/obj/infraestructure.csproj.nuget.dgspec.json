@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {}
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {}
   },
   "projects": {
     "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
@@ -65,12 +65,12 @@
         }
       }
     },
-    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
-        "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectName": "infraestructure",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
         "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",

@@ -14,6 +14,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseMiddleware<Api.Middlewares.GlobalExceptionHandlerMiddleware>();
+
 app.UseHttpsRedirection();
 app.MapControllers();
 
