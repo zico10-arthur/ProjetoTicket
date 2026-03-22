@@ -19,15 +19,16 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"INSERT INTO Usuarios(Cpf, Nome, Email, PerfilId)
-        VALUES (@Cpf, @Nome, @Email, @PerfilId)";
+        const string sql = @"INSERT INTO Usuarios(Cpf, Nome, Email, PerfilId, Senha)
+        VALUES (@Cpf, @Nome, @Email, @PerfilId, @Senha)";
 
         connection.Execute(sql, new
         {
             Cpf = usuario.Cpf,
             Nome = usuario.Nome,
             Email = usuario.Email,
-            PerfilId = usuario.PerfilId
+            PerfilId = usuario.PerfilId,
+            Senha = usuario.Senha
         });
     }
 
@@ -35,7 +36,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
                          FROM Usuarios
                          WHERE Cpf = @Cpf OR Email = @Email";
 
@@ -52,7 +53,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
                          FROM Usuarios
                          WHERE PerfilId = @PerfilId";
 

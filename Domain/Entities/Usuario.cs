@@ -13,21 +13,35 @@ public class Usuario
 
     public Guid PerfilId {get;private set;}
 
-    public Usuario(string cpf, string nome, string email, Guid perfilid)
+    public string Senha {get; private set;} 
+
+    public Usuario(string cpf, string nome, string email, Guid perfilid, string senha)
     {
-        ValidarNome(nome);
-        ValidarCpf(cpf);
-        if (!DigitosSaoValidos(cpf)) throw new CpfInvalido();
-        ValidarEmail(email);
         
         Cpf = cpf;
         Nome = nome;
+        Email = email;
         PerfilId = perfilid;
+        Senha = senha;
     }
+
+    public static Usuario Criar(string cpf, string nome, string email, Guid perfilid, string senha)
+{
+    cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+
+    Usuario usuario = new Usuario(cpf, nome, email, perfilid, senha);
+
+    usuario.ValidarNome(nome);
+    usuario.ValidarCpf(cpf);
+    if (!DigitosSaoValidos(cpf)) throw new CpfInvalido();
+    usuario.ValidarEmail(email);
+    usuario.ValidarSenha(senha);
+
+    return usuario;
+}
 
     private void ValidarCpf(string cpf)
     {
-        cpf = cpf.Replace(".", "").Replace("-", "");
 
         if (string.IsNullOrWhiteSpace(cpf))
                 throw new CpfVazio();
@@ -62,12 +76,14 @@ public class Usuario
 
     private void ValidarNome(string nome)
     {
-        nome = nome.Trim();
 
          if (string.IsNullOrWhiteSpace(nome))
             {
                 throw new NomeVazio();
             }
+                
+        nome = nome.Trim();
+
         
          if (nome.Length < 3)
                 throw new NomeInvalido();
@@ -82,9 +98,11 @@ public class Usuario
 
     private void ValidarEmail(string email)
     {
-        email = email.Trim();
 
         if (string.IsNullOrWhiteSpace(email)) throw new EmailVazio();
+
+        email = email.Trim();
+
 
         try 
     {
@@ -95,6 +113,23 @@ public class Usuario
     {
         throw new EmailInvalido();
     }
+    }
+
+    private void ValidarSenha(string senha)
+    {
+        if (string.IsNullOrWhiteSpace(senha)) throw new SenhaVazia();
+
+        senha = senha.Trim();
+
+
+        if (senha.Length < 8) throw new Senha8digitos();
+
+        if (!senha.Any(char.IsLetter) ||
+            !senha.Any(char.IsDigit) ||
+            !senha.Any(c => !char.IsLetterOrDigit(c)))
+            {
+                throw new SenhaInvalida();
+            }
     }
  
     

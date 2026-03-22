@@ -38,3 +38,21 @@ public class EmailInvalido : DomainException
     public EmailInvalido()
     : base("O email é inválido"){}
 }
+
+public class SenhaVazia : DomainException
+{
+    public SenhaVazia()
+    : base("A senha deve ser preenchida"){}
+}
+
+public class Senha8digitos : DomainException
+{
+    public Senha8digitos()
+    : base("A senha deve ter 8 dígitos"){}
+}
+
+public class SenhaInvalida : DomainException
+{
+    public SenhaInvalida()
+    : base("Senha inválida"){}
+}

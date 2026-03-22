@@ -19,7 +19,7 @@ public class UsuarioService : IUsuarioService
         if (cpfbuscado != null) throw new UsuarioCadastrado();
 
         Guid idComprador = Guid.Parse("C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3");
-        Usuario? novocomprador = new Usuario(dto.Cpf, dto.Nome, dto.Email, idComprador);
+        Usuario? novocomprador = Usuario.Criar(dto.Cpf, dto.Nome, dto.Email, idComprador, dto.Senha);
         _repository.CadastrarUsuario(novocomprador);
     }
 
@@ -35,7 +35,7 @@ public class UsuarioService : IUsuarioService
         if (cpfbuscado != null) throw new UsuarioCadastrado();
 
         Guid IdVendedor = Guid.Parse("B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2");
-        Usuario? novovendedor = new Usuario(dto.Cpf, dto.Nome, dto.Email, IdVendedor);
+        Usuario? novovendedor =  Usuario.Criar(dto.Cpf, dto.Nome, dto.Email, IdVendedor, dto.Senha);
         _repository.CadastrarUsuario(novovendedor);
     }
 }
