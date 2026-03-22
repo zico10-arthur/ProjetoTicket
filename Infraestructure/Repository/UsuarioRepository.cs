@@ -65,4 +65,21 @@ public class UsuarioRepository : IUsuarioRepository
         )
         );
     }
+
+    public async Task<Usuario?> BuscarEmail(string email, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
+                         FROM Usuarios
+                         WHERE Email = @Email";
+
+        return await connection.QueryFirstOrDefaultAsync<Usuario>(
+        new CommandDefinition(
+            sql,
+            new { Email = email },
+            cancellationToken: ct
+        )
+        );
+    }
 }

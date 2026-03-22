@@ -10,4 +10,6 @@ public interface IUsuarioRepository
     
     Task<Usuario?> BuscarId(Guid perfilid, CancellationToken ct);
 
+    Task<Usuario?> BuscarEmail(string email, CancellationToken ct);
+
 }

@@ -38,4 +38,16 @@ public class UsuarioService : IUsuarioService
         Usuario? novovendedor =  Usuario.Criar(dto.Cpf, dto.Nome, dto.Email, IdVendedor, dto.Senha);
         _repository.CadastrarUsuario(novovendedor);
     }
+
+    public async Task<Usuario> Login(LoginDTO dto, CancellationToken ct)
+    {
+        Usuario? logado = await _repository.BuscarEmail(dto.Email, ct);
+        if(logado == null) throw new LoginErro();
+
+        if (logado.Senha != dto.Senha) throw new LoginErro();
+        return logado;
+    }
+
+    
+    
 }

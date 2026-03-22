@@ -14,3 +14,9 @@ public class UsuarioNaoAutorizado : DomainException
     :base("Apenas administradores podem cadastrar vendedores"){}
 }
 
+public class LoginErro : DomainException
+{
+    public LoginErro()
+    : base("Usuário não encontrado ou senha inválida") {}
+}
+

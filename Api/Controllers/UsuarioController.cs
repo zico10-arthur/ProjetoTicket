@@ -21,7 +21,7 @@ public class UsuarioController : ControllerBase
     {
        await _service.CadastrarComprador(dto,ct);
 
-       return Ok(new {message ="Sucesso!"});
+       return Ok(new {message ="Usuário Cadastrado com sucesso"});
     }
 
     [HttpPost("CadastrarVendedor/{Id}")]
@@ -30,6 +30,14 @@ public class UsuarioController : ControllerBase
     {
         await _service.CadastrarVendedor(dto, ct, Id);
 
-        return Ok(new {message ="Sucesso!"});
+        return Ok(new {message ="Usuário Cadastrado com sucesso"});
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDTO dto, CancellationToken ct)
+    {
+        await _service.Login(dto,ct);
+
+        return Ok(new{message="Bem vindo!"});
     }
 }
