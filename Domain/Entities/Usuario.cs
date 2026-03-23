@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Domain.Exceptions;
 using System.Net.Mail;
+
 public class Usuario
 {
     public string Cpf {get; private set;} = string.Empty;

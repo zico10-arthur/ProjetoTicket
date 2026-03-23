@@ -1,5 +1,3 @@
-
-
 namespace Domain.Interface;
 
 public interface IUsuarioRepository

@@ -1,0 +1,71 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Web/1.0.0": {
+        "dependencies": {
+          "Application": "1.0.0",
+          "MudBlazor": "9.2.0"
+        },
+        "runtime": {
+          "Web.dll": {}
+        }
+      },
+      "MudBlazor/9.2.0": {
+        "runtime": {
+          "lib/net10.0/MudBlazor.dll": {
+            "assemblyVersion": "9.2.0.0",
+            "fileVersion": "9.2.0.0"
+          }
+        }
+      },
+      "Application/1.0.0": {
+        "dependencies": {
+          "Domain": "1.0.0"
+        },
+        "runtime": {
+          "Application.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Domain/1.0.0": {
+        "runtime": {
+          "Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MudBlazor/9.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ckAndxv3to3CahczgLrqKdzhPV3750B7taqICSIAdKXoh0dSyqcUcjAI5YlE5s7NB7C+NdpkfWpK+dKQwxvUOA==",
+      "path": "mudblazor/9.2.0",
+      "hashPath": "mudblazor.9.2.0.nupkg.sha512"
+    },
+    "Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
