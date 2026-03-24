@@ -1,0 +1,80 @@
+@page "/eventos"
+@inject BlazorFront.Services.EventoService EventoService
+@inject NavigationManager Nav
+
+<h3>Eventos</h3>
+
+<button class="btn btn-primary mb-3" @onclick='() => Nav.NavigateTo("/eventos/novo")'>Novo Evento</button>
+
+@if (loading)
+{
+    <p>Carregando...</p>
+}
+else if (erro != null)
+{
+    <p class="text-danger">@erro</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data</th>
+                <th>Capacidade</th>
+                <th>Preço</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evento in eventos)
+            {
+                <tr>
+                    <td>@evento.Nome</td>
+                    <td>@evento.DataEvento.ToString("dd/MM/yyyy")</td>
+                    <td>@evento.CapacidadeTotal</td>
+                    <td>R$ @evento.PrecoPadrao.ToString("F2")</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" @onclick='() => Nav.NavigateTo($"/eventos/editar/{evento.Id}")'>Editar</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Deletar(evento.Id)">Deletar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<BlazorFront.Models.EventoModel> eventos = [];
+    private bool loading = true;
+    private string? erro;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            eventos = await EventoService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            erro = $"Erro ao carregar eventos: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task Deletar(Guid id)
+    {
+        try
+        {
+            await EventoService.DeleteAsync(id);
+            eventos = await EventoService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            erro = $"Erro ao deletar: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.page[b-xut9zh9fke] {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main[b-xut9zh9fke] {
+    flex: 1;
+    padding: 1rem;
+}
