@@ -815,7 +815,6 @@ C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\scope
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\scopedcss\projectbundle\BlazorFront.bundle.scp.css
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\blazor.build.boot-extension.json
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\blazor.boot.json
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\vl54r4eg6y-8rbvw3on5j.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\ruxs13irow-69tin58myl.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\jpbniy9kfq-bqjiyaj88i.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\vlda7o8elu-c2jlpeoesf.gz
@@ -1074,10 +1073,11 @@ C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\Blazo
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\ref\BlazorFront.dll
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\svhc51oub7-6c3reojez5.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\ber2hn1lcw-6c3reojez5.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.stguodfdg0.wasm
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.te0cdqf2dy.pdb
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.stguodfdg0.wasm.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.te0cdqf2dy.pdb.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\kw8ufyoe05-stguodfdg0.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\1ex3pad0vl-te0cdqf2dy.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\24cs0oqg8w-69l6nx4h21.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.scxktu2w9t.wasm
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.ug78agpx6r.pdb
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.scxktu2w9t.wasm.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\bin\Debug\net9.0\wwwroot\_framework\BlazorFront.ug78agpx6r.pdb.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\vl54r4eg6y-tdar27n1gy.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\kw8ufyoe05-scxktu2w9t.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\1ex3pad0vl-ug78agpx6r.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\BlazorFront\obj\Debug\net9.0\compressed\24cs0oqg8w-4atpbokx5z.gz

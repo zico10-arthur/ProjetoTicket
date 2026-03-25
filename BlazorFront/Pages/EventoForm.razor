@@ -3,26 +3,27 @@
 @inject BlazorFront.Services.EventoService EventoService
 @inject NavigationManager Nav
 
-<h3>@(Id == null ? "Novo Evento" : "Editar Evento")</h3>
+<h3 class="text-royal fw-bold mb-4">@(Id == null ? "Novo Evento" : "Editar Evento")</h3>
 
+<div class="card shadow-sm p-4" style="max-width: 540px;">
 <EditForm Model="modelo" OnValidSubmit="Salvar">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
-        <label class="form-label">Nome</label>
+        <label class="form-label fw-semibold">Nome</label>
         <InputText class="form-control" @bind-Value="modelo.Nome" />
     </div>
     <div class="mb-3">
-        <label class="form-label">Data do Evento</label>
+        <label class="form-label fw-semibold">Data do Evento</label>
         <InputDate class="form-control" @bind-Value="modelo.DataEvento" />
     </div>
     <div class="mb-3">
-        <label class="form-label">Capacidade Total</label>
+        <label class="form-label fw-semibold">Capacidade Total</label>
         <InputNumber class="form-control" @bind-Value="modelo.CapacidadeTotal" />
     </div>
     <div class="mb-3">
-        <label class="form-label">Preço Padrão (R$)</label>
+        <label class="form-label fw-semibold">Preço Padrão (R$)</label>
         <InputNumber class="form-control" @bind-Value="modelo.PrecoPadrao" />
     </div>
 
@@ -31,9 +32,10 @@
         <div class="alert alert-danger mt-3">@erro</div>
     }
 
-    <button type="submit" class="btn btn-success me-2">Salvar</button>
-    <button type="button" class="btn btn-secondary" @onclick='() => Nav.NavigateTo("/eventos")'>Cancelar</button>
+    <button type="submit" class="btn btn-royal me-2">Salvar</button>
+    <button type="button" class="btn btn-outline-secondary" @onclick='() => Nav.NavigateTo("/eventos")'>Cancelar</button>
 </EditForm>
+</div>
 
 @code {
     [Parameter] public Guid? Id { get; set; }

@@ -2,46 +2,48 @@
 @inject BlazorFront.Services.EventoService EventoService
 @inject NavigationManager Nav
 
-<h3>Eventos</h3>
+<h3 class="text-royal fw-bold mb-3">Eventos</h3>
 
-<button class="btn btn-primary mb-3" @onclick='() => Nav.NavigateTo("/eventos/novo")'>Novo Evento</button>
+<button class="btn btn-royal mb-3" @onclick='() => Nav.NavigateTo("/eventos/novo")'>+ Novo Evento</button>
 
 @if (loading)
 {
-    <p>Carregando...</p>
+    <p class="text-muted">Carregando...</p>
 }
 else if (erro != null)
 {
-    <p class="text-danger">@erro</p>
+    <div class="alert alert-danger">@erro</div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Data</th>
-                <th>Capacidade</th>
-                <th>Preço</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var evento in eventos)
-            {
+    <div class="card shadow-sm">
+        <table class="table table-hover mb-0">
+            <thead class="table-royal">
                 <tr>
-                    <td>@evento.Nome</td>
-                    <td>@evento.DataEvento.ToString("dd/MM/yyyy")</td>
-                    <td>@evento.CapacidadeTotal</td>
-                    <td>R$ @evento.PrecoPadrao.ToString("F2")</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning me-1" @onclick='() => Nav.NavigateTo($"/eventos/editar/{evento.Id}")'>Editar</button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => Deletar(evento.Id)">Deletar</button>
-                    </td>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Capacidade</th>
+                    <th>Preço</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var evento in eventos)
+                {
+                    <tr>
+                        <td>@evento.Nome</td>
+                        <td>@evento.DataEvento.ToString("dd/MM/yyyy")</td>
+                        <td>@evento.CapacidadeTotal</td>
+                        <td>R$ @evento.PrecoPadrao.ToString("F2")</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-royal me-1" @onclick='() => Nav.NavigateTo($"/eventos/editar/{evento.Id}")'>Editar</button>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => Deletar(evento.Id)">Deletar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
