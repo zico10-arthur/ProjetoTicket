@@ -702,7 +702,7 @@
           "bin/placeholder/Domain.dll": {}
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
@@ -711,10 +711,10 @@
           "Microsoft.Data.SqlClient": "6.1.4"
         },
         "compile": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         }
       }
     }
@@ -1958,18 +1958,18 @@
       "path": "../Domain/Domain.csproj",
       "msbuildProject": "../Domain/Domain.csproj"
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
-      "path": "../infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/infraestructure.csproj",
+      "msbuildProject": "../infraestructure/infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
       "Application >= 1.0.0",
-      "Infraestructure >= 1.0.0",
       "Microsoft.AspNetCore.OpenApi >= 9.0.12",
-      "Swashbuckle.AspNetCore >= 6.5.0"
+      "Swashbuckle.AspNetCore >= 6.5.0",
+      "infraestructure >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2007,8 +2007,8 @@
             "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
               "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
             },
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
             }
           }
         }

@@ -9,9 +9,9 @@
       "Api/1.0.0": {
         "dependencies": {
           "Application": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.AspNetCore.OpenApi": "9.0.12",
-          "Swashbuckle.AspNetCore": "6.5.0"
+          "Swashbuckle.AspNetCore": "6.5.0",
+          "infraestructure": "1.0.0"
         },
         "runtime": {
           "Api.dll": {}
@@ -480,7 +480,7 @@
           }
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -488,8 +488,7 @@
         },
         "runtime": {
           "Infraestructure.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "fileVersion": "0.0.0.0"
           }
         }
       }
@@ -770,7 +769,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
