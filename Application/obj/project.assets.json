@@ -1713,8 +1713,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../infraestructure/Infraestructure.csproj"
+      "path": "../Infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1754,8 +1754,8 @@
             "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
               "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj"
             },
-            "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+            "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+              "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
             }
           }
         }

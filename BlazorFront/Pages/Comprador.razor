@@ -1,0 +1,60 @@
+@page "/comprador"
+@layout LoggedLayout
+
+<PageTitle>Sold Out Tickets - Comprador</PageTitle>
+
+<div class="container pb-5 pt-4">
+    <h3 class="text-royal fw-bold mb-4">Eventos Disponíveis</h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var evento in eventos)
+        {
+            <div class="col">
+                <div class="card evento-card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-royal fw-bold">@evento.Nome</h5>
+                        <hr class="border-royal" />
+                        <p class="mb-1">
+                            <span class="evento-label">📅 Data</span>
+                            <span>@evento.DataEvento.ToString("dd/MM/yyyy")</span>
+                        </p>
+                        <p class="mb-1">
+                            <span class="evento-label">👥 Capacidade</span>
+                            <span>@evento.CapacidadeTotal pessoas</span>
+                        </p>
+                        <p class="mb-3">
+                            <span class="evento-label">💰 Preço</span>
+                            <span class="fw-bold text-royal">R$ @evento.PrecoPadrao.ToString("F2")</span>
+                        </p>
+                        <div class="mt-auto">
+                            <!-- TODO: integrar com endpoint de compra -->
+                            <button class="btn btn-royal w-100" @onclick="() => Comprar(evento)">Comprar Ingresso</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (mensagem != null)
+    {
+        <div class="alert alert-success mt-4">@mensagem</div>
+    }
+</div>
+
+@code {
+    private string? mensagem;
+
+    // TODO: substituir por chamada real ao EventoService
+    private List<EventoModel> eventos = [
+        new() { Id = Guid.NewGuid(), Nome = "Show de Rock", CapacidadeTotal = 500, DataEvento = DateTime.Now.AddDays(10), PrecoPadrao = 120.00m },
+        new() { Id = Guid.NewGuid(), Nome = "Festival de Jazz", CapacidadeTotal = 300, DataEvento = DateTime.Now.AddDays(20), PrecoPadrao = 80.00m },
+        new() { Id = Guid.NewGuid(), Nome = "Peça de Teatro", CapacidadeTotal = 150, DataEvento = DateTime.Now.AddDays(5), PrecoPadrao = 60.00m },
+    ];
+
+    private void Comprar(EventoModel evento)
+    {
+        // TODO: integrar com endpoint de compra
+        mensagem = $"Compra de \"{evento.Nome}\" simulada com sucesso!";
+    }
+}

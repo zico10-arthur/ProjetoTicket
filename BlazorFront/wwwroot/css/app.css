@@ -147,3 +147,54 @@ h1:focus {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+/* Layout Público */
+.public-page {
+    min-height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.public-header {
+    background-color: var(--royal);
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.public-content {
+    flex: 1;
+}
+
+.landing-hero {
+    background: linear-gradient(135deg, var(--royal-light) 0%, #ffffff 100%);
+    border-bottom: 1px solid #dde3f5;
+}
+
+/* Cards de Evento */
+.evento-card {
+    border: 1px solid #dde3f5;
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.evento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(65, 105, 225, 0.15) !important;
+}
+
+.evento-label {
+    display: inline-block;
+    width: 130px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.border-royal {
+    border-color: var(--royal-light) !important;
+}
+
+.bg-royal {
+    background-color: var(--royal) !important;
+    color: white;
+}
