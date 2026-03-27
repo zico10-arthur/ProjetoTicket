@@ -4,6 +4,7 @@ using Application.Service;
 using Application.Interfaces;
 using Api.Middlewares;
 using Infrastructure.Database;
+using Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddAutoMapper(typeof(UsuarioProfile));
+
+
 
 builder.Services.AddScoped<ConnectionFactory>(sp =>
 {

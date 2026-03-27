@@ -12,4 +12,6 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarEmail(string email, CancellationToken ct);
 
+    Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct);
+
 }

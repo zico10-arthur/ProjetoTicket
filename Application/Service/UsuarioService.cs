@@ -2,15 +2,17 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Interface;
 using Application.Exceptions;
-
+using AutoMapper;
 namespace Application.Service;
 
 public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _repository;
-    public UsuarioService(IUsuarioRepository repository)
+    private readonly IMapper _mapper;
+    public UsuarioService(IUsuarioRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     public async Task CadastrarComprador(CadastrarUsuarioDTO dto, CancellationToken ct)
@@ -46,6 +48,16 @@ public class UsuarioService : IUsuarioService
 
         if (logado.Senha != dto.Senha) throw new LoginErro();
         return logado;
+    }
+
+    
+    public async Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct)
+    {
+        Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        if (usuario == null) throw new UsuarioNotFound();
+
+        UsuarioSaidaDTO dto = _mapper.Map<UsuarioSaidaDTO>(usuario);
+        return dto;
     }
 
     

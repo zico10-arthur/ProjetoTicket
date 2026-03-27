@@ -40,4 +40,14 @@ public class UsuarioController : ControllerBase
 
         return Ok(new{message="Bem vindo!"});
     }
+
+    [HttpGet("ListarUsuarioEspecifico/{cpf}")]
+    public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute]string cpf, CancellationToken ct)
+    {
+        UsuarioSaidaDTO dto = await _service.UsuarioEspecifico(cpf, ct);
+
+        return Ok(dto);
+    }
+
+    
 }

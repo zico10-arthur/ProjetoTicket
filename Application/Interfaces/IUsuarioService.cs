@@ -9,4 +9,6 @@ public interface IUsuarioService
     Task CadastrarVendedor(CadastrarUsuarioDTO dto, CancellationToken ct, Guid AdminLogado);
 
     Task<Usuario> Login(LoginDTO dto, CancellationToken ct);
+
+    Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct);
 }

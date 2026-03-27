@@ -2,6 +2,7 @@ using Dapper;
 using Domain.Exceptions;
 using Infrastructure.Database;
 using Domain.Interface;
+using Domain.Entities;
 
 
 namespace Infraestructure.Repository;
@@ -82,4 +83,38 @@ public class UsuarioRepository : IUsuarioRepository
         )
         );
     }
+
+    public async Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct)
+{
+    cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+
+    using var connection = _factory.CreateConnection();
+
+    const string sql = @"
+        SELECT 
+            u.Cpf,
+            u.Nome,
+            u.Email,
+            u.Senha,
+            u.PerfilId,
+            p.Id,
+            p.Nome
+        FROM Usuarios u
+        INNER JOIN Perfis p ON u.PerfilId = p.Id
+        WHERE u.Cpf = @Cpf";
+
+    var result = await connection.QueryAsync<Usuario, Perfil, Usuario>(
+        sql,
+        (usuario, perfil) =>
+        {
+            usuario.Perfil = perfil;
+            return usuario;
+        },
+        new { Cpf = cpf },
+        splitOn: "Id" 
+    );
+
+    return result.FirstOrDefault();
+}
+
 }
