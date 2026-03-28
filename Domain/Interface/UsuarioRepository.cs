@@ -12,4 +12,10 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarEmail(string email, CancellationToken ct);
 
+    Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct);
+
+    Task RemoverUsuario(Usuario usuario, CancellationToken ct);
+
+    Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct);
+
 }

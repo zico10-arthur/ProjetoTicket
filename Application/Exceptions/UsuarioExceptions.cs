@@ -20,3 +20,9 @@ public class LoginErro : DomainException
     : base("Usuário não encontrado ou senha inválida") {}
 }
 
+public class UsuarioNotFound : DomainException
+{
+    public UsuarioNotFound()
+    : base("Usuário não encontrado") {}
+}
+

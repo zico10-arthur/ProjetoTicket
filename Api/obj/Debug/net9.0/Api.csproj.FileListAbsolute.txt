@@ -87,6 +87,7 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dl
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+<<<<<<< HEAD
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\bin\Debug\net9.0\appsettings.json
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\bin\Debug\net9.0\Api.staticwebassets.endpoints.json
@@ -177,3 +178,7 @@ C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\obj\Debug\net9.0\refint\Ap
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+=======
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+>>>>>>> 7168570126e6bf743960b3dad2f43f13e57653d3

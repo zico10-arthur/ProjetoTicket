@@ -9,11 +9,11 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\I
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.AssemblyInfo.cs
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.csproj.CoreCompileInputs.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.sourcelink.json
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraest.B0D41582.Up2Date
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\Infraestructure.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\Infraestructure.dll
+<<<<<<< HEAD
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\bin\Debug\net9.0\Infraestructure.deps.json
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\bin\Debug\net9.0\Infraestructure.dll
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\bin\Debug\net9.0\Infraestructure.pdb
@@ -30,3 +30,6 @@ C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\obj\Debug\net9
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\Infraestructure.dll
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.pdb
 C:\Users\tempu\Downloads\Nova pasta\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\Infraestructure.dll
+=======
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraest.B0D41582.Up2Date
+>>>>>>> 7168570126e6bf743960b3dad2f43f13e57653d3

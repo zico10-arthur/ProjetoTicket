@@ -56,3 +56,4 @@ public class SenhaInvalida : DomainException
     public SenhaInvalida()
     : base("Senha inválida"){}
 }
+

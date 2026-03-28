@@ -1,0 +1,59 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Nav
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudPaper Class="pa-8">
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Login</MudText>
+
+        @if (!string.IsNullOrEmpty(mensagemErro))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@mensagemErro</MudAlert>
+        }
+
+        <MudTextField @bind-Value="email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="senha" Label="Senha" Variant="Variant.Outlined" InputType="InputType.Password" Class="mb-6" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                   OnClick="Entrar" Disabled="carregando">
+            @if (carregando)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Entrar
+        </MudButton>
+
+        <MudText Align="Align.Center" Class="mt-4">
+            Não tem conta? <MudLink Href="/cadastro">Cadastre-se</MudLink>
+        </MudText>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    string email = string.Empty;
+    string senha = string.Empty;
+    string mensagemErro = string.Empty;
+    bool carregando = false;
+
+    record ErroResponse(string Message);
+
+    async Task Entrar()
+    {
+        mensagemErro = string.Empty;
+        carregando = true;
+
+        var client = HttpClientFactory.CreateClient("Api");
+        var response = await client.PostAsJsonAsync("/api/Usuario/login", new { Email = email, Senha = senha });
+
+        carregando = false;
+
+        if (response.IsSuccessStatusCode)
+            Nav.NavigateTo("/");
+        else
+        {
+            var erro = await response.Content.ReadFromJsonAsync<ErroResponse>();
+            mensagemErro = erro?.Message ?? "Erro ao realizar login.";
+        }
+    }
+}

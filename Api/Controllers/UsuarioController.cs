@@ -40,4 +40,32 @@ public class UsuarioController : ControllerBase
 
         return Ok(new{message="Bem vindo!"});
     }
+
+    [HttpGet("ListarUsuarioEspecifico/{cpf}")]
+    public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute]string cpf, CancellationToken ct)
+    {
+        UsuarioSaidaDTO dto = await _service.UsuarioEspecifico(cpf, ct);
+
+        return Ok(dto);
+    }
+
+    [HttpDelete("DeletarUsuario/{cpf}")]
+
+    public async Task<IActionResult> RemoverUusuario([FromRoute]string cpf, CancellationToken ct)
+    {
+        await _service.RemoverUsuario(cpf, ct);
+
+        return Ok(new{message = "Usuario deletado com sucesso"});
+    }
+
+    [HttpPut("alterarsenha/{cpf}")]
+
+    public async Task<IActionResult> AlterarSenha([FromRoute]string cpf, [FromBody] AlterarSenhaDTO dto, CancellationToken ct)
+    {
+        await _service.AlterarSenha(dto, cpf, ct);
+
+        return Ok(new{message = "senha alterada com sucesso"});
+    }
+
+    
 }

@@ -9,11 +9,13 @@ public class Usuario
 
     public string Email{get; private set;} = string.Empty;
 
-    public Perfil Perfil {get;private set;}
+    public Perfil Perfil {get;  set;}
 
     public Guid PerfilId {get;private set;}
 
     public string Senha {get; private set;} 
+
+    public Usuario() {}
 
     public Usuario(string cpf, string nome, string email, Guid perfilid, string senha)
     {
@@ -130,6 +132,11 @@ public class Usuario
             {
                 throw new SenhaInvalida();
             }
+    }
+
+    public void AlterarSenha(string novasenha)
+    {
+        Senha = novasenha;
     }
  
     
