@@ -702,7 +702,7 @@
           "bin/placeholder/Domain.dll": {}
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
@@ -711,10 +711,10 @@
           "Microsoft.Data.SqlClient": "6.1.4"
         },
         "compile": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         }
       }
     }
@@ -1958,38 +1958,38 @@
       "path": "../Domain/Domain.csproj",
       "msbuildProject": "../Domain/Domain.csproj"
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
-      "path": "../infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/infraestructure.csproj",
+      "msbuildProject": "../infraestructure/infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
       "Application >= 1.0.0",
-      "Infraestructure >= 1.0.0",
       "Microsoft.AspNetCore.OpenApi >= 9.0.12",
-      "Swashbuckle.AspNetCore >= 6.5.0"
+      "Swashbuckle.AspNetCore >= 6.5.0",
+      "infraestructure >= 1.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\rezen\\.nuget\\packages\\": {},
+    "C:\\Users\\tempu\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
+      "projectUniqueName": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
-      "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\obj\\",
+      "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Api\\Api.csproj",
+      "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\rezen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1998,17 +1998,18 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
+            "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Application\\Application.csproj": {
+              "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Application\\Application.csproj"
             },
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+            "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+              "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
             }
           }
         }
@@ -2023,7 +2024,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net9.0": {
@@ -2057,7 +2058,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.309/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
