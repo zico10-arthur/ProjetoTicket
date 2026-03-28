@@ -133,6 +133,11 @@ public class Usuario
                 throw new SenhaInvalida();
             }
     }
+
+    public void AlterarSenha(string novasenha)
+    {
+        Senha = novasenha;
+    }
  
     
 }

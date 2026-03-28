@@ -14,4 +14,8 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct);
 
+    Task RemoverUsuario(Usuario usuario, CancellationToken ct);
+
+    Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct);
+
 }

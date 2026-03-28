@@ -11,4 +11,8 @@ public interface IUsuarioService
     Task<Usuario> Login(LoginDTO dto, CancellationToken ct);
 
     Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct);
+
+    Task RemoverUsuario(string cpf, CancellationToken ct);
+
+    Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct);
 }

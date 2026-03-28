@@ -60,6 +60,23 @@ public class UsuarioService : IUsuarioService
         return dto;
     }
 
+    public async Task RemoverUsuario(string cpf, CancellationToken ct)
+    {
+        Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        if (usuario == null) throw new UsuarioNotFound();
+
+        _repository.RemoverUsuario(usuario, ct);
+    }
+
+    public async Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct)
+    {
+         Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        if (usuario == null) throw new UsuarioNotFound();
+
+        usuario.AlterarSenha(dto.NovaSenha);
+        await _repository.AtualizarSenha(cpf, dto.NovaSenha, ct);
+    }
+
     
     
 }

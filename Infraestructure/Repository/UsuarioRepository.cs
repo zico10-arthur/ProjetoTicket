@@ -117,4 +117,38 @@ public class UsuarioRepository : IUsuarioRepository
     return result.FirstOrDefault();
 }
 
+    public async Task RemoverUsuario(Usuario usuario, CancellationToken ct)
+    {
+        string cpf = (usuario.Cpf?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+
+        using var connection =  _factory.CreateConnection();
+
+        const string sql = "DELETE FROM Usuarios WHERE Cpf = @Cpf";
+
+        int linhasAfetadas = await connection.ExecuteAsync(
+        new CommandDefinition(
+            sql, 
+            new { Cpf = cpf }, 
+            cancellationToken: ct
+        )
+    );
+
+    }
+
+    public async Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct)
+{
+    cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+
+    using var connection = _factory.CreateConnection();
+
+    const string sql = "UPDATE Usuarios SET Senha = @Senha WHERE Cpf = @Cpf";
+
+    int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
+        sql, 
+        new { Senha = novaSenha, Cpf = cpf }, 
+        cancellationToken: ct
+    ));
+
+}
+
 }
