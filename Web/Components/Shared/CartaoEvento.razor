@@ -1,0 +1,50 @@
+<MudCard Elevation="3" Class="event-card" @onclick="ToggleCard">
+    <MudCardContent>
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-3">
+            <b>@Evento.Titulo</b>
+        </MudText>
+        
+        <div class="d-flex align-center mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Data</b></MudText>
+            <MudSpacer />
+            <MudText>@Evento.Data.ToShortDateString()</MudText>
+        </div>
+
+        <div class="d-flex align-center mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Capacidade</b></MudText>
+            <MudSpacer />
+            <MudText>@Evento.Capacidade pessoas</MudText>
+        </div>
+
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Preço</b></MudText>
+            <MudSpacer />
+            <MudText Color="Color.Primary">
+                <b>@Evento.Preco.ToString("C")</b>
+            </MudText>
+        </div>
+    </MudCardContent>
+    
+    <MudCollapse Expanded="isExpanded">
+        <div class="pa-4 pt-0">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick:stopPropagation="true">
+                Comprar Ingresso
+            </MudButton>
+        </div>
+    </MudCollapse>
+</MudCard>
+
+@code {
+    [Parameter]
+    public EventoViewModel Evento { get; set; } = null!;
+
+    private bool isExpanded;
+
+    private void ToggleCard()
+    {
+        isExpanded = !isExpanded;
+    }
+}

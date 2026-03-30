@@ -37,8 +37,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/CadastrarCupom.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYWRhc3RyYXJDdXBvbS5yYXpvcg==
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Admin/CriarCupom.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxDcmlhckN1cG9tLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Admin/Cupons.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxDdXBvbnMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Admin/EditarCupom.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxFZGl0YXJDdXBvbS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Admin/Usuarios.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxVc3Vhcmlvcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Cadastro.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYWRhc3Ryby5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Counter.razor]
@@ -51,6 +67,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Pages/NotFound.razor]
@@ -72,3 +92,7 @@ build_metadata.AdditionalFiles.CssScope =
 [C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Layout/ReconnectModal.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcUmVjb25uZWN0TW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-mzcemie4t6
+
+[C:/Users/Erick/Documents/ProjetoTicket/Web/Components/Shared/CartaoEvento.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQ2FydGFvRXZlbnRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-hmg3cnnos7

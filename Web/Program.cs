@@ -1,5 +1,7 @@
 using MudBlazor.Services;
-using Web.Components; // Certifique-se que o namespace da sua pasta Components está correto
+using Web.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Web.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,21 @@ builder.Services.AddScoped(sp =>
         // Verifique se sua API está na 5000 (http) ou 7200 (https)
         BaseAddress = new Uri("http://localhost:5007/") 
     };
+});
+
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirTudo", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();

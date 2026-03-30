@@ -4,21 +4,19 @@ using System.Net.Mail;
 
 public class Cupom
 {
-    public Guid Id {get; private set; }
-    public Guid? IdEvento { get; private set; }
     public string Codigo { get; private set; }
     public int PorcentagemDesconto { get; private set; }
     public decimal ValorMinimo { get; private set; }
     public DateTime? DataExpiracao { get; private set; }
     public bool Ativo { get; private set; }
 
+    public bool EstaValidoParaUso => Ativo && DataExpiracao >= DateTime.Now;
+
     // Construtor para o Dapper não reclamar da "materialization"
     protected Cupom() { }
 
-    private Cupom(string codigo, int percentDesc, decimal valorMin, DateTime? expiracao, Guid? idEvento = null)
+    private Cupom(string codigo, int percentDesc, decimal valorMin, DateTime? expiracao)
     {
-        Id = Guid.NewGuid();
-        IdEvento = idEvento;
         Codigo = codigo.ToUpper().Trim();
         PorcentagemDesconto = percentDesc;
         ValorMinimo = valorMin;
@@ -27,12 +25,12 @@ public class Cupom
     }
 
 
-    public static Cupom Criar(string codigo, int percentDesc, decimal valorMin, DateTime? expiracao, Guid? idEvento = null)
+    public static Cupom Criar(string codigo, int percentDesc, decimal valorMin, DateTime? expiracao)
     {
         if (expiracao < DateTime.Now) throw new DataExpiracaoInvalida(); 
         if (valorMin <= 0) throw new ValorMinimoInvalido();
 
-        Cupom cupom = new Cupom(codigo, percentDesc, valorMin, expiracao, idEvento);
+        Cupom cupom = new Cupom(codigo, percentDesc, valorMin, expiracao);
 
         cupom.ValidarCodigo(codigo);
         cupom.ValidarDesconto(percentDesc);
@@ -41,9 +39,9 @@ public class Cupom
     }
 
 
-    public bool EstaAtivo() 
+    public void AlternarStatus()
     {
-        return Ativo;
+        Ativo = !Ativo; 
     }
 
 

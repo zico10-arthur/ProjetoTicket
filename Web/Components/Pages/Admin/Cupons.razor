@@ -1,0 +1,203 @@
+@page "/admin/cupons"
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+@using Web.Models
+@using MudBlazor
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager Nav
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <div class="d-flex align-center mb-6">
+        <MudText Typo="Typo.h4" Color="Color.Primary"><b>🎟️ Gestão de Cupons</b></MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/admin/cupons/criar">
+            Novo Cupom
+        </MudButton>
+    </div>
+
+    @if (isLoading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudGrid Spacing="4">
+            @foreach (var cupom in cupons)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3" Class="rounded-lg border-t-4" Style="border-top-color: var(--mud-palette-primary);">
+                        <MudCardContent>
+                            <div class="d-flex justify-space-between align-center mb-4">
+                                @* Código do Cupom em destaque *@
+                                <MudText Typo="Typo.h5" Color="Color.Primary"><b>@cupom.Codigo.ToUpper()</b></MudText>
+                                
+                                @* Badge de Status *@
+                                <MudChip T="string" Color="@(cupom.Ativo ? Color.Success : Color.Error)" Size="Size.Small" Variant="Variant.Text">
+                                    @(cupom.Ativo ? "Ativo" : "Inativo")
+                                </MudChip>
+                            </div>
+
+                            @* Porcentagem de Desconto (Agora como Inteiro) *@
+                            <div class="d-flex align-center mb-2">
+                                <MudIcon Icon="@Icons.Material.Filled.Percent" Size="Size.Small" Class="mr-2" Color="Color.Info"/>
+                                <MudText Typo="MudBlazor.Typo.body1">Desconto: <b>@cupom.PorcentagemDesconto%</b></MudText>
+                            </div>
+
+                            @* Valor Mínimo para uso *@
+                            <div class="d-flex align-center mb-2">
+                                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="mr-2" Color="Color.Info"/>
+                                <MudText Typo="MudBlazor.Typo.body1">Mínimo: <b>@cupom.ValorMinimo.ToString("C")</b></MudText>
+                            </div>
+
+                            @* Data de Expiração *@
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Size="Size.Small" Class="mr-2" Color="Color.Default"/>
+                                <MudText Typo="MudBlazor.Typo.body2" Class="text-muted">Expira: @cupom.DataExpiracao.ToShortDateString()</MudText>
+                            </div>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            @* Botões de ação que chamam seu Controller *@
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Inherit" Size="Size.Small" OnClick="@(() => Nav.NavigateTo($"/admin/cupons/editar/{cupom.Codigo}"))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => AbrirConfirmacaoDelecao(cupom.Codigo))" />
+                            <MudSpacer />
+                            <MudSwitch T="bool" Value="@cupom.Ativo" ValueChanged="@((bool novoStatus) => MudarStatus(cupom, novoStatus))" Color="Color.Primary" Label="Status" />
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<CupomViewModel> cupons = new();
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Garante que só vamos buscar no banco na primeira vez que a tela carrega
+        if (firstRender)
+        {
+            await CarregarCupons();
+        }
+    }
+
+    // 2. O seu CarregarCupons com uma trava de segurança
+    private async Task CarregarCupons()
+    {
+        try
+        {
+            // Agora sim o JS está pronto para ler o Token!
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            token = token?.Replace("\"", "");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Snackbar.Add("Token não encontrado. Faça login novamente.", Severity.Warning);
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+            var resultado = await Http.GetFromJsonAsync<List<CupomViewModel>>("api/Cupom/ListarTodosCupons");
+            if (resultado != null) cupons = resultado;
+        }
+        catch (Exception ex) 
+        { 
+            Snackbar.Add($"Falha ao carregar: {ex.Message}", Severity.Error); 
+        }
+        finally 
+        { 
+            isLoading = false; 
+            StateHasChanged(); // Avisa a tela que os dados chegaram e manda redesenhar
+        }
+    }
+
+    private async Task AbrirConfirmacaoDelecao(string codigo)
+    {
+        // Ajustamos o final do nome para ShowMessageBoxAsync
+        bool? confirmou = await DialogService.ShowMessageBoxAsync(
+            "Atenção", 
+            $"Deseja realmente excluir o cupom {codigo}?", 
+            yesText: "Excluir", cancelText: "Cancelar");
+
+        if (confirmou == true)
+        {
+            await DeletarCupom(codigo);
+        }
+    }
+
+    private async Task DeletarCupom(string codigo)
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            
+            // Seu controller pede o adminId no corpo da requisição DELETE
+            var adminId = Guid.Parse("A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1");
+
+            // Criamos a requisição manual para enviar o Guid no Body do Delete
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"api/Cupom/DeletarCupom/{codigo}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = JsonContent.Create(adminId);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Cupom removido!", Severity.Success);
+                // Atualiza a lista na tela sem precisar recarregar a página
+                cupons.RemoveAll(c => c.Codigo == codigo);
+            }
+            else
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Não foi possível excluir o cupom. Erro {(int)response.StatusCode} ({response.StatusCode}): {erro}", Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro de conexão com a API.", Severity.Error);
+        }
+    }
+
+    private async Task MudarStatus(CupomViewModel cupom, bool novoStatus)
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            token = token?.Replace("\"", "");
+            
+            // O mesmo ID de admin que estamos usando para testar
+            var adminId = Guid.Parse("A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1");
+
+            var request = new HttpRequestMessage(HttpMethod.Patch, $"api/Cupom/{cupom.Codigo}/AlternarStatus");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = JsonContent.Create(adminId);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                cupom.Ativo = novoStatus; // Atualiza o botão na tela
+                Snackbar.Add("Status atualizado com sucesso!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Não foi possível alterar o status.", Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao comunicar com a API.", Severity.Error);
+        }
+    }
+
+}

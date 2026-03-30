@@ -10,7 +10,8 @@
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
-          "Microsoft.Data.SqlClient": "6.1.4"
+          "Microsoft.Data.SqlClient": "6.1.4",
+          "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
           "Infraestructure.dll": {}
@@ -47,6 +48,29 @@
           "lib/net8.0/Dapper.dll": {
             "assemblyVersion": "2.0.0.0",
             "fileVersion": "2.1.72.10375"
+          }
+        }
+      },
+      "dbup-core/6.1.1": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.11"
+        },
+        "runtime": {
+          "lib/netstandard2.0/dbup-core.dll": {
+            "assemblyVersion": "6.1.1.0",
+            "fileVersion": "6.1.1.0"
+          }
+        }
+      },
+      "dbup-sqlserver/7.2.0": {
+        "dependencies": {
+          "Microsoft.Data.SqlClient": "6.1.4",
+          "dbup-core": "6.1.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/dbup-sqlserver.dll": {
+            "assemblyVersion": "7.2.0.0",
+            "fileVersion": "7.2.0.0"
           }
         }
       },
@@ -439,6 +463,20 @@
       "sha512": "sha512-ns4mGqQd9a/MhP8m6w556vVlZIa0/MfUu03zrxjZC/jlr1uVCsUac8bkdB+Fs98Llbd56rRSo1eZH5VVmeGZyw==",
       "path": "dapper/2.1.72",
       "hashPath": "dapper.2.1.72.nupkg.sha512"
+    },
+    "dbup-core/6.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kgpuyJVEFJHoIj/slnc994Go88aoeZqNDfGHDBr4sh7CsEWwJhOTCt/FJqO4ziUImL5L0NEY0kxxOiNgPKI2Fw==",
+      "path": "dbup-core/6.1.1",
+      "hashPath": "dbup-core.6.1.1.nupkg.sha512"
+    },
+    "dbup-sqlserver/7.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1xhdu2ZoQEi2nNrirBfkkfn+AbHWQvy8CGilb+5dIjghFJrsMKFM17DiI5Nz+ofWg9N1lqz5WorujzuGvc/+fQ==",
+      "path": "dbup-sqlserver/7.2.0",
+      "hashPath": "dbup-sqlserver.7.2.0.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",

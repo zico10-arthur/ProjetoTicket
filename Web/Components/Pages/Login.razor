@@ -1,0 +1,60 @@
+@page "/login"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudCard Elevation="3" Class="pa-8 rounded-lg">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Entrar no Sistema</MudText>
+        
+        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-6" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin">
+            Fazer Login
+        </MudButton>
+
+        <div class="mt-6 text-center">
+            <MudLink Href="/cadastro" Color="Color.Info">
+                Ainda não possui uma conta? Clique e cadastre-se!
+            </MudLink>
+        </div>
+    </MudCard>
+</MudContainer>
+
+@code {
+    public class LoginDTO { public string Email { get; set; } = ""; public string Senha { get; set; } = ""; }
+    private LoginDTO dto = new();
+
+    private async Task RealizarLogin()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Usuario/login", dto);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+                
+                // 1. Salva o token no LocalStorage do navegador (como se fosse um cookie)
+                await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+                
+                // 2. Avisa a nossa classe nova que o usuário logou!
+                ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
+                
+                Snackbar.Add("Login bem sucedido!", Severity.Success);
+                NavManager.NavigateTo("/"); // Vai para a Home
+            }
+            else
+            {
+                Snackbar.Add("Você ainda não está cadastrado!! Cadastre-se no link logo abaixo desta caixa de Login!", Severity.Warning);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
+        }
+    }
+}

@@ -26,6 +26,8 @@ public class Usuario
         Senha = senha;
     }
 
+    protected Usuario() { }
+
     public static Usuario Criar(string cpf, string nome, string email, Guid perfilid, string senha)
 {
     cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();

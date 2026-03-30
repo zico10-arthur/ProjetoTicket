@@ -1,101 +1,96 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
-
+<MudThemeProvider />
 <MudDialogProvider />
-<MudSnackbarProvider />
+<MudSnackbarProvider /> 
 <MudPopoverProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+    <MudAppBar Color="Color.Primary" Elevation="1" Fixed="true">
+        <MudText Typo="Typo.h5" Class="ml-3 cursor-pointer" @onclick='() => NavManager.NavigateTo("/")'>🎟️ SoldOut Tickets</MudText>
+        <MudSpacer />
+
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="d-flex align-center gap-3">
+                    <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login">
+                        Entrar
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Href="/cadastro">
+                        Cadastrar-se
+                    </MudButton>
+                </div>
+            </NotAuthorized>
+
+            <Authorized>
+                <AuthorizeView Roles="Comprador" Context="compradorCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/">Eventos</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/cupons">Cupons</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="@compradorCtx.User.Identity?.Name" Icon="@Icons.Material.Filled.Person" Color="Color.Inherit">
+                        <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
+                        <MudMenuItem Href="/reservas">Minhas Reservas</MudMenuItem>
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Vendedor" Context="vendedorCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/">Eventos</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/criar-evento">Criar Evento</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="@vendedorCtx.User.Identity?.Name" Icon="@Icons.Material.Filled.Storefront" Color="Color.Inherit">
+                        <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
+                        <MudMenuItem Href="/meus-eventos">Meus Eventos</MudMenuItem>
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin" Context="adminCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/admin/eventos">Eventos</MudButton>
+                        
+                        <MudMenu Label="Cupons" Color="Color.Inherit" AnchorOrigin="Origin.BottomCenter">
+                            <MudMenuItem Href="/admin/cupons">Mostrar Cupons</MudMenuItem>
+                            <MudMenuItem Href="/admin/cupons/criar">Criar Cupons</MudMenuItem>
+                        </MudMenu>
+
+                        <MudButton Color="Color.Inherit" Href="/admin/usuarios">Usuários</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/admin/reservas">Reservas</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="Admin" Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit">
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent Class="pt-16 pa-4">
-        @Body
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-8 mb-8">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 
-
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
-
 @code {
-    private bool _drawerOpen = true;
-    private bool _isDarkMode = true;
-    private MudTheme? _theme = null;
+    [Inject] NavigationManager NavManager { get; set; } = null!;
 
-    protected override void OnInitialized()
+    private async Task Deslogar()
     {
-        base.OnInitialized();
-
-        _theme = new()
-        {
-            PaletteLight = _lightPalette,
-            PaletteDark = _darkPalette,
-            LayoutProperties = new LayoutProperties()
-        };
+        // 1. Apaga o Token do navegador
+        await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        
+        // 2. Avisa a classe que o usuário saiu
+        ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoDeslogado();
+        
+        // 3. Joga o cara pra tela de Login
+        NavManager.NavigateTo("/login");
     }
-
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
-    }
-
-    private readonly PaletteLight _lightPalette = new()
-    {
-        Black = "#110e2d",
-        AppbarText = "#424242",
-        AppbarBackground = "rgba(255,255,255,0.8)",
-        DrawerBackground = "#ffffff",
-        GrayLight = "#e8e8e8",
-        GrayLighter = "#f9f9f9",
-    };
-
-    private readonly PaletteDark _darkPalette = new()
-    {
-        Primary = "#7e6fff",
-        Surface = "#1e1e2d",
-        Background = "#1a1a27",
-        BackgroundGray = "#151521",
-        AppbarText = "#92929f",
-        AppbarBackground = "rgba(26,26,39,0.8)",
-        DrawerBackground = "#1a1a27",
-        ActionDefault = "#74718e",
-        ActionDisabled = "#9999994d",
-        ActionDisabledBackground = "#605f6d4d",
-        TextPrimary = "#b2b0bf",
-        TextSecondary = "#92929f",
-        TextDisabled = "#ffffff33",
-        DrawerIcon = "#92929f",
-        DrawerText = "#92929f",
-        GrayLight = "#2a2833",
-        GrayLighter = "#1e1e2d",
-        Info = "#4a86ff",
-        Success = "#3dcb6c",
-        Warning = "#ffb545",
-        Error = "#ff3f5f",
-        LinesDefault = "#33323e",
-        TableLines = "#33323e",
-        Divider = "#292838",
-        OverlayLight = "#1e1e2d80",
-    };
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Rounded.AutoMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
 }
-
-

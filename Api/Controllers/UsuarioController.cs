@@ -36,8 +36,8 @@ public class UsuarioController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO dto, CancellationToken ct)
     {
-        await _service.Login(dto,ct);
+        string tokenGerado = await _service.Login(dto, ct); 
 
-        return Ok(new{message="Bem vindo!"});
+        return Ok(tokenGerado); 
     }
 }

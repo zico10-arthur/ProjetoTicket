@@ -1,0 +1,74 @@
+@page "/admin/cupons/criar"
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+@using Web.Models
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudPaper Class="pa-8">
+        <MudText Typo="Typo.h5" Class="mb-6">🎟️ Novo Cupom de Desconto</MudText>
+        
+        <MudTextField @bind-Value="novoCupom.Codigo" Label="Código (Ex: FESTA50)" Variant="Variant.Outlined" Class="mb-4" />
+        
+        <div class="d-flex gap-4 mb-4">
+            <MudNumericField @bind-Value="novoCupom.PorcentagemDesconto" 
+                 Label="Porcentagem de Desconto" 
+                 Variant="Variant.Outlined" 
+                 Adornment="Adornment.End" 
+                 AdornmentText="%" 
+                 T="int" />
+            
+            <MudNumericField @bind-Value="novoCupom.ValorMinimo" Label="Valor Mínimo" 
+                             Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="R$" />
+        </div>
+
+        <MudDatePicker Label="Data de Expiração" @bind-Date="dataTemp" Variant="Variant.Outlined" Class="mb-6" />
+
+        <div class="d-flex gap-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Salvar">Gravar Cupom</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" FullWidth="true" OnClick='() => Nav.NavigateTo("/admin/cupons")'>Voltar</MudButton>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private CupomViewModel novoCupom = new() { DataExpiracao = DateTime.Now.AddMonths(1) };
+    private DateTime? dataTemp = DateTime.Now.AddMonths(1);
+
+    private async Task Salvar()
+    {
+        try 
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            novoCupom.DataExpiracao = dataTemp ?? DateTime.Now;
+            novoCupom.Ativo = true;
+
+            // O Guid abaixo é o Id do Admin que seu Controller espera na Rota
+            var adminId = "A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1"; 
+
+            // Envio para api/Cupom/CadastrarCupom/A1A1...
+            var response = await Http.PostAsJsonAsync($"api/Cupom/CadastrarCupom/{adminId}", novoCupom);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Cupom cadastrado com sucesso!", Severity.Success);
+                Nav.NavigateTo("/admin/cupons");
+            }
+            else
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Erro {(int)response.StatusCode} ({response.StatusCode}): {erro}", Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao comunicar com o servidor.", Severity.Error);
+        }
+    }
+}

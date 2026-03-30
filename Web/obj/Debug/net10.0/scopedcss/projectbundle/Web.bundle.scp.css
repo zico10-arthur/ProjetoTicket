@@ -219,3 +219,14 @@ dialog[open].components-resume-failed .components-resume-failed-visible[b-mzcemi
         padding: 16px;
     }
 }
+/* /Components/Shared/CartaoEvento.razor.rz.scp.css */
+.event-card[b-hmg3cnnos7] {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.event-card:hover[b-hmg3cnnos7] {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+}

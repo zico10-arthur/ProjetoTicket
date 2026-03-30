@@ -1,0 +1,119 @@
+@page "/admin/cupons/editar/{CodigoCupom}"
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+@using Web.Models
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudPaper Class="pa-8">
+        <MudText Typo="Typo.h5" Class="mb-6">✏️ Editar Cupom: <b>@CodigoCupom.ToUpper()</b></MudText>
+
+        @if (carregando)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <div class="d-flex gap-4 mb-4">
+                <MudNumericField @bind-Value="cupom.PorcentagemDesconto" Label="% Desconto" 
+                                 Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentText="%" T="int" />
+                
+                <MudNumericField @bind-Value="cupom.ValorMinimo" Label="Valor Mínimo" 
+                                 Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="R$" />
+            </div>
+
+            <MudDatePicker Label="Data de Expiração" @bind-Date="dataTemp" Variant="Variant.Outlined" Class="mb-6" />
+
+            <div class="d-flex gap-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="SalvarAlteracoes">Salvar Alterações</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" FullWidth="true" OnClick='() => Nav.NavigateTo("/admin/cupons")'>Cancelar</MudButton>
+            </div>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string CodigoCupom { get; set; } = string.Empty;
+
+    private CupomViewModel cupom = new();
+    private DateTime? dataTemp;
+    private bool carregando = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CarregarDadosDoCupom();
+        }
+    }
+
+    private async Task CarregarDadosDoCupom()
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            token = token?.Replace("\"", "");
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Como a API não tem um método "Buscar Por Código", buscamos todos e filtramos no Front-end
+            var todos = await Http.GetFromJsonAsync<List<CupomViewModel>>("api/Cupom/ListarTodosCupons");
+            var encontrado = todos?.FirstOrDefault(c => c.Codigo.Equals(CodigoCupom, StringComparison.OrdinalIgnoreCase));
+
+            if (encontrado != null)
+            {
+                cupom = encontrado;
+                dataTemp = cupom.DataExpiracao;
+            }
+            else
+            {
+                Snackbar.Add("Cupom não encontrado!", Severity.Warning);
+                Nav.NavigateTo("/admin/cupons");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro ao carregar: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SalvarAlteracoes()
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            token = token?.Replace("\"", "");
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+            var adminId = Guid.Parse("A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1");
+
+            // 1. Atualiza o Desconto (Chama a rota AlterarDesconto)
+            var dtoDesconto = new { AdminId = adminId, novoDesconto = cupom.PorcentagemDesconto };
+            await Http.PatchAsJsonAsync($"api/Cupom/{CodigoCupom}/AlterarDesconto", dtoDesconto);
+
+            // 2. Atualiza o Valor Mínimo (Chama a rota ValorMinimo)
+            var dtoValor = new { AdminId = adminId, NovoValor = cupom.ValorMinimo };
+            await Http.PatchAsJsonAsync($"api/Cupom/{CodigoCupom}/ValorMinimo", dtoValor);
+
+            // 3. Atualiza a Data de Expiração (Chama a rota DataExpiracao)
+            var dtoData = new { AdminId = adminId, novaData = dataTemp ?? DateTime.Now };
+            await Http.PatchAsJsonAsync($"api/Cupom/{CodigoCupom}/DataExpiracao", dtoData);
+
+            Snackbar.Add("Cupom atualizado com sucesso!", Severity.Success);
+            Nav.NavigateTo("/admin/cupons");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro ao atualizar: {ex.Message}", Severity.Error);
+        }
+    }
+}
