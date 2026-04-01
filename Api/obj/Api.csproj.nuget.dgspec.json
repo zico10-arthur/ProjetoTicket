@@ -35,8 +35,8 @@
               "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
                 "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
               },
-              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
               }
             }
           }
@@ -57,6 +57,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.12, )"
@@ -146,6 +150,14 @@
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
               "version": "[12.0.1, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.0.1, )"
             }
           },
           "imports": [
@@ -233,12 +245,12 @@
         }
       }
     },
-    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
-        "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectName": "infraestructure",
+        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
         "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",

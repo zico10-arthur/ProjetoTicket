@@ -9,10 +9,13 @@ public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _repository;
     private readonly IMapper _mapper;
-    public UsuarioService(IUsuarioRepository repository, IMapper mapper)
+
+    private readonly ITokenService _tokenservice;
+    public UsuarioService(IUsuarioRepository repository, IMapper mapper, ITokenService tokenservice)
     {
         _repository = repository;
         _mapper = mapper;
+        _tokenservice = tokenservice;
     }
 
     public async Task CadastrarComprador(CadastrarUsuarioDTO dto, CancellationToken ct)
@@ -41,13 +44,14 @@ public class UsuarioService : IUsuarioService
         _repository.CadastrarUsuario(novovendedor);
     }
 
-    public async Task<Usuario> Login(LoginDTO dto, CancellationToken ct)
+    public async Task<string> Login(LoginDTO dto, CancellationToken ct)
     {
         Usuario? logado = await _repository.BuscarEmail(dto.Email, ct);
         if(logado == null) throw new LoginErro();
 
         if (logado.Senha != dto.Senha) throw new LoginErro();
-        return logado;
+        var token = _tokenservice.GerarToken(logado);
+        return token;
     }
 
     
@@ -65,7 +69,7 @@ public class UsuarioService : IUsuarioService
         Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
-        _repository.RemoverUsuario(usuario, ct);
+       await _repository.RemoverUsuario(usuario, ct);
     }
 
     public async Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct)

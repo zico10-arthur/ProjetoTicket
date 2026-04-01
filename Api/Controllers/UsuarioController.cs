@@ -1,6 +1,8 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Api.Controllers;
 
@@ -24,6 +26,8 @@ public class UsuarioController : ControllerBase
        return Ok(new {message ="Usuário Cadastrado com sucesso"});
     }
 
+    [Authorize(Roles = "Admin")]
+
     [HttpPost("CadastrarVendedor/{Id}")]
 
     public async Task<IActionResult> CadastrarVendedor([FromBody] CadastrarUsuarioDTO dto,[FromRoute] Guid Id, CancellationToken ct)
@@ -36,10 +40,13 @@ public class UsuarioController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO dto, CancellationToken ct)
     {
-        await _service.Login(dto,ct);
+        var token = await _service.Login(dto,ct);
 
-        return Ok(new{message="Bem vindo!"});
+        return Ok(new{token = token});
     }
+
+    
+    [Authorize(Roles = "Admin")]
 
     [HttpGet("ListarUsuarioEspecifico/{cpf}")]
     public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute]string cpf, CancellationToken ct)

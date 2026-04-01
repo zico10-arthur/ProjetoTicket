@@ -89,3 +89,4 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntim
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
