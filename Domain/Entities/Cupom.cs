@@ -1,15 +1,21 @@
 public class Cupom
 {
-    public string Codigo {get; private set;}
+    public string Codigo { get; private set; }
+    public int PorcentagemDesconto { get; private set; }
+    public decimal ValorMinimo { get; private set; }
+    public DateTime? DataExpiracao { get; private set; }
+    public bool Ativo { get; private set; }
 
-    public decimal PorcentagemDesconto {get; private set;}
+    public bool EstaValidoParaUso => Ativo && DataExpiracao >= DateTime.Now;
 
-    public decimal ValorMinimo{get; private set;}
+    protected Cupom() { }
 
-    public Cupom(string codigo, decimal porcentagemdesconto, decimal valorminimo)
+    private Cupom(string codigo, int percentDesc, decimal valorMin, DateTime? expiracao)
     {
-        Codigo = codigo;
-        PorcentagemDesconto = porcentagemdesconto;
-        ValorMinimo = valorminimo;
+        Codigo = codigo.ToUpper().Trim();
+        PorcentagemDesconto = percentDesc;
+        ValorMinimo = valorMin;
+        DataExpiracao = expiracao;
+        Ativo = true;
     }
 }

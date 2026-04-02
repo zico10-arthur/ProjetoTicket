@@ -8,6 +8,8 @@ public class Perfil
 
     public List<Usuario> Usuarios {get;private set;} = new();
 
+    private Perfil(){}
+
     public Perfil(string nome)
     {
         Nome = nome;

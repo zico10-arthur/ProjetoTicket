@@ -1,3 +1,5 @@
+using Domain.Entities;
+
 public class Evento
 {
     public Guid id {get;private set;}  = Guid.NewGuid();
@@ -9,6 +11,13 @@ public class Evento
     public DateTime DataEvento {get; private set;}
 
     public decimal PrecoPadrao {get; private set;}
+
+    public List<Ingresso> Ingressos { get; private set; } = new();
+
+    private Evento()
+    {
+        
+    }
 
     public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao)
     {

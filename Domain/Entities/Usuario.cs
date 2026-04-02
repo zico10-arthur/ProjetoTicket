@@ -12,11 +12,15 @@ public class Usuario
 
     public Guid PerfilId {get;private set;}
 
-    public Usuario(string cpf, string nome, string email, Guid perfilId)
+    public string Senha {get; private set;}
+
+    protected Usuario() { }
+    public Usuario(string cpf, string nome, string email, Guid perfilId, string senha)
     {
         Cpf = cpf;
         Nome = nome;
         Email = email;
         PerfilId = perfilId;
+        Senha = senha;
     }
 }
