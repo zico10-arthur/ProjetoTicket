@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6OpfOGsagbk=",
+  "dgSpecHash": "iCfW1xc/PEo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+  "projectFilePath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tempu\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",

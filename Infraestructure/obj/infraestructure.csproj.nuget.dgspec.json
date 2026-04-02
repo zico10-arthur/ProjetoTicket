@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {}
+    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {}
   },
   "projects": {
     "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Domain\\Domain.csproj": {
@@ -70,12 +70,12 @@
         }
       }
     },
-    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
-        "projectName": "infraestructure",
-        "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
+        "projectName": "Infraestructure",
+        "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",

@@ -36,8 +36,8 @@
               "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Application\\Application.csproj": {
                 "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\Application\\Application.csproj"
               },
-              "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
-                "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
+              "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -58,9 +58,21 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.72, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.12, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[6.1.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -236,12 +248,12 @@
         }
       }
     },
-    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+    "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
-        "projectName": "infraestructure",
-        "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
+        "projectName": "Infraestructure",
+        "projectPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\tempu\\Downloads\\Nova pasta\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",

@@ -3,6 +3,8 @@ using Domain.Exceptions;
 using Infrastructure.Database;
 using Domain.Interface;
 using Domain.Entities;
+using System.Threading.Tasks.Sources;
+using System.Linq.Expressions;
 
 
 namespace Infraestructure.Repository;
@@ -150,5 +152,61 @@ public class UsuarioRepository : IUsuarioRepository
     ));
 
 }
+    public async Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct)
+{
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "UPDATE Usuarios SET Email = @Email WHERE Cpf = @Cpf";
+
+        int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new {Email = usuario.Email, Cpf = usuario.Cpf},
+            cancellationToken: ct
+        ));
+
+
+}
+    public async Task AtualizarNomeAsync(Usuario usuario, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "UPDATE Usuarios SET Nome = @Nome WHERE Cpf = @Cpf";
+
+        int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new {Nome = usuario.Nome, Cpf = usuario.Cpf},
+            cancellationToken: ct
+        ));
+    }
+
+    public async Task<IEnumerable<Usuario>> ListarTodosAsync(CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+        SELECT 
+            u.Cpf,
+            u.Nome,
+            u.Email,
+            u.Senha,
+            u.PerfilId,
+            p.Id,
+            p.Nome
+        FROM Usuarios u
+        INNER JOIN Perfis p ON u.PerfilId = p.Id";
+
+        var usuarios = await connection.QueryAsync<Usuario,Perfil,Usuario>(
+            sql,
+            (usuario,perfil) =>
+            {
+                usuario.Perfil = perfil;
+                return usuario;
+            },
+            splitOn: "Id"
+        );
+
+        return usuarios;
+    
+    }
 
 }

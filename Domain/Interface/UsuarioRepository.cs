@@ -18,4 +18,9 @@ public interface IUsuarioRepository
 
     Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct);
 
+    Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct);
+
+    Task AtualizarNomeAsync(Usuario usuario, CancellationToken ct);
+
+    Task<IEnumerable<Usuario>> ListarTodosAsync(CancellationToken ct);
 }

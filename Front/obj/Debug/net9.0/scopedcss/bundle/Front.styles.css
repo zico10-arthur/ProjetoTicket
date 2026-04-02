@@ -1,4 +1,4 @@
-/* _content/Front/Components/Layout/MainLayout.razor.rz.scp.css */
+/* /Components/Layout/MainLayout.razor.rz.scp.css */
 .page[b-7f9rttbore] {
     position: relative;
     display: flex;
@@ -97,7 +97,7 @@ main[b-7f9rttbore] {
         right: 0.75rem;
         top: 0.5rem;
     }
-/* _content/Front/Components/Layout/NavMenu.razor.rz.scp.css */
+/* /Components/Layout/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-rsbsazgmz3] {
     appearance: none;
     cursor: pointer;
