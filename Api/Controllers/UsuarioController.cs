@@ -3,7 +3,6 @@ using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-
 namespace Api.Controllers;
 
 [ApiController]
