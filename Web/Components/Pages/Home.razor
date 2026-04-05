@@ -1,19 +1,42 @@
-﻿@page "/"
+@page "/"
+@inject HttpClient Http
 
 <MudGrid Spacing="4">
-    @foreach (var evento in eventos)
+    @if (eventos is null)
     {
-        <MudItem xs="12" sm="6" md="4">
-            <CartaoEvento Evento="@evento" />
+        <MudItem xs="12">
+            <MudText>Carregando eventos...</MudText>
         </MudItem>
+    }
+    else if (!eventos.Any())
+    {
+        <MudItem xs="12">
+            <MudText>Nenhum evento disponível.</MudText>
+        </MudItem>
+    }
+    else
+    {
+        @foreach (var evento in eventos)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <CartaoEvento Evento="@evento" />
+            </MudItem>
+        }
     }
 </MudGrid>
 
 @code {
-    private List<EventoViewModel> eventos = new()
+    private List<EventoViewModel>? eventos;
+
+    protected override async Task OnInitializedAsync()
     {
-        new EventoViewModel { Titulo = "Robôs Vs. Lutadores", Data = new DateTime(2026, 10, 16), Capacidade = 2500, Preco = 56.99m },
-        new EventoViewModel { Titulo = "Show do Forfun", Data = new DateTime(2026, 08, 22), Capacidade = 5000, Preco = 50.00m },
-        new EventoViewModel { Titulo = "Botafogo x Flamengo", Data = new DateTime(2026, 09, 10), Capacidade = 40000, Preco = 95.00m }
-    };
+        try
+        {
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento");
+        }
+        catch
+        {
+            eventos = new();
+        }
+    }
 }

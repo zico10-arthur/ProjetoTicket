@@ -41,12 +41,12 @@
                 <AuthorizeView Roles="Vendedor" Context="vendedorCtx">
                     <div class="d-flex gap-4 mr-8">
                         <MudButton Color="Color.Inherit" Href="/">Eventos</MudButton>
-                        <MudButton Color="Color.Inherit" Href="/criar-evento">Criar Evento</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/eventos/criar">Criar Evento</MudButton>
                     </div>
                     <MudSpacer />
                     <MudMenu Label="@vendedorCtx.User.Identity?.Name" Icon="@Icons.Material.Filled.Storefront" Color="Color.Inherit">
                         <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
-                        <MudMenuItem Href="/meus-eventos">Meus Eventos</MudMenuItem>
+                        <MudMenuItem Href="/eventos/meus">Meus Eventos</MudMenuItem>
                         <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
                     </MudMenu>
                 </AuthorizeView>

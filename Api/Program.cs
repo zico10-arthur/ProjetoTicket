@@ -14,33 +14,29 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-builder.Services.AddControllers(); 
-=======
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<Application.Mappings.EventoProfile>());
-builder.Services.AddSingleton(new Infrastructure.Database.ConnectionFactory(builder.Configuration.GetConnectionString("DefaultConnection")!));
-builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Services.EventoService>();
-builder.Services.AddScoped<Infrastructure.Interfaces.IEventoRepository, Infraestructure.Repositories.EventoRepository>();
->>>>>>> branch-dudu
-
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 builder.Services.AddScoped<ICupomService, CupomService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<UsuarioProfile>());
 
+builder.Services.AddScoped<Infrastructure.Interfaces.IEventoRepository, Infraestructure.Repositories.EventoRepository>();
+builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Services.EventoService>();
 
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<UsuarioProfile>();
+    cfg.AddProfile<Application.Mappings.EventoProfile>();
+});
 
 builder.Services.AddScoped<ConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("DefaultConnection");
-
     return new ConnectionFactory(connectionString!);
 });
 
@@ -73,17 +69,13 @@ DatabaseMigration.Initialize(connectionString);
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<Api.Middlewares.GlobalExceptionHandlerMiddleware>();
-
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
-app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-app.MapControllers(); 
+app.MapControllers();
 
 app.Run();

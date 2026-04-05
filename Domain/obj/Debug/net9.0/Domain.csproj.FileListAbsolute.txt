@@ -1,46 +1,12 @@
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll
-<<<<<<< HEAD
-C:\Users\Erick\Documents\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
-C:\Users\Erick\Documents\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
-C:\Users\Erick\Documents\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
-C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll
-=======
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
->>>>>>> branch-dudu
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
-<<<<<<< HEAD
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
-c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
-=======
->>>>>>> branch-dudu
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll

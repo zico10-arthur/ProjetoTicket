@@ -19,12 +19,22 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         try
         {
-            var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            var token = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "authToken");
 
             if (string.IsNullOrWhiteSpace(token))
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
             var claims = ParseClaimsFromJwt(token);
+
+            // Verifica expiração
+            var expClaim = claims.FirstOrDefault(c => c.Type == "exp");
+            if (expClaim != null && long.TryParse(expClaim.Value, out var exp))
+            {
+                var expDate = DateTimeOffset.FromUnixTimeSeconds(exp);
+                if (expDate < DateTimeOffset.UtcNow)
+                    return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
+
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
 

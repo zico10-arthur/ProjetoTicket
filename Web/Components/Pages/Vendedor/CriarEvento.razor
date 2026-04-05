@@ -1,0 +1,56 @@
+@page "/eventos/criar"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Vendedor">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+            <MudText Typo="Typo.h5" Class="mb-6">Criar Novo Evento</MudText>
+
+            <MudTextField @bind-Value="dto.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField @bind-Value="dto.CapacidadeTotal" Label="Capacidade Total" Variant="Variant.Outlined" Class="mb-4" InputType="InputType.Number" />
+            <MudDatePicker @bind-Date="dataEvento" Label="Data do Evento" Variant="Variant.Outlined" Class="mb-4" />
+            <MudNumericField T="decimal" @bind-Value="dto.PrecoPadrao" Label="Preço (R$)" Variant="Variant.Outlined" Class="mb-6" Format="F2" Min="0.01m" />
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Criar">
+                Criar Evento
+            </MudButton>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudAlert Severity="Severity.Warning">Você precisa estar logado como Vendedor para acessar esta página.</MudAlert>
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Ir para Login</MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private EventoRequestDTO dto = new();
+    private DateTime? dataEvento;
+
+    private async Task Criar()
+    {
+        if (dataEvento is null)
+        {
+            Snackbar.Add("Selecione a data do evento.", Severity.Warning);
+            return;
+        }
+
+        dto.DataEvento = dataEvento.Value;
+
+        var response = await Http.PostAsJsonAsync("api/Evento", dto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Evento criado com sucesso!", Severity.Success);
+            NavManager.NavigateTo("/eventos/meus");
+        }
+        else
+        {
+            var erro = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"Erro: {erro}", Severity.Error);
+        }
+    }
+}

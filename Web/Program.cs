@@ -26,7 +26,10 @@ builder.Services.AddScoped(sp =>
     };
 });
 
-builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("Vendedor", policy => policy.RequireRole("Vendedor"));
+});
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

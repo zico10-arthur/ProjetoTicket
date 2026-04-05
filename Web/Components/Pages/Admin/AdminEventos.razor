@@ -1,0 +1,90 @@
+@page "/admin/eventos"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-6"><b>🎟️ Gestão de Eventos</b></MudText>
+
+    @if (eventos is null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (!eventos.Any())
+    {
+        <MudText>Nenhum evento cadastrado.</MudText>
+    }
+    else
+    {
+        <MudGrid Spacing="4">
+            @foreach (var evento in eventos)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3">
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6"><b>@evento.Nome</b></MudText>
+                            <MudText>Data: @evento.DataEvento.ToShortDateString()</MudText>
+                            <MudText>Capacidade: @evento.CapacidadeTotal pessoas</MudText>
+                            <MudText Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => ConfirmarDelecao(evento.Id)">
+                                Excluir
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<EventoViewModel>? eventos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarEventos();
+    }
+
+    private async Task CarregarEventos()
+    {
+        try
+        {
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento") ?? new();
+        }
+        catch
+        {
+            eventos = new();
+            Snackbar.Add("Erro ao carregar eventos.", Severity.Error);
+        }
+    }
+
+    private async Task ConfirmarDelecao(Guid id)
+    {
+        bool? confirmou = await DialogService.ShowMessageBoxAsync(
+            "Atenção",
+            "Deseja realmente excluir este evento?",
+            yesText: "Excluir", cancelText: "Cancelar");
+
+        if (confirmou == true)
+            await Deletar(id);
+    }
+
+    private async Task Deletar(Guid id)
+    {
+        var response = await Http.DeleteAsync($"api/Evento/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Evento excluído.", Severity.Success);
+            await CarregarEventos();
+        }
+        else
+        {
+            var erro = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"Erro: {erro}", Severity.Error);
+        }
+    }
+}

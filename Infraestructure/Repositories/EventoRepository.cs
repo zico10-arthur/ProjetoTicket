@@ -1,6 +1,5 @@
 using Dapper;
 using Infrastructure.Database;
-using Infraestructure;
 using Domain.Entities;
 using Infrastructure.Interfaces;
 
