@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Domain.Interface;
 
 namespace Api.Controllers;
 
@@ -10,10 +11,12 @@ namespace Api.Controllers;
 public class UsuarioController : ControllerBase
 {
     private readonly IUsuarioService _service;
+    private readonly IUsuarioRepository _repository;
 
-    public UsuarioController(IUsuarioService service)
+    public UsuarioController(IUsuarioService service, IUsuarioRepository repository)
     {
         _service = service;
+        _repository = repository;
     }
 
     [HttpPost("CadastrarComprador")]
@@ -71,6 +74,14 @@ public class UsuarioController : ControllerBase
         await _service.AlterarSenha(dto, cpf, ct);
 
         return Ok(new{message = "senha alterada com sucesso"});
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("Todos")]
+    public async Task<IActionResult> ListarTodos(CancellationToken ct)
+    {
+        var usuarios = await _repository.ListarTodos(ct);
+        return Ok(usuarios);
     }
 
     

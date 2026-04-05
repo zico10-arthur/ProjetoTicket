@@ -1,4 +1,4 @@
-
+using Domain.Entities;
 
 namespace Domain.Interface;
 
@@ -17,5 +17,7 @@ public interface IUsuarioRepository
     Task RemoverUsuario(Usuario usuario, CancellationToken ct);
 
     Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct);
+
+    Task<IEnumerable<Usuario>> ListarTodos(CancellationToken ct);
 
 }

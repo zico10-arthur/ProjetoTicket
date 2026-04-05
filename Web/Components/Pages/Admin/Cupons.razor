@@ -57,7 +57,7 @@
                             @* Data de Expiração *@
                             <div class="d-flex align-center">
                                 <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Size="Size.Small" Class="mr-2" Color="Color.Default"/>
-                                <MudText Typo="MudBlazor.Typo.body2" Class="text-muted">Expira: @cupom.DataExpiracao.ToShortDateString()</MudText>
+                                <MudText Typo="MudBlazor.Typo.body2" Class="text-muted">Expira: @cupom.DataExpiracao?.ToShortDateString()</MudText>
                             </div>
                         </MudCardContent>
 

@@ -67,7 +67,7 @@
             if (encontrado != null)
             {
                 cupom = encontrado;
-                dataTemp = cupom.DataExpiracao;
+                dataTemp = cupom.DataExpiracao ?? DateTime.Now.AddMonths(1);
             }
             else
             {

@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Interface;
 using Application.Exceptions;
+using Domain.Entities;
 using AutoMapper;
 namespace Application.Service;
 

@@ -16,7 +16,7 @@ public interface ICupomService
 
     Task AlterarDesconto(Guid AdminLogado, string codigo, decimal novoDesconto, CancellationToken ct);
 
-    Task<IEnumerable<Cupom>> ListarTodosCupons(Guid AdminLogado, CancellationToken ct);
+    Task<IEnumerable<Domain.Entities.Cupom>> ListarTodosCupons(Guid AdminLogado, CancellationToken ct);
 
-    Task<IEnumerable<Cupom>> ListarCuponsValidos(CancellationToken ct);
+    Task<IEnumerable<Domain.Entities.Cupom>> ListarCuponsValidos(CancellationToken ct);
 }

@@ -35,6 +35,9 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<Usuario?> BuscarCpfOuEmail(string cpf, string email, CancellationToken ct)
     {
+        cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+        email = (email ?? string.Empty).Trim();
+
         using var connection = _factory.CreateConnection();
 
         const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
@@ -150,5 +153,14 @@ public class UsuarioRepository : IUsuarioRepository
     ));
 
 }
+
+    public async Task<IEnumerable<Usuario>> ListarTodos(CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha FROM Usuarios";
+
+        return await connection.QueryAsync<Usuario>(new CommandDefinition(sql, cancellationToken: ct));
+    }
 
 }

@@ -56,27 +56,32 @@
     private List<UsuarioViewModel>? usuarios;
     private bool isLoading = true;
 
-    // Esse método roda sozinho quando a tela abre
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender) return;
+
         try
         {
-            // 1. Pegamos o Crachá (Token) guardado no navegador
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-            
-            // 2. Colamos o Crachá na testa do carteiro (HttpClient)
-            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            token = token?.Replace("\"", "");
 
-            // 3. Fazemos o pedido pra API (A ROTA PRECISA EXISTIR NO BACK-END!)
+            if (string.IsNullOrEmpty(token))
+            {
+                Snackbar.Add("Token não encontrado. Faça login novamente.", Severity.Warning);
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             usuarios = await Http.GetFromJsonAsync<List<UsuarioViewModel>>("api/Usuario/Todos");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Snackbar.Add("Erro ao buscar usuários no servidor.", Severity.Error);
+            Snackbar.Add($"Erro ao buscar usuários: {ex.Message}", Severity.Error);
         }
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
     }
 

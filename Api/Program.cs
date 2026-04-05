@@ -8,6 +8,9 @@ using Application.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +21,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICupomRepository, CupomRepository>();
+builder.Services.AddScoped<ICupomService, CupomService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddAutoMapper(typeof(UsuarioProfile));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<UsuarioProfile>());
 
 
 
@@ -34,6 +39,7 @@ builder.Services.AddScoped<ConnectionFactory>(sp =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -43,13 +49,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            RoleClaimType = "role",
+            NameClaimType = "email"
         };
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+var connectionString = app.Configuration.GetConnectionString("DefaultConnection")!;
+DatabaseMigration.Initialize(connectionString);
 
 app.UseSwagger();
 app.UseSwaggerUI();

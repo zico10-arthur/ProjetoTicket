@@ -4,6 +4,7 @@
 @inject ISnackbar Snackbar
 @inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
+@using System.Text.Json
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
     <MudCard Elevation="3" Class="pa-8 rounded-lg">
@@ -36,16 +37,15 @@
             
             if (response.IsSuccessStatusCode)
             {
-                var token = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync();
+                var doc = JsonDocument.Parse(json);
+                var token = doc.RootElement.GetProperty("token").GetString()!;
                 
-                // 1. Salva o token no LocalStorage do navegador (como se fosse um cookie)
                 await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-                
-                // 2. Avisa a nossa classe nova que o usuário logou!
                 ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
                 
                 Snackbar.Add("Login bem sucedido!", Severity.Success);
-                NavManager.NavigateTo("/"); // Vai para a Home
+                NavManager.NavigateTo("/");
             }
             else
             {

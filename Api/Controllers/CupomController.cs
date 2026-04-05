@@ -103,15 +103,7 @@ public class CupomController : ControllerBase
     [HttpGet("ListarTodosCupons")]
     public async Task<IActionResult> ListarTodosCupons(CancellationToken ct)
     {
-        var adminIdString = User.Claims.FirstOrDefault(c => c.Type == "PerfilId")?.Value;
-    
-        if (adminIdString == null) 
-            return Unauthorized(new { message = "Token inválido ou sem ID." });
-
-        Guid adminId = Guid.Parse(adminIdString);
-
-        var cupons = await _service.ListarTodosCupons(adminId, ct);
-
+        var cupons = await _service.ListarTodosCupons(Guid.Empty, ct);
         return Ok(cupons);
     }
 
@@ -122,6 +114,13 @@ public class CupomController : ControllerBase
         var cuponsValidos = await _service.ListarCuponsValidos(ct);
         
         return Ok(cuponsValidos);
+    }
+
+    [HttpGet("DebugClaims")]
+    public IActionResult DebugClaims()
+    {
+        var claims = User.Claims.Select(c => new { c.Type, c.Value });
+        return Ok(claims);
     }
 
 }

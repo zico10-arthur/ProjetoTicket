@@ -2,7 +2,7 @@ using Dapper;
 using Domain.Exceptions;
 using Infrastructure.Database;
 using Domain.Interface;
-
+using Domain.Entities;
 
 namespace Infraestructure.Repository;
 
@@ -140,7 +140,7 @@ public class CupomRepository : ICupomRepository
             new CommandDefinition(
                 sql,
                 new { 
-                    novoDesconto = novoDesconto,
+                    NovoDesconto = novoDesconto,
                     Codigo = codigo
                 },
                 cancellationToken: ct

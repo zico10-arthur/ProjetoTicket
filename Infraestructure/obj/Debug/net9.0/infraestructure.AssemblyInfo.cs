@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("infraestructure")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Infraestructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+779a09e46d99175a6894a2babfbba620c4eb8978")]
-[assembly: System.Reflection.AssemblyProductAttribute("infraestructure")]
-[assembly: System.Reflection.AssemblyTitleAttribute("infraestructure")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f08a0de324968d882a1fbff483d812c7168c708c")]
+[assembly: System.Reflection.AssemblyProductAttribute("Infraestructure")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Infraestructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.

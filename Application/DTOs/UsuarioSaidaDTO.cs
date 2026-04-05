@@ -11,5 +11,4 @@ public class UsuarioSaidaDTO
     public string Email{get;  set;} = string.Empty;
 
     public PerfilDTO Perfil {get; set;}
-    public string Senha {get;  set;} 
 }

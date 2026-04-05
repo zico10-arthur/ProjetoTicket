@@ -63,14 +63,21 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         var claims = new List<Claim>();
         foreach (var kvp in keyValuePairs!)
         {
+            var claimType = kvp.Key switch
+            {
+                "role" => ClaimTypes.Role,
+                "email" => ClaimTypes.Email,
+                _ => kvp.Key
+            };
+
             if (kvp.Value is JsonElement element && element.ValueKind == JsonValueKind.Array)
             {
                 foreach (var item in element.EnumerateArray())
-                    claims.Add(new Claim(kvp.Key, item.ToString()));
+                    claims.Add(new Claim(claimType, item.ToString()));
             }
             else
             {
-                claims.Add(new Claim(kvp.Key, kvp.Value.ToString()!));
+                claims.Add(new Claim(claimType, kvp.Value.ToString()!));
             }
         }
         return claims;
