@@ -2,7 +2,7 @@ public class Reserva
 {
     public Guid Id {get; private set;} = Guid.NewGuid();
 
-    public Usuario usuario {get; private set;}
+    public Usuario Usuario { get; private set; }
 
     public string UsuarioCpf{get; private set;}
 

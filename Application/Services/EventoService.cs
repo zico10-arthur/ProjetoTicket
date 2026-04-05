@@ -53,35 +53,20 @@ public class EventoService : IEventoService
     }
 
 
+    private static void ValidarEvento(EventoRequestDTO eventoDto)
+    {
+        if (eventoDto.DataEvento <= DateTime.UtcNow)
+            throw new ArgumentException("A data do evento deve ser futura.");
+    }
+
+
     public async Task CreateAsync(EventoRequestDTO eventoDto)
     {
-
-        if(eventoDto.CapacidadeTotal <= 0)
-        {
-            
-            throw new ArgumentException("Capacidade deve ser maior que zero.");
-
-        } 
-        
-        if(eventoDto.DataEvento <= DateTime.Now)
-        {
-            
-            throw new ArgumentException("A data do evento deve ser futura.");
-
-        } 
-        
-        if(eventoDto.PrecoPadrao <= 0)
-        {
-            
-            throw new ArgumentException("O preço deve ser maior que zero.");
-
-        } 
-        
+        ValidarEvento(eventoDto);
 
         var evento = _mapper.Map<Evento>(eventoDto);
 
         await _eventoRepository.CreateAsync(evento);
-
     }
 
 
@@ -98,27 +83,7 @@ public class EventoService : IEventoService
 
         }
 
-        if(eventoDto.CapacidadeTotal <= 0)
-        {
-
-            throw new ArgumentException("Capacidade deve ser maior que zero.");
-
-        }
-
-        if (eventoDto.DataEvento <= DateTime.Now)
-        {
-
-            throw new ArgumentException("A data do evento deve ser futura.");
-
-        }
-
-        if (eventoDto.PrecoPadrao <= 0)
-        {
-
-            throw new ArgumentException("O preço deve ser maior que zero.");
-
-        }
-
+        ValidarEvento(eventoDto);
 
         var eventoAtualizado = _mapper.Map<Evento>(eventoDto);
         await _eventoRepository.UpdateAsync(id, eventoAtualizado);
@@ -139,7 +104,7 @@ public class EventoService : IEventoService
 
         }
 
-        if (evento.DataEvento <= DateTime.Now)
+        if (evento.DataEvento <= DateTime.UtcNow)
         {
             
             throw new InvalidOperationException("Não é possível deletar um evento que já ocorreu.");

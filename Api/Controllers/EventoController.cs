@@ -77,6 +77,7 @@ public class EventoController : ControllerBase
 
 
     [HttpPost]
+    [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> CreateAsync(EventoRequestDTO evento)
     {
 
@@ -100,6 +101,7 @@ public class EventoController : ControllerBase
 
 
     [HttpPut("{id}")]
+    [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> UpdateAsync(Guid id, EventoRequestDTO evento)
     {
 
@@ -128,6 +130,7 @@ public class EventoController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> DeleteAsync(Guid id)
     {
 

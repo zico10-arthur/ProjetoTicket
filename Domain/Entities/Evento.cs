@@ -1,14 +1,14 @@
 public class Evento
 {
-    public Guid id {get;private set;}  = Guid.NewGuid();
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public string Nome{get; private set;}
+    public string Nome { get; private set; }
 
-    public int CapacidadeTotal{get; private set;}
+    public int CapacidadeTotal { get; private set; }
 
-    public DateTime DataEvento {get; private set;}
+    public DateTime DataEvento { get; private set; }
 
-    public decimal PrecoPadrao {get; private set;}
+    public decimal PrecoPadrao { get; private set; }
 
     public Evento() {}
 
