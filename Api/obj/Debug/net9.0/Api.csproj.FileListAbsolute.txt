@@ -87,9 +87,15 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dl
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+<<<<<<< HEAD
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+=======
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Dapper.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\Npgsql.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\obj\Debug\net9.0\Api.sourcelink.json
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
@@ -114,6 +120,7 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\AutoMapper.dl
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Azure.Core.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Azure.Identity.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Dapper.dll
+<<<<<<< HEAD
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\dbup-core.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\dbup-sqlserver.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Humanizer.dll
@@ -139,6 +146,15 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Ext
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.DependencyModel.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Logging.dll
+=======
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Bcl.AsyncInterfaces.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Bcl.Cryptography.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Data.SqlClient.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
@@ -152,17 +168,23 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.Ide
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.OpenApi.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Microsoft.SqlServer.Server.dll
+<<<<<<< HEAD
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Mono.TextTemplating.dll
+=======
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.ClientModel.dll
+<<<<<<< HEAD
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.CodeDom.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Composition.AttributedModel.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Composition.Convention.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Composition.Hosting.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Composition.Runtime.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Composition.TypedParts.dll
+=======
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Configuration.ConfigurationManager.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Diagnostics.DiagnosticSource.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Diagnostics.EventLog.dll
@@ -170,6 +192,7 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Identi
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Memory.Data.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Security.Cryptography.Pkcs.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\System.Security.Cryptography.ProtectedData.dll
+<<<<<<< HEAD
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.resources.dll
@@ -235,6 +258,8 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\ru\Microsoft.
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+=======
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\cs\Microsoft.Data.SqlClient.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\de\Microsoft.Data.SqlClient.resources.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\es\Microsoft.Data.SqlClient.resources.dll
@@ -257,9 +282,15 @@ c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\runtimes\win\
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\runtimes\win\lib\net9.0\System.Security.Cryptography.Pkcs.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Application.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Domain.dll
+<<<<<<< HEAD
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Infraestructure.dll
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Application.pdb
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Infraestructure.pdb
+=======
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\infraestructure.dll
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Application.pdb
+c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\infraestructure.pdb
+>>>>>>> branch-dudu
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Domain.pdb
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\rjimswa.dswa.cache.json
 c:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\rjsmrazor.dswa.cache.json

@@ -4,7 +4,11 @@ public class Reserva
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
+<<<<<<< HEAD
     public string UsuarioCpf { get; private set; }
+=======
+    public Usuario Usuario { get; private set; }
+>>>>>>> branch-dudu
 
     public Guid EventoId { get; private set; }
 
