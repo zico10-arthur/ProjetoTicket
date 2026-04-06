@@ -13,9 +13,15 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD:Web/obj/Debug/net9.0/Web.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9427b94c871e94dd527c2b06554f8e7b8efc332d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Web")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90e0493e562de1bd89626251c89fc16a46e21900")]
+[assembly: System.Reflection.AssemblyProductAttribute("Front")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Front")]
+>>>>>>> origin/email-nome-listarusuarios:Front/obj/Debug/net9.0/Front.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.

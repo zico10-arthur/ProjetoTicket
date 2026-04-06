@@ -19,6 +19,7 @@ public class Usuario
 
     public Usuario() {}
 
+
     public Usuario(string cpf, string nome, string email, Guid perfilid, string senha)
     {
         
@@ -139,6 +140,28 @@ public class Usuario
     public void AlterarSenha(string novasenha)
     {
         Senha = novasenha;
+    }
+
+    public void AlterarEmail(string emailnovo)
+    {
+        if (string.IsNullOrWhiteSpace(emailnovo) || !emailnovo.Contains("@"))
+            throw new EmailInvalido();
+
+        if (Email == emailnovo)
+            throw new InvalidOperationException("O novo E-mail não pode ser igual ao atual.");
+        
+        Email = emailnovo;
+    }
+
+    public void AlterarNome(string novoNome)
+    {
+        if (string.IsNullOrWhiteSpace(novoNome) || novoNome.Trim().Length < 3)
+            throw new NomeInvalido();
+
+        if (Nome == novoNome)
+            throw new InvalidOperationException("O novo nome não pode ser igual ao atual.");
+        
+        Nome = novoNome.Trim();
     }
  
     

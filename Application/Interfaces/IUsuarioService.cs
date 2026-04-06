@@ -15,4 +15,12 @@ public interface IUsuarioService
     Task RemoverUsuario(string cpf, CancellationToken ct);
 
     Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct);
+
+    Task AlterarEmailAsync(string cpf, AlterarEmailDTO dto ,CancellationToken ct);
+
+    Task AlterarNomeAsync(string cpf, AlterarNomeDTO dto, CancellationToken ct);
+
+    Task<IEnumerable<UsuarioResponseDTO>> ListarUsuariosAsync(CancellationToken ct);
+
+
 }

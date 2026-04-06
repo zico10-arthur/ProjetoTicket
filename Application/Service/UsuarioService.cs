@@ -82,6 +82,42 @@ public class UsuarioService : IUsuarioService
         await _repository.AtualizarSenha(cpf, dto.NovaSenha, ct);
     }
 
+    public async Task AlterarEmailAsync(string cpfBruto, AlterarEmailDTO dto, CancellationToken ct)
+    {
+        var cpfLimpo = cpfBruto.Replace(".","").Replace("-","").Trim();
+
+        var usuario = await _repository.BuscarCpf(cpfLimpo,ct);
+        if (usuario == null) throw new UsuarioNotFound();
+
+        usuario.AlterarEmail(dto.NovoEmail);
+
+        await _repository.AtualizarEmailAsync(usuario, ct);
+    }
     
-    
+    public async Task AlterarNomeAsync(string cpf, AlterarNomeDTO dto, CancellationToken ct)
+    {
+        var cpfLimpo = cpf.Replace(".","").Replace("-","").Trim();
+
+        var usuario = await _repository.BuscarCpf(cpfLimpo,ct);
+
+        if(usuario == null)
+            throw new UsuarioNotFound();
+
+        usuario.AlterarNome(dto.NovoNome);
+
+        await _repository.AtualizarNomeAsync(usuario,ct);
+    }
+
+    public async Task<IEnumerable<UsuarioResponseDTO>> ListarUsuariosAsync(CancellationToken ct)
+    {
+        var usuarios = await _repository.ListarTodosAsync(ct);
+
+        return usuarios.Select(u => new UsuarioResponseDTO
+        {
+            Cpf = u.Cpf,
+            Nome = u.Nome,
+            Email = u.Email,
+            Perfil = u.Perfil != null ? u.Perfil.Nome: "Sem Perfil"
+        });
+    }
 }
