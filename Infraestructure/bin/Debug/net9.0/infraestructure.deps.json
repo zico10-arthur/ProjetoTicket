@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -14,7 +14,7 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "Infraestructure.dll": {}
+          "infraestructure.dll": {}
         }
       },
       "Azure.Core/1.50.0": {
@@ -93,6 +93,7 @@
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "7.7.1",
           "Microsoft.SqlServer.Server": "1.0.0",
           "System.Configuration.ConfigurationManager": "9.0.11",
+          "System.Diagnostics.DiagnosticSource": "9.0.11",
           "System.IdentityModel.Tokens.Jwt": "7.7.1",
           "System.Security.Cryptography.Pkcs": "9.0.11"
         },
@@ -244,7 +245,9 @@
       },
       "Microsoft.Identity.Client/4.80.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Abstractions": "8.14.0"
+          "Microsoft.IdentityModel.Abstractions": "8.14.0",
+          "System.Diagnostics.DiagnosticSource": "9.0.11",
+          "System.ValueTuple": "4.5.0"
         },
         "runtime": {
           "lib/net8.0/Microsoft.Identity.Client.dll": {
@@ -361,6 +364,7 @@
           }
         }
       },
+      "System.Diagnostics.DiagnosticSource/9.0.11": {},
       "System.Diagnostics.EventLog/9.0.11": {
         "runtime": {
           "lib/net9.0/System.Diagnostics.EventLog.dll": {
@@ -427,6 +431,7 @@
           }
         }
       },
+      "System.ValueTuple/4.5.0": {},
       "Domain/1.0.0": {
         "runtime": {
           "Domain.dll": {
@@ -438,7 +443,7 @@
     }
   },
   "libraries": {
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -618,6 +623,13 @@
       "path": "system.configuration.configurationmanager/9.0.11",
       "hashPath": "system.configuration.configurationmanager.9.0.11.nupkg.sha512"
     },
+    "System.Diagnostics.DiagnosticSource/9.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/QzMFklOm8Ak//YB0I2kR+ByxUndT63ucrRWQm0xZsuLExJWrVDeGKtYZDuBackd9dThbwMdOotIEc4c4KwJiw==",
+      "path": "system.diagnostics.diagnosticsource/9.0.11",
+      "hashPath": "system.diagnostics.diagnosticsource.9.0.11.nupkg.sha512"
+    },
     "System.Diagnostics.EventLog/9.0.11": {
       "type": "package",
       "serviceable": true,
@@ -652,6 +664,13 @@
       "sha512": "sha512-s8yUYuYYu+PAwvBdhLG1KyrGrk9gkYeuPxfAsXsTqqWyepwSyEw8hAaflW4nO98NG52YpYI1am2+9o+79h2RtQ==",
       "path": "system.security.cryptography.protecteddata/9.0.11",
       "hashPath": "system.security.cryptography.protecteddata.9.0.11.nupkg.sha512"
+    },
+    "System.ValueTuple/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ==",
+      "path": "system.valuetuple/4.5.0",
+      "hashPath": "system.valuetuple.4.5.0.nupkg.sha512"
     },
     "Domain/1.0.0": {
       "type": "project",

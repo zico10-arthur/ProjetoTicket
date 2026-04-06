@@ -10,9 +10,9 @@
         "dependencies": {
           "AutoMapper": "16.1.1",
           "Domain": "1.0.0",
+          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1",
-          "infraestructure": "1.0.0"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1"
         },
         "runtime": {
           "Application.dll": {}
@@ -474,7 +474,7 @@
           }
         }
       },
-      "infraestructure/1.0.0": {
+      "Infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -482,7 +482,7 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "infraestructure.dll": {
+          "Infraestructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -739,7 +739,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "infraestructure/1.0.0": {
+    "Infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

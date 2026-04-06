@@ -20,4 +20,10 @@ public interface IUsuarioRepository
 
     Task<IEnumerable<Usuario>> ListarTodos(CancellationToken ct);
 
+    Task<IEnumerable<Usuario>> ListarTodosAsync(CancellationToken ct);
+
+    Task AtualizarNomeAsync(Usuario usuario, CancellationToken ct);
+
+     Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct);
+
 }
