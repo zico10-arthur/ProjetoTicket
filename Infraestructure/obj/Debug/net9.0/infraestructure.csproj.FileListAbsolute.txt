@@ -29,4 +29,4 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\I
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\Infraestructure.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.pdb
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\Infraestructure.dll
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraest.F27731A2.Up2Date
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraest.B0D41582.Up2Date

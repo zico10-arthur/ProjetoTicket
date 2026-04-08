@@ -1,0 +1,166 @@
+@page "/perfil"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+@using System.Text.Json
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+
+    @if (carregando)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (usuario == null)
+    {
+        <MudText Color="Color.Error">Não foi possível carregar os dados do perfil.</MudText>
+    }
+    else
+    {
+        <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
+            <MudText Typo="Typo.h5" Class="mb-6">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-2" />
+                Meu Perfil
+            </MudText>
+
+            <MudTextField Value="usuario.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="usuario.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="usuario.Cpf" Label="CPF" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="usuario.Perfil" Label="Perfil" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+        </MudCard>
+
+        <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
+            <MudText Typo="Typo.h6" Class="mb-4">Alterar Senha</MudText>
+
+            <MudTextField @bind-Value="novaSenha" Label="Nova Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" />
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="AlterarSenha">
+                Salvar Nova Senha
+            </MudButton>
+        </MudCard>
+
+        <AuthorizeView Roles="Admin" Context="_">
+            <NotAuthorized>
+                <MudCard Elevation="3" Class="pa-8 rounded-lg">
+                    <MudText Typo="Typo.h6" Class="mb-2">Remover Conta</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Error" Class="mb-4">Atenção: essa ação é irreversível.</MudText>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="ConfirmarRemocao">
+                        Excluir minha conta
+                    </MudButton>
+                </MudCard>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+</MudContainer>
+
+<MudDialog @bind-Visible="dialogAberto">
+    <TitleContent>Confirmar exclusão</TitleContent>
+    <DialogContent>
+        <MudText>Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => dialogAberto = false">Cancelar</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RemoverConta">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private UsuarioPerfilModel? usuario;
+    private string novaSenha = "";
+    private bool carregando = true;
+    private bool dialogAberto = false;
+    private string cpf = "";
+
+    private class UsuarioPerfilModel
+    {
+        public string Cpf { get; set; } = "";
+        public string Nome { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Perfil { get; set; } = "";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+            if (string.IsNullOrEmpty(token)) { NavManager.NavigateTo("/login"); return; }
+
+            var payload = token.Split('.')[1];
+            var rem = payload.Length % 4;
+            var padding = rem == 2 ? "==" : rem == 3 ? "=" : "";
+            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(payload + padding));
+            var doc = JsonDocument.Parse(json);
+
+            cpf = doc.RootElement.GetProperty("cpf").GetString()!;
+
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.GetAsync($"api/Usuario/ListarUsuarioEspecifico/{cpf}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                var data = JsonDocument.Parse(body).RootElement;
+
+                usuario = new UsuarioPerfilModel
+                {
+                    Cpf = data.GetProperty("cpf").GetString() ?? "",
+                    Nome = data.GetProperty("nome").GetString() ?? "",
+                    Email = data.GetProperty("email").GetString() ?? "",
+                    Perfil = data.TryGetProperty("perfil", out var p)
+                        ? p.TryGetProperty("nome", out var n) ? n.GetString() ?? "" : ""
+                        : ""
+                };
+            }
+        }
+        catch (Exception ex) { Snackbar.Add($"Erro ao carregar perfil: {ex.Message}", Severity.Error); }
+        finally { carregando = false; StateHasChanged(); }
+    }
+
+    private async Task AlterarSenha()
+    {
+        if (string.IsNullOrWhiteSpace(novaSenha)) { Snackbar.Add("Informe a nova senha.", Severity.Warning); return; }
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarsenha/{cpf}", new { NovaSenha = novaSenha });
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Senha alterada com sucesso!", Severity.Success);
+            novaSenha = "";
+        }
+        else
+            Snackbar.Add("Erro ao alterar senha.", Severity.Error);
+    }
+
+    private void ConfirmarRemocao() => dialogAberto = true;
+
+    private async Task RemoverConta()
+    {
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+        var response = await Http.DeleteAsync($"api/Usuario/DeletarUsuario/{cpf}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");
+            ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoDeslogado();
+            NavManager.NavigateTo("/");
+        }
+        else
+            Snackbar.Add("Erro ao remover conta.", Severity.Error);
+
+        dialogAberto = false;
+    }
+}

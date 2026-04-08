@@ -48,7 +48,6 @@ public class UsuarioController : ControllerBase
     }
 
     
-    [Authorize(Roles = "Admin")]
 
     [HttpGet("ListarUsuarioEspecifico/{cpf}")]
     public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute]string cpf, CancellationToken ct)

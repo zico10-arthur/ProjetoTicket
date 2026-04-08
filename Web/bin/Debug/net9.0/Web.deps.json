@@ -9,7 +9,7 @@
       "Web/1.0.0": {
         "dependencies": {
           "Application": "1.0.0",
-          "MudBlazor": "9.2.0"
+          "MudBlazor": "9.3.0"
         },
         "runtime": {
           "Web.dll": {}
@@ -459,7 +459,7 @@
           }
         }
       },
-      "MudBlazor/9.2.0": {
+      "MudBlazor/9.3.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "9.0.1",
           "Microsoft.AspNetCore.Components.Web": "9.0.1",
@@ -467,8 +467,8 @@
         },
         "runtime": {
           "lib/net9.0/MudBlazor.dll": {
-            "assemblyVersion": "9.2.0.0",
-            "fileVersion": "9.2.0.0"
+            "assemblyVersion": "9.3.0.0",
+            "fileVersion": "9.3.0.0"
           }
         }
       },
@@ -596,8 +596,9 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "infraestructure.dll": {
-            "fileVersion": "0.0.0.0"
+          "Infraestructure.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       }
@@ -854,12 +855,12 @@
       "path": "microsoft.sqlserver.server/1.0.0",
       "hashPath": "microsoft.sqlserver.server.1.0.0.nupkg.sha512"
     },
-    "MudBlazor/9.2.0": {
+    "MudBlazor/9.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ckAndxv3to3CahczgLrqKdzhPV3750B7taqICSIAdKXoh0dSyqcUcjAI5YlE5s7NB7C+NdpkfWpK+dKQwxvUOA==",
-      "path": "mudblazor/9.2.0",
-      "hashPath": "mudblazor.9.2.0.nupkg.sha512"
+      "sha512": "sha512-7EMI5HRvi7SNh1e80RWoS4yXb71BmJbqyx/ccP5T21q3ceLx5AP+SSIfTzqI5Iv6CbcJQQYLp1uwWtvohIeZrA==",
+      "path": "mudblazor/9.3.0",
+      "hashPath": "mudblazor.9.3.0.nupkg.sha512"
     },
     "System.ClientModel/1.8.0": {
       "type": "package",

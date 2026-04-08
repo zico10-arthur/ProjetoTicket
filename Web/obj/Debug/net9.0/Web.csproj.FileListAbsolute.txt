@@ -200,9 +200,6 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\scopedcss\Com
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\scopedcss\Components\Shared\CartaoEvento.razor.rz.scp.css
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\scopedcss\bundle\Web.styles.css
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\scopedcss\projectbundle\Web.bundle.scp.css
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-o2b68hjqqd.gz
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-8dleymzaev.gz
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-0ykner63ol.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\ds8f6vp0dx-2jeq8efc6q.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\zwlia8ab39-9qcgs1yvfe.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\gga45437c7-9em65so5oy.gz
@@ -214,3 +211,6 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\staticwebasse
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\Web.csproj.Up2Date
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\Web.genruntimeconfig.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\ref\Web.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-nq21ts4qye.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-cf158k2j5i.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-jsf39xodda.gz

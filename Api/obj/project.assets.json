@@ -2177,8 +2177,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../infraestructure/Infraestructure.csproj"
+      "path": "../Infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2225,8 +2225,8 @@
             "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
               "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
             },
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
             }
           }
         }

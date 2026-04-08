@@ -640,7 +640,7 @@
           }
         }
       },
-      "MudBlazor/9.2.0": {
+      "MudBlazor/9.3.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Components": "9.0.1",
@@ -1742,10 +1742,10 @@
         "microsoft.sqlserver.server.nuspec"
       ]
     },
-    "MudBlazor/9.2.0": {
-      "sha512": "ckAndxv3to3CahczgLrqKdzhPV3750B7taqICSIAdKXoh0dSyqcUcjAI5YlE5s7NB7C+NdpkfWpK+dKQwxvUOA==",
+    "MudBlazor/9.3.0": {
+      "sha512": "7EMI5HRvi7SNh1e80RWoS4yXb71BmJbqyx/ccP5T21q3ceLx5AP+SSIfTzqI5Iv6CbcJQQYLp1uwWtvohIeZrA==",
       "type": "package",
-      "path": "mudblazor/9.2.0",
+      "path": "mudblazor/9.3.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1766,7 +1766,7 @@
         "lib/net8.0/MudBlazor.xml",
         "lib/net9.0/MudBlazor.dll",
         "lib/net9.0/MudBlazor.xml",
-        "mudblazor.9.2.0.nupkg.sha512",
+        "mudblazor.9.3.0.nupkg.sha512",
         "mudblazor.nuspec",
         "staticwebassets/MudBlazor.min.css",
         "staticwebassets/MudBlazor.min.js",
@@ -2060,8 +2060,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../infraestructure/Infraestructure.csproj"
+      "path": "../Infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
