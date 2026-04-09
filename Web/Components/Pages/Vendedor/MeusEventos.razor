@@ -37,6 +37,7 @@
                                 </MudCardContent>
                                 <MudCardActions>
                                     <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="@($"/eventos/editar/{evento.Id}")">Editar</MudButton>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
                                     <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => Deletar(evento.Id)">Excluir</MudButton>
                                 </MudCardActions>
                             </MudCard>

@@ -26,4 +26,5 @@ public interface IUsuarioRepository
 
      Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct);
 
+
 }

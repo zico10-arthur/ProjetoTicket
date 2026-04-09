@@ -59,15 +59,22 @@ public class EventoService : IEventoService
             throw new ArgumentException("A data do evento deve ser futura.");
     }
 
+    public async Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto)
+{
+    if (eventoDto == null)
+        throw new ArgumentNullException(nameof(eventoDto));
 
-    public async Task CreateAsync(EventoRequestDTO eventoDto)
-    {
-        ValidarEvento(eventoDto);
+    var evento = _mapper.Map<Evento>(eventoDto);
 
-        var evento = _mapper.Map<Evento>(eventoDto);
+    if (evento.CapacidadeTotal <= 0)
+        throw new InvalidOperationException("Capacidade deve ser maior que zero");
 
-        await _eventoRepository.CreateAsync(evento);
-    }
+    evento.GerarLoteIngressos(evento.CapacidadeTotal);
+
+    await _eventoRepository.CriarEventoCompletoAsync(evento);
+
+    return evento.id;
+}
 
 
     public async Task UpdateAsync(Guid id, EventoRequestDTO eventoDto)

@@ -1,0 +1,136 @@
+@page "/eventos/{EventoId}/ingressos"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@using System.Text.Json
+
+<AuthorizeView Roles="Vendedor">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+            <div class="d-flex align-center mb-6">
+                <MudText Typo="Typo.h5">Ingressos do Evento @(nomeEvento != "" ? $"({nomeEvento})" : "")</MudText>
+                <MudSpacer />
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/eventos/meus">
+                    Voltar para Meus Eventos
+                </MudButton>
+            </div>
+
+            <div class="d-flex gap-4 mb-6">
+                <div class="d-flex align-center gap-2">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#9E9E9E;"></div>
+                    <MudText Typo="Typo.body2">Disponível</MudText>
+                </div>
+                <div class="d-flex align-center gap-2">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#F44336;"></div>
+                    <MudText Typo="Typo.body2">Reservado / Vendido</MudText>
+                </div>
+                <div class="d-flex align-center gap-2">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#FFD700;border:1px solid #ccc;"></div>
+                    <MudText Typo="Typo.body2">VIP</MudText>
+                </div>
+            </div>
+
+            @if (carregando)
+            {
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            }
+            else if (!ingressos.Any())
+            {
+                <MudText>Nenhum ingresso encontrado.</MudText>
+            }
+            else
+            {
+                @foreach (var setor in ingressos.GroupBy(i => i.Setor).OrderBy(s => s.Key == "VIP" ? 0 : 1))
+                {
+                    <MudText Typo="Typo.h6" Class="mb-2 mt-4">Setor @setor.Key</MudText>
+
+                    @foreach (var fila in setor.GroupBy(i => ExtrairFila(i.Posicao)).OrderBy(f => f.Key))
+                    {
+                        <div class="d-flex align-center gap-1 mb-2">
+                            <MudText Typo="Typo.caption" Style="width:50px;min-width:50px;">Fila @fila.Key</MudText>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var ingresso in fila.OrderBy(i => ExtrairAssento(i.Posicao)))
+                                {
+                                    <MudTooltip Text="@($"{ingresso.Posicao} | {ingresso.Preco:C} | {StatusTexto(ingresso.Status)}")">
+                                        <div style="width:20px;height:20px;border-radius:50%;cursor:pointer;background:@CorIngresso(ingresso);"></div>
+                                    </MudTooltip>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.body2">
+                    Total: @ingressos.Count() | 
+                    Disponíveis: @ingressos.Count(i => i.Status == 0) | 
+                    Reservados/Vendidos: @ingressos.Count(i => i.Status > 0)
+                </MudText>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudAlert Severity="Severity.Warning">Acesso negado.</MudAlert>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+
+    private List<IngressoModel> ingressos = new();
+    private bool carregando = true;
+    private string nomeEvento = "";
+
+    private class IngressoModel
+    {
+        public Guid Id { get; set; }
+        public string Posicao { get; set; } = "";
+        public string Setor { get; set; } = "";
+        public decimal Preco { get; set; }
+        public int Status { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var evento = await Http.GetFromJsonAsync<EventoViewModel>($"api/Evento/{EventoId}");
+            if (evento != null) nomeEvento = evento.Nome;
+
+            var result = await Http.GetFromJsonAsync<List<IngressoModel>>($"api/Ingresso/eventos/{EventoId}/ingressos");
+            ingressos = result ?? new();
+        }
+        catch { Snackbar.Add("Erro ao carregar ingressos.", Severity.Error); }
+        finally { carregando = false; }
+    }
+
+    private string CorIngresso(IngressoModel ingresso)
+    {
+        if (ingresso.Status > 0) return "#F44336";
+        if (ingresso.Setor == "VIP") return "#FFD700";
+        return "#9E9E9E";
+    }
+
+    private string StatusTexto(int status) => status switch
+    {
+        0 => "Disponível",
+        1 => "Reservado",
+        2 => "Vendido",
+        _ => "Desconhecido"
+    };
+
+    private int ExtrairFila(string posicao)
+    {
+        // Posicao = "Fila 1 | Assento 5"
+        var parte = posicao.Split('|')[0].Trim(); // "Fila 1"
+        return int.TryParse(parte.Replace("Fila", "").Trim(), out var n) ? n : 0;
+    }
+
+    private int ExtrairAssento(string posicao)
+    {
+        var parte = posicao.Split('|').Length > 1 ? posicao.Split('|')[1].Trim() : ""; // "Assento 5"
+        return int.TryParse(parte.Replace("Assento", "").Trim(), out var n) ? n : 0;
+    }
+}

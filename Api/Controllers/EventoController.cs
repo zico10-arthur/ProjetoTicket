@@ -80,23 +80,15 @@ public class EventoController : ControllerBase
     [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> CreateAsync(EventoRequestDTO evento)
     {
-
         try
         {
-
-            await _eventoService.CreateAsync(evento);
-
-            return Ok();
-
-
+            var id = await _eventoService.CriarEventoAsync(evento);
+            return Ok(new { id });
         }
         catch (Exception erro)
         {
-
             return BadRequest($"Erro ao criar novo evento | {erro.Message}");
-
         }
-
     }
 
 

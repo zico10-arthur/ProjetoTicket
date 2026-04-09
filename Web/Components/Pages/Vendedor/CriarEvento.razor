@@ -44,8 +44,11 @@
 
         if (response.IsSuccessStatusCode)
         {
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var id = doc.RootElement.GetProperty("id").GetString();
             Snackbar.Add("Evento criado com sucesso!", Severity.Success);
-            NavManager.NavigateTo("/eventos/meus");
+            NavManager.NavigateTo($"/eventos/{id}/ingressos");
         }
         else
         {

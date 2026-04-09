@@ -26,11 +26,14 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<Infrastructure.Interfaces.IEventoRepository, Infraestructure.Repositories.EventoRepository>();
 builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Services.EventoService>();
+builder.Services.AddScoped<IIngressoRepository, IngressoRepository>();
+builder.Services.AddScoped<IIngressoService, IngressoService>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<UsuarioProfile>();
     cfg.AddProfile<Application.Mappings.EventoProfile>();
+    cfg.AddProfile<Application.Mappings.IngressoProfile>();
 });
 
 builder.Services.AddScoped<ConnectionFactory>(sp =>

@@ -1,0 +1,170 @@
+@page "/comprar/{EventoId}/ingressos"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@using System.Text.Json
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <div class="d-flex align-center mb-6">
+        <MudText Typo="Typo.h5">@(nomeEvento != "" ? $"Selecione seu Ingresso — {nomeEvento}" : "Selecione seu Ingresso")</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/">
+            Voltar
+        </MudButton>
+    </div>
+
+    <div class="d-flex gap-4 mb-6">
+        <div class="d-flex align-center gap-2">
+            <div style="width:16px;height:16px;border-radius:50%;background:#9E9E9E;"></div>
+            <MudText Typo="Typo.body2">Disponível</MudText>
+        </div>
+        <div class="d-flex align-center gap-2">
+            <div style="width:16px;height:16px;border-radius:50%;background:#7E57C2;"></div>
+            <MudText Typo="Typo.body2">Selecionado</MudText>
+        </div>
+        <div class="d-flex align-center gap-2">
+            <div style="width:16px;height:16px;border-radius:50%;background:#F44336;"></div>
+            <MudText Typo="Typo.body2">Indisponível</MudText>
+        </div>
+        <div class="d-flex align-center gap-2">
+            <div style="width:16px;height:16px;border-radius:50%;background:#FFD700;border:1px solid #ccc;"></div>
+            <MudText Typo="Typo.body2">VIP</MudText>
+        </div>
+    </div>
+
+    @if (carregando)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (!ingressos.Any())
+    {
+        <MudText>Nenhum ingresso disponível.</MudText>
+    }
+    else
+    {
+        @foreach (var setor in ingressos.GroupBy(i => i.Setor).OrderBy(s => s.Key == "VIP" ? 0 : 1))
+        {
+            <MudText Typo="Typo.h6" Class="mb-2 mt-4">Setor @setor.Key</MudText>
+
+            @foreach (var fila in setor.GroupBy(i => ExtrairFila(i.Posicao)).OrderBy(f => f.Key))
+            {
+                <div class="d-flex align-center gap-1 mb-2">
+                    <MudText Typo="Typo.caption" Style="width:50px;min-width:50px;">Fila @fila.Key</MudText>
+                    <div class="d-flex flex-wrap gap-1">
+                        @foreach (var ingresso in fila.OrderBy(i => ExtrairAssento(i.Posicao)))
+                        {
+                            var selecionado = ingressoSelecionado?.Id == ingresso.Id;
+                            var disponivel = ingresso.Status == 0;
+
+                            <MudTooltip Text="@($"{ingresso.Posicao} | {ingresso.Preco:C} | {StatusTexto(ingresso.Status)}")">
+                                <div @onclick="() => Selecionar(ingresso)"
+                                     @onmouseenter="() => hoverId = ingresso.Id"
+                                     @onmouseleave="() => hoverId = Guid.Empty"
+                                     style="width:22px;height:22px;border-radius:50%;cursor:@(disponivel ? "pointer" : "not-allowed");
+                                            background:@CorIngresso(ingresso, selecionado);
+                                            transition: background 0.15s;
+                                            border: @(selecionado ? "2px solid #512DA8" : "none");">
+                                </div>
+                            </MudTooltip>
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+        <MudDivider Class="my-4" />
+
+        @if (ingressoSelecionado != null)
+        {
+            <MudCard Elevation="2" Class="pa-4 mb-4">
+                <MudText Typo="Typo.h6" Class="mb-2">Ingresso Selecionado</MudText>
+                <MudText>Posição: <b>@ingressoSelecionado.Posicao</b></MudText>
+                <MudText>Setor: <b>@ingressoSelecionado.Setor</b></MudText>
+                <MudText>Preço: <b>@ingressoSelecionado.Preco.ToString("C")</b></MudText>
+            </MudCard>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="Reservar">
+                Reservar
+            </MudButton>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Clique em um assento disponível para selecioná-lo.</MudText>
+        }
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+
+    private List<IngressoModel> ingressos = new();
+    private IngressoModel? ingressoSelecionado;
+    private bool carregando = true;
+    private string nomeEvento = "";
+    private Guid hoverId = Guid.Empty;
+
+    private class IngressoModel
+    {
+        public Guid Id { get; set; }
+        public string Posicao { get; set; } = "";
+        public string Setor { get; set; } = "";
+        public decimal Preco { get; set; }
+        public int Status { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var evento = await Http.GetFromJsonAsync<EventoViewModel>($"api/Evento/{EventoId}");
+            if (evento != null) nomeEvento = evento.Nome;
+
+            var result = await Http.GetFromJsonAsync<List<IngressoModel>>($"api/Ingresso/eventos/{EventoId}/ingressos");
+            ingressos = result ?? new();
+        }
+        catch { Snackbar.Add("Erro ao carregar ingressos.", Severity.Error); }
+        finally { carregando = false; }
+    }
+
+    private void Selecionar(IngressoModel ingresso)
+    {
+        if (ingresso.Status != 0) return;
+        ingressoSelecionado = ingressoSelecionado?.Id == ingresso.Id ? null : ingresso;
+    }
+
+    private void Reservar()
+    {
+        // Lógica de reserva ainda não implementada
+        Snackbar.Add("Redirecionando para pagamento...", Severity.Info);
+        // NavManager.NavigateTo($"/pagamento/{ingressoSelecionado!.Id}");
+    }
+
+    private string CorIngresso(IngressoModel ingresso, bool selecionado)
+    {
+        if (selecionado) return "#7E57C2";
+        if (ingresso.Status > 0) return "#F44336";
+        if (hoverId == ingresso.Id && ingresso.Status == 0) return "#7E57C2";
+        if (ingresso.Setor == "VIP") return "#FFD700";
+        return "#9E9E9E";
+    }
+
+    private string StatusTexto(int status) => status switch
+    {
+        0 => "Disponível",
+        1 => "Reservado",
+        2 => "Vendido",
+        _ => "Desconhecido"
+    };
+
+    private int ExtrairFila(string posicao)
+    {
+        var parte = posicao.Split('|')[0].Trim();
+        return int.TryParse(parte.Replace("Fila", "").Trim(), out var n) ? n : 0;
+    }
+
+    private int ExtrairAssento(string posicao)
+    {
+        var parte = posicao.Split('|').Length > 1 ? posicao.Split('|')[1].Trim() : "";
+        return int.TryParse(parte.Replace("Assento", "").Trim(), out var n) ? n : 0;
+    }
+}
