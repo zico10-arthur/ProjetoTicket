@@ -35,8 +35,8 @@
               "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Domain\\Domain.csproj": {
                 "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -155,14 +155,14 @@
         }
       }
     },
-    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\obj\\",
+        "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

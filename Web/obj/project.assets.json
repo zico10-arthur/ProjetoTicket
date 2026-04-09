@@ -2060,8 +2060,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../Infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {

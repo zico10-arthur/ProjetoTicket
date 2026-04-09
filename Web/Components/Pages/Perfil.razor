@@ -40,6 +40,26 @@
             </MudButton>
         </MudCard>
 
+        <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
+            <MudText Typo="Typo.h6" Class="mb-4">Alterar E-mail</MudText>
+
+            <MudTextField @bind-Value="novoEmail" Label="Novo E-mail" Variant="Variant.Outlined" Class="mb-4" />
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="AlterarEmail">
+                Salvar Novo E-mail
+            </MudButton>
+        </MudCard>
+
+        <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
+            <MudText Typo="Typo.h6" Class="mb-4">Alterar Nome</MudText>
+
+            <MudTextField @bind-Value="novoNome" Label="Novo Nome" Variant="Variant.Outlined" Class="mb-4" />
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="AlterarNome">
+                Salvar Novo Nome
+            </MudButton>
+        </MudCard>
+
         <AuthorizeView Roles="Admin" Context="_">
             <NotAuthorized>
                 <MudCard Elevation="3" Class="pa-8 rounded-lg">
@@ -69,6 +89,8 @@
 @code {
     private UsuarioPerfilModel? usuario;
     private string novaSenha = "";
+    private string novoEmail = "";
+    private string novoNome = "";
     private bool carregando = true;
     private bool dialogAberto = false;
     private string cpf = "";
@@ -140,6 +162,46 @@
         }
         else
             Snackbar.Add("Erro ao alterar senha.", Severity.Error);
+    }
+
+    private async Task AlterarNome()
+    {
+        if (string.IsNullOrWhiteSpace(novoNome)) { Snackbar.Add("Informe o novo nome.", Severity.Warning); return; }
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarnome/{cpf}", new { NovoNome = novoNome });
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Nome alterado com sucesso!", Severity.Success);
+            usuario!.Nome = novoNome;
+            novoNome = "";
+        }
+        else
+            Snackbar.Add("Erro ao alterar nome.", Severity.Error);
+    }
+
+    private async Task AlterarEmail()
+    {
+        if (string.IsNullOrWhiteSpace(novoEmail)) { Snackbar.Add("Informe o novo e-mail.", Severity.Warning); return; }
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alteraremail/{cpf}", new { NovoEmail = novoEmail });
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("E-mail alterado com sucesso!", Severity.Success);
+            usuario!.Email = novoEmail;
+            novoEmail = "";
+        }
+        else
+            Snackbar.Add("Erro ao alterar e-mail.", Severity.Error);
     }
 
     private void ConfirmarRemocao() => dialogAberto = true;

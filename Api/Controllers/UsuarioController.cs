@@ -83,5 +83,25 @@ public class UsuarioController : ControllerBase
         return Ok(usuarios);
     }
 
+    [HttpPut("alterarnome/{cpf}")]
+
+    public async Task<IActionResult> AlterarNome([FromRoute] string cpf, [FromBody] AlterarNomeDTO dto, CancellationToken ct )
+    {
+        await _service.AlterarNomeAsync(cpf, dto, ct);
+
+        return Ok(new{message = "Nome alterado com sucesso"});
+    }
+
+    [HttpPut("alteraremail/{cpf}")]
+
+    public async Task<IActionResult> AlterarEmail([FromRoute] string cpf, [FromBody] AlterarEmailDTO dto, CancellationToken ct )
+    {
+        await _service.AlterarEmailAsync(cpf, dto, ct);
+
+        return Ok(new{message = "Email alterado com sucesso"});
+    }
+
+
+
     
 }
