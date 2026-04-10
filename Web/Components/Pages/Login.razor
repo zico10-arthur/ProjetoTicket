@@ -29,6 +29,9 @@
     public class LoginDTO { public string Email { get; set; } = ""; public string Senha { get; set; } = ""; }
     private LoginDTO dto = new();
 
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    private string? ReturnUrl { get; set; }
+
     private async Task RealizarLogin()
     {
         try
@@ -45,7 +48,7 @@
                 ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
                 
                 Snackbar.Add("Login bem sucedido!", Severity.Success);
-                NavManager.NavigateTo("/");
+                NavManager.NavigateTo(ReturnUrl ?? "/");
             }
             else
             {

@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 @using System.Text.Json
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
@@ -112,8 +113,17 @@
         public int Status { get; set; }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender) return;
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            NavManager.NavigateTo("/login");
+            return;
+        }
+
         try
         {
             var evento = await Http.GetFromJsonAsync<EventoViewModel>($"api/Evento/{EventoId}");
@@ -123,7 +133,7 @@
             ingressos = result ?? new();
         }
         catch { Snackbar.Add("Erro ao carregar ingressos.", Severity.Error); }
-        finally { carregando = false; }
+        finally { carregando = false; StateHasChanged(); }
     }
 
     private void Selecionar(IngressoModel ingresso)

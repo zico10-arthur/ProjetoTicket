@@ -2197,11 +2197,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
+      "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
+      "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\api\\Api.csproj",
       "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\obj\\",
+      "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
