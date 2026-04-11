@@ -1,6 +1,8 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -77,12 +79,15 @@ public class EventoController : ControllerBase
 
 
     [HttpPost]
+    [Authorize(Roles = "Vendedor")]
     [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> CreateAsync(EventoRequestDTO evento)
     {
         try
         {
-            var id = await _eventoService.CriarEventoAsync(evento);
+            var cpf = User.FindFirstValue("cpf") ?? string.Empty;
+
+            var id = await _eventoService.CriarEventoAsync(evento, cpf);
             return Ok(new { id });
         }
         catch (Exception erro)

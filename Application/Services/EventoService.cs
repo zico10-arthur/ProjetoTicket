@@ -59,12 +59,13 @@ public class EventoService : IEventoService
             throw new ArgumentException("A data do evento deve ser futura.");
     }
 
-    public async Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto)
+    public async Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto, string usuarioCpf)
 {
     if (eventoDto == null)
         throw new ArgumentNullException(nameof(eventoDto));
 
     var evento = _mapper.Map<Evento>(eventoDto);
+    evento.DefinirUsuarioCpf(usuarioCpf);
 
     if (evento.CapacidadeTotal <= 0)
         throw new InvalidOperationException("Capacidade deve ser maior que zero");

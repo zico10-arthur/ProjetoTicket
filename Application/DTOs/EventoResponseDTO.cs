@@ -13,4 +13,6 @@ public class EventoResponseDTO
 
     public decimal PrecoPadrao {get; set;}
 
+    public string UsuarioCpf { get; set; } = string.Empty;
+
 }

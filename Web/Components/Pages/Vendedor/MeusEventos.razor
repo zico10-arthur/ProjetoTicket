@@ -2,6 +2,8 @@
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JS
 
 <AuthorizeView Roles="Vendedor">
     <Authorized>
@@ -57,9 +59,12 @@
 
 @code {
     private List<EventoViewModel>? eventos;
+    private string cpfLogado = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        cpfLogado = authState.User.FindFirst("cpf")?.Value ?? string.Empty;
         await CarregarEventos();
     }
 
@@ -67,7 +72,10 @@
     {
         try
         {
-            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento") ?? new();
+            var todos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento") ?? new();
+            eventos = string.IsNullOrEmpty(cpfLogado)
+                ? todos
+                : todos.Where(e => e.UsuarioCpf == cpfLogado).ToList();
         }
         catch
         {
@@ -77,7 +85,12 @@
 
     private async Task Deletar(Guid id)
     {
-        var response = await Http.DeleteAsync($"api/Evento/{id}");
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"api/Evento/{id}");
+        if (!string.IsNullOrEmpty(token))
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var response = await Http.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {

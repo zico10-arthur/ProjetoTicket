@@ -7,4 +7,5 @@ public class EventoViewModel
     public DateTime DataEvento { get; set; }
     public int CapacidadeTotal { get; set; }
     public decimal PrecoPadrao { get; set; }
+    public string UsuarioCpf { get; set; } = string.Empty;
 }

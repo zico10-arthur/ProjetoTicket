@@ -12,6 +12,8 @@ public class Evento
 
     public decimal PrecoPadrao {get; private set;}
 
+    public string UsuarioCpf { get; private set; }
+
     public List<Ingresso> Ingressos { get; private set; } = new();
 
     private Evento()
@@ -19,13 +21,16 @@ public class Evento
         
     }
 
-    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao)
+    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao, string usuarioCpf)
     {
         Nome = nome;
         CapacidadeTotal = capacidadetotal;
         DataEvento = dataevento;
         PrecoPadrao = precopadrao;
+        UsuarioCpf = usuarioCpf;
     }
+
+    public void DefinirUsuarioCpf(string cpf) => UsuarioCpf = cpf;
 
     public void GerarLoteIngressos(int quantidadeDesejada)
 {

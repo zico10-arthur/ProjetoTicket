@@ -26,7 +26,7 @@ public class EventoRepository : IEventoRepository
         
         using var conn = _connectionFactory.CreateConnection();
 
-        return await conn.QueryAsync<Evento>("SELECT * FROM dbo.Eventos");
+        return await conn.QueryAsync<Evento>("SELECT id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, UsuarioCpf FROM dbo.Eventos");
 
     }
 
@@ -36,7 +36,7 @@ public class EventoRepository : IEventoRepository
         
         using var conn = _connectionFactory.CreateConnection();
 
-        return await conn.QueryFirstOrDefaultAsync<Evento>("SELECT * FROM dbo.Eventos WHERE id = @Id", new{Id = id});
+        return await conn.QueryFirstOrDefaultAsync<Evento>("SELECT id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, UsuarioCpf FROM dbo.Eventos WHERE id = @Id", new{Id = id});
 
     }
 
@@ -52,8 +52,8 @@ public class EventoRepository : IEventoRepository
         try
         {
             const string sqlEvento = @"
-                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao)
-                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao)";
+                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, UsuarioCpf)
+                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @UsuarioCpf)";
 
             await conn.ExecuteAsync(sqlEvento, evento, transacao);
 

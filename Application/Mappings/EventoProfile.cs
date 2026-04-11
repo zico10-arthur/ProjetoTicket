@@ -9,6 +9,7 @@ public class EventoProfile : Profile
     public EventoProfile()
     {
         CreateMap<Evento, EventoResponseDTO>();
-        CreateMap<EventoRequestDTO, Evento>();
+        CreateMap<EventoRequestDTO, Evento>()
+            .ForMember(dest => dest.UsuarioCpf, opt => opt.Ignore());
     }
 }
