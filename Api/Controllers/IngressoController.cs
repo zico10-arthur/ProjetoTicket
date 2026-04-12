@@ -11,10 +11,12 @@ namespace Api.Controllers;
 public class IngressoController : ControllerBase
 {
     private readonly IIngressoService _service;
+    private readonly IIngressoRepository _repository;
 
-    public IngressoController(IIngressoService service)
+    public IngressoController(IIngressoService service, IIngressoRepository repository)
     {
         _service = service;
+        _repository = repository;
     }
 
     [HttpGet("eventos/{eventoId}/ingressos")]
@@ -24,4 +26,17 @@ public class IngressoController : ControllerBase
 
         return Ok(ingressos);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ObterPorId([FromRoute] Guid id, CancellationToken ct)
+    {
+        // Chama o método que já criaste no Repositório!
+        var ingresso = await _repository.BuscarIngressoId(id, ct);
+
+        if (ingresso == null)
+            return NotFound(new { message = "Ingresso não encontrado." });
+
+        return Ok(ingresso);
+    }
+
 }

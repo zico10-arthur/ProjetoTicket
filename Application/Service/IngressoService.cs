@@ -2,7 +2,7 @@ using Domain.Interface;
 using Application.Interfaces;
 using AutoMapper;
 using Infraestructure.Repository;
-using Infrastructure.Interfaces;
+using Domain.Interface;
 using Application.DTOs;
 namespace Application.Service;
 

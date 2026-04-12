@@ -16,6 +16,9 @@ public class Ingresso
 
     public int Status {get; private set;} = 0;
 
+    public DateTime? DataBloqueio { get; private set; }
+
+
     private Ingresso() { }
 
     public Ingresso(Guid eventoid, decimal preco, string posicao, string setor)

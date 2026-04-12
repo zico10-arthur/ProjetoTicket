@@ -18,6 +18,7 @@ BEGIN
         Posicao VARCHAR(50) NOT NULL,
         Setor VARCHAR(20) NOT NULL,
         Status INT NOT NULL DEFAULT 0,
+        DataBloqueio DATETIME NULL,
         CONSTRAINT FK_Ingressos_Eventos FOREIGN KEY (EventoId) REFERENCES dbo.Eventos(id)
     );
 END
