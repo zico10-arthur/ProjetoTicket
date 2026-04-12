@@ -1,3 +1,4 @@
+using Api.BackgroundTasks;
 using Infraestructure.Repository;
 using Domain.Interface;
 using Application.Service;
@@ -22,12 +23,16 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ICupomRepository, CupomRepository>();
 builder.Services.AddScoped<ICupomService, CupomService>();
+builder.Services.AddScoped<IReservaService, ReservaService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddScoped<Infrastructure.Interfaces.IEventoRepository, Infraestructure.Repositories.EventoRepository>();
-builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Services.EventoService>();
+builder.Services.AddScoped<Domain.Interface.IEventoRepository, Infraestructure.Repository.EventoRepository>();
+builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Service.EventoService>();
 builder.Services.AddScoped<IIngressoRepository, IngressoRepository>();
+builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IIngressoService, IngressoService>();
+
+builder.Services.AddHostedService<LiberacaoAssentosWorker>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
