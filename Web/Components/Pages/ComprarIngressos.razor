@@ -4,6 +4,7 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 @using System.Text.Json
+@using System.Net.Http.Headers;
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
     <div class="d-flex align-center mb-6">
@@ -142,11 +143,29 @@
         ingressoSelecionado = ingressoSelecionado?.Id == ingresso.Id ? null : ingresso;
     }
 
-    private void Reservar()
+    private async Task Reservar()
     {
-        // Lógica de reserva ainda não implementada
-        Snackbar.Add("Redirecionando para pagamento...", Severity.Info);
-        // NavManager.NavigateTo($"/pagamento/{ingressoSelecionado!.Id}");
+        if (ingressoSelecionado == null) return;
+
+        try
+        { 
+            Snackbar.Add("Levando ao checkout...", Severity.Success);
+            NavManager.NavigateTo($"/checkout/{EventoId}/{ingressoSelecionado.Id}");
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao processar a solicitação.", Severity.Error);
+        }
+    }
+
+    private async Task CarregarIngressos()
+    {
+        carregando = true;
+        var result = await Http.GetFromJsonAsync<List<IngressoModel>>($"api/Ingresso/eventos/{EventoId}/ingressos");
+        ingressos = result ?? new();
+        ingressoSelecionado = null;
+        carregando = false;
+        StateHasChanged();
     }
 
     private string CorIngresso(IngressoModel ingresso, bool selecionado)

@@ -1,0 +1,127 @@
+@page "/reservas"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@using System.Net.Http.Headers
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <div class="d-flex align-center mb-6">
+        <MudIcon Icon="@Icons.Material.Filled.ConfirmationNumber" Size="Size.Large" Color="Color.Primary" Class="mr-3" />
+        <MudText Typo="Typo.h4">Minhas Reservas</MudText>
+    </div>
+
+    @if (carregando)
+    {
+        <div class="d-flex justify-center mt-16">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+        </div>
+    }
+    else if (!reservas.Any())
+    {
+        <MudAlert Severity="Severity.Info" Class="mt-4">
+            Você ainda não possui nenhuma reserva ou ingresso.
+        </MudAlert>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" Href="/">
+            Explorar Eventos
+        </MudButton>
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var reserva in reservas)
+            {
+                <MudItem xs="12" sm="6">
+                    <MudCard Elevation="3" Style="border-left: 5px solid #512DA8;">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@reserva.NomeEvento</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Success">
+                                    <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Small" Class="mr-1" Style="vertical-align: text-bottom;" />
+                                    @reserva.DataEvento.ToString("dd/MM/yyyy 'às' HH:mm")
+                                </MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <div class="d-flex align-center gap-2 mb-3">
+                                <MudText Typo="Typo.body2">
+                                    <b>Setor:</b> @reserva.SetorIngresso
+                                </MudText>
+                                
+                                @if (reserva.SetorIngresso.ToUpper() == "VIP")
+                                {
+                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small" Variant="Variant.Filled">VIP</MudChip>
+                                }
+                            </div>
+                            
+                            <MudText Typo="Typo.body2" Class="mb-3">
+                                <b>Assento:</b> @reserva.PosicaoIngresso
+                            </MudText>
+
+                            <MudDivider Class="my-2" />
+                            
+                            <div class="d-flex justify-space-between align-center mt-2">
+                                <MudText Typo="Typo.body1"><b>Valor Pago:</b></MudText>
+                                <MudText Typo="Typo.h6" Color="Color.Primary"><b>@reserva.ValorFinalPago.ToString("C")</b></MudText>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(reserva.CupomUtilizado))
+                            {
+                                <MudText Typo="Typo.caption" Style="color: #E65100;">
+                                    * Cupom aplicado: @reserva.CupomUtilizado
+                                </MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private bool carregando = true;
+    private List<ReservaDetalhadaDTO> reservas = new();
+
+    public class ReservaDetalhadaDTO
+    {
+        public Guid Id { get; set; }
+        public string NomeEvento { get; set; } = "";
+        public DateTime DataEvento { get; set; }
+        public string PosicaoIngresso { get; set; } = "";
+        public string SetorIngresso { get; set; } = "";
+        public string? CupomUtilizado { get; set; }
+        public decimal ValorFinalPago { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            
+            if (string.IsNullOrEmpty(token))
+            {
+                NavManager.NavigateTo("/login");
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var resultado = await Http.GetFromJsonAsync<List<ReservaDetalhadaDTO>>("api/Reserva/ListarPorCpf");
+            
+            if (resultado != null)
+            {
+                reservas = resultado;
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao carregar suas reservas.", Severity.Error);
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+}

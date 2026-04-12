@@ -1,0 +1,92 @@
+@page "/admin/reservas"
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@using System.Net.Http.Headers
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
+    <MudText Typo="Typo.h4" Class="mb-6">Painel de Reservas (Administração)</MudText>
+
+    @if (carregando)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        @foreach (var grupo in reservas.GroupBy(r => r.NomeEvento))
+        {
+            <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-8 mb-4">@grupo.Key</MudText>
+            
+            <MudTable Items="@grupo" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="2">
+                <HeaderContent>
+                    <MudTh>Comprador</MudTh>
+                    <MudTh>CPF</MudTh>
+                    <MudTh>Setor/Posição</MudTh>
+                    <MudTh>Valor</MudTh>
+                    <MudTh>Cupom</MudTh>
+                    <MudTh>ID Reserva</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Comprador"><b>@context.NomeUsuario</b></MudTd>
+                    <MudTd DataLabel="CPF">@context.CpfUsuario</MudTd>
+                    <MudTd DataLabel="Setor/Posição">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@context.SetorIngresso</MudChip> 
+                        @context.PosicaoIngresso
+                    </MudTd>
+                    <MudTd DataLabel="Valor">@context.ValorFinalPago.ToString("C")</MudTd>
+                    <MudTd DataLabel="Cupom">@(context.CupomUtilizado ?? "-")</MudTd>
+                    <MudTd DataLabel="ID">
+                        <MudText Typo="Typo.caption">@context.Id.ToString().Substring(0,8)...</MudText>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    }
+</MudContainer>
+
+@code {
+    private bool carregando = true;
+    private List<ReservaAdminDTO> reservas = new();
+
+    public class ReservaAdminDTO {
+        public Guid Id { get; set; }
+        public string NomeEvento { get; set; } = "";
+        public string PosicaoIngresso { get; set; } = "";
+        public string SetorIngresso { get; set; } = "";
+        public string? CupomUtilizado { get; set; }
+        public decimal ValorFinalPago { get; set; }
+        public string NomeUsuario { get; set; } = "";
+        public string CpfUsuario { get; set; } = "";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+            // Mudamos de GetFromJsonAsync para GetAsync para podermos ler o status de erro
+            var response = await Http.GetAsync("api/Reserva/Admin/Todas");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reservas = await response.Content.ReadFromJsonAsync<List<ReservaAdminDTO>>() ?? new();
+            }
+            else
+            {
+                // Se der erro, ele vai ler a mensagem do servidor e mostrar!
+                var erroServidor = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Falha {response.StatusCode}: {erroServidor}", Severity.Error);
+            }
+        }
+        catch (Exception ex) 
+        {
+            Snackbar.Add($"Erro interno: {ex.Message}", Severity.Error);
+        }
+        finally 
+        {
+            carregando = false;
+        }
+    }
+}

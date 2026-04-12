@@ -1,0 +1,197 @@
+@page "/checkout/{EventoId}/{IngressoId}"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@using System.Net.Http.Headers
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <MudText Typo="Typo.h4" Class="mb-6">Resumo da Reserva</MudText>
+
+    @if (carregando)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (evento == null || ingresso == null)
+    {
+        <MudAlert Severity="Severity.Error">Erro ao carregar dados da reserva.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+            <MudItem xs="12" md="7">
+                <MudCard Elevation="3" Class="pa-4 h-100">
+                    <MudText Typo="Typo.h6" Color="Color.Primary">@evento.Nome</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-4">@evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
+                    
+                    <MudDivider Class="my-3"/>
+                    
+                    <MudText Typo="Typo.subtitle1"><b>Detalhes do Assento</b></MudText>
+                    <MudText Typo="Typo.body1">Setor: @ingresso.Setor</MudText>
+                    <MudText Typo="Typo.body1">Cadeira: @ingresso.Posicao</MudText>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" md="5">
+                <MudCard Elevation="3" Class="pa-4 h-100" Style="background-color: #fcfcfc;">
+                    <MudText Typo="Typo.h6" Class="mb-4">Valores</MudText>
+
+                    <div class="d-flex justify-space-between mb-2">
+                        <MudText>Subtotal:</MudText>
+                        <MudText>@ingresso.Preco.ToString("C")</MudText>
+                    </div>
+
+                    <MudSelect T="CupomModel" Label="Aplicar Cupom" ValueChanged="AplicarCupom" Variant="Variant.Outlined" Class="mb-4" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem T="CupomModel" Value="null">Nenhum cupom</MudSelectItem>
+                        @foreach (var c in cuponsDisponiveis)
+                        {
+                            <MudSelectItem T="CupomModel" Value="c">@c.Codigo (@c.PorcentagemDesconto% OFF)</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    @if (cupomSelecionado != null)
+                    {
+                        <div class="d-flex justify-space-between mb-2" style="color: green;">
+                            <MudText>Desconto (@cupomSelecionado.Codigo):</MudText>
+                            <MudText>- @valorDesconto.ToString("C")</MudText>
+                        </div>
+                    }
+
+                    <MudDivider Class="my-3"/>
+
+                    <div class="d-flex justify-space-between mb-6">
+                        <MudText Typo="Typo.h5"><b>Total:</b></MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Primary"><b>@valorFinal.ToString("C")</b></MudText>
+                    </div>
+
+                    <MudButton Disabled = "@cupomInvalido" Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Size="Size.Large" OnClick="IrParaPagamento">
+                        Ir Para Pagamento
+                    </MudButton>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+    [Parameter] public string IngressoId { get; set; } = "";
+
+    private bool carregando = true;
+    private bool cupomInvalido = false;
+    private EventoModel? evento;
+    private IngressoModel? ingresso;
+    
+    private List<CupomModel> cuponsDisponiveis = new();
+    private CupomModel? cupomSelecionado;
+    
+    private decimal valorDesconto = 0;
+    private decimal valorFinal = 0;
+
+    // Classes auxiliares para receber os dados
+    public class EventoModel { public Guid Id { get; set; } public string Nome { get; set; } = ""; public DateTime DataEvento { get; set; } }
+    public class IngressoModel { public Guid Id { get; set; } public string Posicao { get; set; } = ""; public string Setor { get; set; } = ""; public decimal Preco { get; set; } }
+    public class CupomModel { public string Codigo { get; set; } = ""; public int PorcentagemDesconto { get; set; } public decimal ValorMinimo { get; set; } }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Busca dados do Evento, Ingresso e Cupons simultaneamente
+            var eventoTask = Http.GetFromJsonAsync<EventoModel>($"api/Evento/{EventoId}");
+            var ingressoTask = Http.GetFromJsonAsync<IngressoModel>($"api/Ingresso/{IngressoId}"); // Você fez essa rota BuscarIngressoId!
+            var cuponsTask = Http.GetFromJsonAsync<List<CupomModel>>("api/Cupom/ListarCuponsValidos");
+
+            await Task.WhenAll(eventoTask, ingressoTask, cuponsTask);
+
+            evento = eventoTask.Result;
+            ingresso = ingressoTask.Result;
+            cuponsDisponiveis = cuponsTask.Result ?? new();
+
+            if (ingresso != null)
+            {
+                valorFinal = ingresso.Preco; // Inicializa o valor total sem desconto
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao carregar dados do resumo.", Severity.Error);
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private void AplicarCupom(CupomModel? cupom)
+    {
+        cupomSelecionado = cupom;
+
+        if (ingresso == null) return;
+
+        if (cupom != null)
+        {
+            if (ingresso.Preco < cupom.ValorMinimo)
+            {
+                Snackbar.Add($"Este cupom exige um valor mínimo de {cupom.ValorMinimo:C}", Severity.Warning);
+                cupomSelecionado = null;
+                valorDesconto = 0;
+                valorFinal = ingresso.Preco;
+                cupomInvalido = true;
+                return;
+            }
+
+            // Calcula o desconto no front só para exibir
+            valorDesconto = ingresso.Preco * (cupom.PorcentagemDesconto / 100m);
+            valorFinal = ingresso.Preco - valorDesconto;
+            cupomInvalido = false;
+        }
+        else
+        {
+            valorDesconto = 0;
+            valorFinal = ingresso.Preco;
+            cupomInvalido = false;
+        }
+    }
+
+    private async Task IrParaPagamento()
+    {
+        // Aqui nós criamos o DTO que o seu FazerReserva (no backend) exige!
+        var payload = new 
+        {
+            EventoId = Guid.Parse(EventoId),
+            IngressoId = Guid.Parse(IngressoId),
+            CupomUtilizado = cupomSelecionado?.Codigo,
+        };
+
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            
+            if (!string.IsNullOrEmpty(token))
+            {
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var response = await Http.PostAsJsonAsync("api/Reserva/FazerReserva", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ReservaResponse>();
+                Snackbar.Add("Reserva gerada! Redirecionando...", Severity.Success);
+                NavManager.NavigateTo($"/pagamento/{result?.Id}");
+            }
+            else
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Erro ao finalizar: {erro}", Severity.Error);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Erro de conexão com o servidor.", Severity.Error);
+        }
+    }
+
+    public class ReservaResponse { public Guid Id { get; set; } }
+}
