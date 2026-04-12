@@ -1,10 +1,10 @@
 using Application.DTOs;
 using Application.Interfaces;
-using Infrastructure.Interfaces;
+using Domain.Interface;
 using Domain.Entities;
 using AutoMapper;
 
-namespace Application.Services;
+namespace Application.Service;
 
 public class EventoService : IEventoService
 {

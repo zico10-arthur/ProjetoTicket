@@ -1,11 +1,11 @@
 using Dapper;
 using Infrastructure.Database;
 using Domain.Entities;
-using Infrastructure.Interfaces;
+using Domain.Interface;
 using Microsoft.Data.SqlClient;
 
 
-namespace Infraestructure.Repositories;
+namespace Infraestructure.Repository;
 
 public class EventoRepository : IEventoRepository
 {
