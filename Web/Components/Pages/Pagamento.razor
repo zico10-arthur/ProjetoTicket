@@ -121,6 +121,11 @@
                 return;
             }
 
+            // Confirma o pagamento — muda ingresso para Status = 2 (vendido)
+            using var requestPagamento = new HttpRequestMessage(HttpMethod.Post, $"api/Reserva/ConfirmarPagamento/{IngressoId}");
+            requestPagamento.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            await Http.SendAsync(requestPagamento);
+
             await Task.Delay(1000);
             pago = true;
             Snackbar.Add("Pagamento realizado com sucesso!", Severity.Success);

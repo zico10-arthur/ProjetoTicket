@@ -24,7 +24,7 @@
                     <MudCard Elevation="3">
                         <MudCardContent>
                             <MudText Typo="Typo.h6"><b>@evento.Nome</b></MudText>
-                            <MudText>Data: @evento.DataEvento.ToShortDateString()</MudText>
+                            <MudText>Data: @evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
                             <MudText>Capacidade: @evento.CapacidadeTotal pessoas</MudText>
                             <MudText Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
                         </MudCardContent>

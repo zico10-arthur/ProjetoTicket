@@ -12,11 +12,13 @@ public class ReservaController : ControllerBase
 {
     private readonly IReservaService _service;
     private readonly IReservaRepository _repository;
+    private readonly IIngressoRepository _ingressoRepository;
 
-    public ReservaController(IReservaService service, IReservaRepository repository)
+    public ReservaController(IReservaService service, IReservaRepository repository, IIngressoRepository ingressoRepository)
     {
         _service = service;
         _repository = repository;
+        _ingressoRepository = ingressoRepository;
     }
 
     [HttpPost("FazerReserva")]
@@ -57,5 +59,13 @@ public class ReservaController : ControllerBase
     {
         var reservas = await _repository.ListarTodasDetalhadasAdmin(ct);
         return Ok(reservas);
+    }
+
+    [HttpPost("ConfirmarPagamento/{ingressoId}")]
+    [Authorize(Roles = "Comprador")]
+    public async Task<IActionResult> ConfirmarPagamento([FromRoute] Guid ingressoId, CancellationToken ct)
+    {
+        await _ingressoRepository.VenderIngresso(ingressoId, ct);
+        return Ok(new { message = "Pagamento confirmado!" });
     }
 }

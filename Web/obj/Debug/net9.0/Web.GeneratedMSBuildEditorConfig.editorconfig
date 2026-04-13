@@ -43,6 +43,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxBZG1pblJlc2VydmFzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/dudsl/Documents/GitHub/ProjetoTicket/Web/Components/Pages/Admin/CadastrarVendedor.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxDYWRhc3RyYXJWZW5kZWRvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/dudsl/Documents/GitHub/ProjetoTicket/Web/Components/Pages/Admin/CriarCupom.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxDcmlhckN1cG9tLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 

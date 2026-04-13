@@ -12,7 +12,7 @@
             <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" Class="mr-3" />
             <MudText><b>Data</b></MudText>
             <MudSpacer />
-            <MudText>@Evento.DataEvento.ToShortDateString()</MudText>
+            <MudText>@Evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
         </div>
 
         <div class="d-flex align-center mb-3">

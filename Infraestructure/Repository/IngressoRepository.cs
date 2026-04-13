@@ -71,6 +71,20 @@ public class IngressoRepository : IIngressoRepository
         return linhasAfetadas > 0;
     }
 
+    public async Task VenderIngresso(Guid ingressoId, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            UPDATE Ingressos 
+            SET Status = 2, DataBloqueio = NULL 
+            WHERE Id = @Id";
+
+        await connection.ExecuteAsync(
+            new CommandDefinition(sql, new { Id = ingressoId }, cancellationToken: ct)
+        );
+    }
+
     public async Task LiberarAssentosExpirados(int minutosExpiracao, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
