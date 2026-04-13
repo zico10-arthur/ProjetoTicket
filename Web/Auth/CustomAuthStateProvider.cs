@@ -35,7 +35,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                     return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            var identity = new ClaimsIdentity(claims, "jwt");
+            var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Email, "role");
             var user = new ClaimsPrincipal(identity);
 
             return new AuthenticationState(user);
@@ -50,7 +50,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     public void MarcarUsuarioComoLogado(string token)
     {
         var claims = ParseClaimsFromJwt(token);
-        var identity = new ClaimsIdentity(claims, "jwt");
+        var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Email, "role");
         var user = new ClaimsPrincipal(identity);
 
         var authState = Task.FromResult(new AuthenticationState(user));
@@ -75,7 +75,6 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         {
             var claimType = kvp.Key switch
             {
-                "role" => ClaimTypes.Role,
                 "email" => ClaimTypes.Email,
                 _ => kvp.Key
             };

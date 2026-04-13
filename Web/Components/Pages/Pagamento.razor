@@ -1,0 +1,137 @@
+@page "/pagamento/{EventoId}/{IngressoId}"
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject IJSRuntime JS
+@using System.Net.Http.Headers
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudText Typo="Typo.h4" Class="mb-2">Pagamento</MudText>
+    @if (Total != null)
+    {
+        <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-6">Total: R$ @Total</MudText>
+    }
+
+    @if (!pago)
+    {
+        <MudCard Elevation="3" Class="pa-6">
+            <MudText Typo="Typo.h6" Class="mb-4">Selecione a forma de pagamento</MudText>
+
+            <div class="d-flex flex-column gap-3">
+                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
+                          Style="@(metodoPagamento == "pix" ? "border-color:#1976D2;border-width:2px;" : "")"
+                          @onclick='() => metodoPagamento = "pix"'>
+                    <div class="d-flex align-center gap-3">
+                        <MudIcon Icon="@Icons.Material.Filled.QrCode" Color="Color.Primary" />
+                        <MudText>PIX</MudText>
+                    </div>
+                </MudPaper>
+
+                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
+                          Style="@(metodoPagamento == "credito" ? "border-color:#1976D2;border-width:2px;" : "")"
+                          @onclick='() => metodoPagamento = "credito"'>
+                    <div class="d-flex align-center gap-3">
+                        <MudIcon Icon="@Icons.Material.Filled.CreditCard" Color="Color.Primary" />
+                        <MudText>Cartão de Crédito</MudText>
+                    </div>
+                </MudPaper>
+
+                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
+                          Style="@(metodoPagamento == "debito" ? "border-color:#1976D2;border-width:2px;" : "")"
+                          @onclick='() => metodoPagamento = "debito"'>
+                    <div class="d-flex align-center gap-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Payment" Color="Color.Primary" />
+                        <MudText>Cartão de Débito</MudText>
+                    </div>
+                </MudPaper>
+            </div>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Size="Size.Large"
+                       Class="mt-6" Disabled="@(string.IsNullOrEmpty(metodoPagamento) || processando)"
+                       OnClick="ConfirmarPagamento">
+                @if (processando)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>Processando...</span>
+                }
+                else
+                {
+                    <span>Confirmar Pagamento</span>
+                }
+            </MudButton>
+        </MudCard>
+    }
+    else
+    {
+        <MudCard Elevation="3" Class="pa-6 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size:64px;" />
+            <MudText Typo="Typo.h5" Class="mt-4 mb-2">Pagamento Confirmado!</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mb-6">
+                Seu ingresso foi confirmado com sucesso.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/reservas">
+                Ver Meus Ingressos
+            </MudButton>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+    [Parameter] public string IngressoId { get; set; } = "";
+    [SupplyParameterFromQuery(Name = "total")] public string? Total { get; set; }
+    [SupplyParameterFromQuery(Name = "cupom")] public string? Cupom { get; set; }
+
+    private string metodoPagamento = "";
+    private bool processando = false;
+    private bool pago = false;
+
+    private async Task ConfirmarPagamento()
+    {
+        processando = true;
+
+        try
+        {
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Snackbar.Add("Você precisa estar logado.", Severity.Warning);
+                NavManager.NavigateTo("/login");
+                return;
+            }
+
+            var payload = new
+            {
+                EventoId = Guid.Parse(EventoId),
+                IngressoId = Guid.Parse(IngressoId),
+                CupomUtilizado = Cupom
+            };
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/Reserva/FazerReserva");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = JsonContent.Create(payload);
+
+            var response = await Http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Erro ao confirmar reserva: {erro}", Severity.Error);
+                return;
+            }
+
+            await Task.Delay(1000);
+            pago = true;
+            Snackbar.Add("Pagamento realizado com sucesso!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            processando = false;
+        }
+    }
+}

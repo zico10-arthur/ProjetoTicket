@@ -830,9 +830,9 @@
         "dependencies": {
           "AutoMapper": "16.1.1",
           "Domain": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1",
+          "infraestructure": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Application.dll": {}
@@ -851,7 +851,7 @@
           "bin/placeholder/Domain.dll": {}
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
@@ -861,10 +861,10 @@
           "dbup-sqlserver": "7.2.0"
         },
         "compile": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         }
       }
     }
@@ -2058,10 +2058,10 @@
       "path": "../Domain/Domain.csproj",
       "msbuildProject": "../Domain/Domain.csproj"
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
-      "path": "../Infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/infraestructure.csproj",
+      "msbuildProject": "../infraestructure/infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2071,24 +2071,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Erick\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\dudsl\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Erick\\Documents\\ProjetoTicket\\Web\\Web.csproj",
+      "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Web\\Web.csproj",
       "projectName": "Web",
-      "projectPath": "C:\\Users\\Erick\\Documents\\ProjetoTicket\\Web\\Web.csproj",
-      "packagesPath": "C:\\Users\\Erick\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Erick\\Documents\\ProjetoTicket\\Web\\obj\\",
+      "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Web\\Web.csproj",
+      "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Web\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Erick\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -2096,15 +2091,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\Erick\\Documents\\ProjetoTicket\\Application\\Application.csproj": {
-              "projectPath": "C:\\Users\\Erick\\Documents\\ProjetoTicket\\Application\\Application.csproj"
+            "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj": {
+              "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj"
             }
           }
         }
@@ -2119,7 +2113,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.200"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0": {
@@ -2149,7 +2143,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
