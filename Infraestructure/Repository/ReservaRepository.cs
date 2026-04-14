@@ -77,10 +77,14 @@ public class ReservaRepository : IReservaRepository
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            DELETE r
-            FROM Reservas r
-            INNER JOIN Ingressos i ON r.IngressoId = i.Id
-            WHERE i.Status = 1 AND i.DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())";
+            UPDATE i SET i.Status = 0
+            FROM Ingressos i
+            INNER JOIN Reservas r ON r.IngressoId = i.Id
+            WHERE i.Status = 1 AND r.DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());
+
+            DELETE FROM Reservas
+            WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
+            AND IngressoId IN (SELECT Id FROM Ingressos WHERE Status = 0)";
 
         await connection.ExecuteAsync(
             new CommandDefinition(sql, new { Minutos = minutosExpiracao }, cancellationToken: ct)

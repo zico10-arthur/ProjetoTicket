@@ -100,27 +100,12 @@ public class EventoService : IEventoService
 
     public async Task DeleteAsync(Guid id)
     {
-
         var evento = await _eventoRepository.GetByIdAsync(id);
 
-
         if (evento is null)
-        {
-
             throw new KeyNotFoundException($"Evento {id} não encontrado");
 
-        }
-
-        if (evento.DataEvento <= DateTime.UtcNow)
-        {
-            
-            throw new InvalidOperationException("Não é possível deletar um evento que já ocorreu.");
-
-        }
-
-
         await _eventoRepository.DeleteAsync(id);
-
     }
 
 
