@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
+@inject IJSRuntime JS
 
 <AuthorizeView Roles="Vendedor">
     <Authorized>
@@ -41,6 +42,10 @@
         }
 
         dto.DataEvento = dataEvento.Value.Date + (horaEvento ?? TimeSpan.Zero);
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
         var response = await Http.PostAsJsonAsync("api/Evento", dto);
 

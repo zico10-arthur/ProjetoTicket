@@ -3,6 +3,7 @@
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IJSRuntime JS
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
     <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-6"><b>🎟️ Gestão de Eventos</b></MudText>
@@ -74,6 +75,10 @@
 
     private async Task Deletar(Guid id)
     {
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
         var response = await Http.DeleteAsync($"api/Evento/{id}");
 
         if (response.IsSuccessStatusCode)

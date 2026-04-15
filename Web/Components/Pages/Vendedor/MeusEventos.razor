@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <AuthorizeView Roles="Vendedor">
     <Authorized>
@@ -67,7 +68,11 @@
     {
         try
         {
-            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento") ?? new();
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento/meus") ?? new();
         }
         catch
         {
@@ -77,6 +82,10 @@
 
     private async Task Deletar(Guid id)
     {
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
         var response = await Http.DeleteAsync($"api/Evento/{id}");
 
         if (response.IsSuccessStatusCode)

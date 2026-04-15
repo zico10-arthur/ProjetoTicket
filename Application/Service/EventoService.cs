@@ -59,51 +59,44 @@ public class EventoService : IEventoService
             throw new ArgumentException("A data do evento deve ser futura.");
     }
 
-    public async Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto)
-{
-    if (eventoDto == null)
-        throw new ArgumentNullException(nameof(eventoDto));
-
-    var evento = _mapper.Map<Evento>(eventoDto);
-
-    if (evento.CapacidadeTotal <= 0)
-        throw new InvalidOperationException("Capacidade deve ser maior que zero");
-
-    evento.GerarLoteIngressos(evento.CapacidadeTotal);
-
-    await _eventoRepository.CriarEventoCompletoAsync(evento);
-
-    return evento.id;
-}
-
-
-    public async Task UpdateAsync(Guid id, EventoRequestDTO eventoDto)
+    public async Task<IEnumerable<EventoResponseDTO>> GetAllByVendedorAsync(string vendedorCpf)
     {
-        
-        var evento = await _eventoRepository.GetByIdAsync(id);
-
-
-        if(evento is null)
-        {
-            
-            throw new KeyNotFoundException($"Evento {id} não encontrado");
-
-        }
-
-        ValidarEvento(eventoDto);
-
-        var eventoAtualizado = _mapper.Map<Evento>(eventoDto);
-        await _eventoRepository.UpdateAsync(id, eventoAtualizado);
-
+        var eventos = await _eventoRepository.GetAllByVendedorAsync(vendedorCpf);
+        return _mapper.Map<IEnumerable<EventoResponseDTO>>(eventos);
     }
 
+    public async Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto, string vendedorCpf)
+    {
+        if (eventoDto == null)
+            throw new ArgumentNullException(nameof(eventoDto));
 
-    public async Task DeleteAsync(Guid id)
+        eventoDto.VendedorCpf = vendedorCpf;
+        var evento = _mapper.Map<Evento>(eventoDto);
+
+        if (evento.CapacidadeTotal <= 0)
+            throw new InvalidOperationException("Capacidade deve ser maior que zero");
+
+        evento.GerarLoteIngressos(evento.CapacidadeTotal);
+        await _eventoRepository.CriarEventoCompletoAsync(evento);
+        return evento.id;
+    }
+
+    public async Task UpdateAsync(Guid id, EventoRequestDTO eventoDto, string vendedorCpf)
     {
         var evento = await _eventoRepository.GetByIdAsync(id);
+        if (evento is null) throw new KeyNotFoundException($"Evento {id} não encontrado");
+        if (evento.VendedorCpf != vendedorCpf) throw new UnauthorizedAccessException("Você não tem permissão para editar este evento.");
 
-        if (evento is null)
-            throw new KeyNotFoundException($"Evento {id} não encontrado");
+        ValidarEvento(eventoDto);
+        var eventoAtualizado = _mapper.Map<Evento>(eventoDto);
+        await _eventoRepository.UpdateAsync(id, eventoAtualizado);
+    }
+
+    public async Task DeleteAsync(Guid id, string vendedorCpf, bool isAdmin = false)
+    {
+        var evento = await _eventoRepository.GetByIdAsync(id);
+        if (evento is null) throw new KeyNotFoundException($"Evento {id} não encontrado");
+        if (!isAdmin && evento.VendedorCpf != vendedorCpf) throw new UnauthorizedAccessException("Você não tem permissão para excluir este evento.");
 
         await _eventoRepository.DeleteAsync(id);
     }

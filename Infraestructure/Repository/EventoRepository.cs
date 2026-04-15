@@ -23,11 +23,14 @@ public class EventoRepository : IEventoRepository
 
     public async Task<IEnumerable<Evento>> GetAllAsync()
     {
-        
         using var conn = _connectionFactory.CreateConnection();
-
         return await conn.QueryAsync<Evento>("SELECT * FROM dbo.Eventos");
+    }
 
+    public async Task<IEnumerable<Evento>> GetAllByVendedorAsync(string vendedorCpf)
+    {
+        using var conn = _connectionFactory.CreateConnection();
+        return await conn.QueryAsync<Evento>("SELECT * FROM dbo.Eventos WHERE VendedorCpf = @VendedorCpf", new { VendedorCpf = vendedorCpf });
     }
 
 
@@ -52,8 +55,8 @@ public class EventoRepository : IEventoRepository
         try
         {
             const string sqlEvento = @"
-                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao)
-                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao)";
+                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf)
+                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf)";
 
             await conn.ExecuteAsync(sqlEvento, evento, transacao);
 
@@ -95,6 +98,7 @@ public class EventoRepository : IEventoRepository
 
         try
         {
+            await conn.ExecuteAsync("DELETE FROM dbo.Reservas WHERE EventoId = @Id", new { Id = id }, transacao);
             await conn.ExecuteAsync("DELETE FROM dbo.Ingressos WHERE EventoId = @Id", new { Id = id }, transacao);
             await conn.ExecuteAsync("DELETE FROM dbo.Eventos WHERE id = @Id", new { Id = id }, transacao);
             await transacao.CommitAsync();
