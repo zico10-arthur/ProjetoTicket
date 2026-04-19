@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+8pZdhH1jcA=",
+  "dgSpecHash": "G+rhtvy35Hg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
+  "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rezen\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.12\\microsoft.aspnetcore.openapi.9.0.12.nupkg.sha512",

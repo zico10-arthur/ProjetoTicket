@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "puY/QNwvTM8=",
+  "dgSpecHash": "hi3V1/IDlNo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+  "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rezen\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",

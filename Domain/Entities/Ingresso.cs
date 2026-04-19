@@ -2,7 +2,7 @@ namespace Domain.Entities;
 
 public class Ingresso
 {
-    public Guid Id {get; private set;} = Guid.NewGuid();
+     public Guid Id {get; private set;} = Guid.NewGuid();
 
     public Guid EventoId {get; private set;}
 
@@ -14,6 +14,11 @@ public class Ingresso
 
     public string Setor {get; private set;}
 
+    public int Status {get; private set;} = 0;
+
+    public DateTime? DataBloqueio { get; private set; }
+
+
     private Ingresso() { }
 
     public Ingresso(Guid eventoid, decimal preco, string posicao, string setor)
@@ -22,5 +27,10 @@ public class Ingresso
         Preco = preco;
         Posicao = posicao;
         Setor = setor;
+        Status = 0;
     }
+
+    public void Reservar() => Status = 1;
+    public void Vender() => Status = 2;
+    public void Liberar() => Status = 0;
 }
