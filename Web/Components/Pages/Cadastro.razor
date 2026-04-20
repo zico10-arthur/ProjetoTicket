@@ -36,9 +36,10 @@
             }
             else
             {
-                // Pega a mensagem de erro customizada que o seu Back-end cuspiu
-                var erro = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Erro no cadastro: {erro}", Severity.Error);
+                var json = await response.Content.ReadAsStringAsync();
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro no cadastro.";
+                Snackbar.Add(mensagem, Severity.Error);
             }
         }
         catch (Exception)

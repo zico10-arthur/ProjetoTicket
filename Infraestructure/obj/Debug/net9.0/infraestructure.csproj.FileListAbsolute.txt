@@ -45,4 +45,4 @@ C:\Users\Erick\Documents\ProjetoTicket\infraestructure\obj\Debug\net9.0\refint\I
 C:\Users\Erick\Documents\ProjetoTicket\infraestructure\obj\Debug\net9.0\Infraestructure.pdb
 C:\Users\Erick\Documents\ProjetoTicket\infraestructure\obj\Debug\net9.0\ref\Infraestructure.dll
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraest.F27731A2.Up2Date
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\infraestructure\obj\Debug\net9.0\infraest.F27731A2.Up2Date
+c:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Infraestructure\obj\Debug\net9.0\Infraest.B0D41582.Up2Date

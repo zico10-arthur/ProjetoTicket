@@ -95,8 +95,10 @@
         }
         else
         {
-            var erro = await response.Content.ReadAsStringAsync();
-            Snackbar.Add($"Erro: {erro}", Severity.Error);
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao excluir evento.";
+            Snackbar.Add(mensagem, Severity.Error);
         }
     }
 }

@@ -1,0 +1,10 @@
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Cupons')
+BEGIN
+    CREATE TABLE Cupons (
+        Codigo NVARCHAR(49) NOT NULL PRIMARY KEY,
+        PorcentagemDesconto INT NOT NULL,
+        ValorMinimo NUMERIC(10,2) NOT NULL,
+        DataExpiracao DATETIME NOT NULL,
+        Ativo BIT NOT NULL DEFAULT 1
+    );
+END
