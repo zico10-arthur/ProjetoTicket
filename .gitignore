@@ -1,0 +1,14 @@
+# Build
+**/bin/
+**/obj/
+
+# User settings
+*.user
+*.suo
+.vs/
+
+# Logs
+*.log
+
+# Secrets
+appsettings.Development.json
