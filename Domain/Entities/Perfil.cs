@@ -8,8 +8,6 @@ public class Perfil
 
     public Perfil() {}
 
-    private Perfil(){}
-
     public Perfil(string nome)
     {
         Nome = nome;
