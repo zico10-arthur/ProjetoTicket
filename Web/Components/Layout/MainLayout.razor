@@ -1,0 +1,101 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider /> 
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Elevation="1" Fixed="true">
+        <MudText Typo="Typo.h5" Class="ml-3 cursor-pointer" @onclick='() => NavManager.NavigateTo("/")'>🎟️ SoldOut Tickets</MudText>
+        <MudSpacer />
+
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="d-flex align-center gap-3">
+                    <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login">
+                        Entrar
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Href="/cadastro">
+                        Cadastrar-se
+                    </MudButton>
+                </div>
+            </NotAuthorized>
+
+            <Authorized>
+                <AuthorizeView Roles="Comprador" Context="compradorCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/">Eventos</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/cupons">Cupons</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="@compradorCtx.User.Identity?.Name" Icon="@Icons.Material.Filled.Person" Color="Color.Inherit">
+                        <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
+                        <MudMenuItem Href="/reservas">Minhas Reservas</MudMenuItem>
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Vendedor" Context="vendedorCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/">Eventos</MudButton>
+                        <MudButton Color="Color.Inherit" Href="/eventos/criar">Criar Evento</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="@vendedorCtx.User.Identity?.Name" Icon="@Icons.Material.Filled.Storefront" Color="Color.Inherit">
+                        <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
+                        <MudMenuItem Href="/eventos/meus">Meus Eventos</MudMenuItem>
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin" Context="adminCtx">
+                    <div class="d-flex gap-4 mr-8">
+                        <MudButton Color="Color.Inherit" Href="/admin/eventos">Eventos</MudButton>
+                        
+                        <MudMenu Label="Cupons" Color="Color.Inherit" AnchorOrigin="Origin.BottomCenter">
+                            <MudMenuItem Href="/admin/cupons">Mostrar Cupons</MudMenuItem>
+                            <MudMenuItem Href="/admin/cupons/criar">Criar Cupons</MudMenuItem>
+                        </MudMenu>
+
+                        <MudMenu Label="Usuários" Color="Color.Inherit" AnchorOrigin="Origin.BottomCenter">
+                            <MudMenuItem Href="/admin/usuarios">Ver Usuários</MudMenuItem>
+                            <MudMenuItem Href="/admin/cadastrar-vendedor">Cadastrar Vendedor</MudMenuItem>
+                        </MudMenu>
+
+                        <MudButton Color="Color.Inherit" Href="/admin/reservas">Reservas</MudButton>
+                    </div>
+                    <MudSpacer />
+                    <MudMenu Label="Admin" Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit">
+                        <MudMenuItem Href="/perfil">Meu Perfil</MudMenuItem>
+                        <MudMenuItem OnClick="Deslogar">Sair</MudMenuItem>
+                    </MudMenu>
+                </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-8 mb-8">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [Inject] NavigationManager NavManager { get; set; } = null!;
+
+    private async Task Deslogar()
+    {
+        // 1. Apaga o Token do navegador
+        await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        
+        // 2. Avisa a classe que o usuário saiu
+        ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoDeslogado();
+        
+        // 3. Joga o cara pra tela de Login
+        NavManager.NavigateTo("/login");
+    }
+}

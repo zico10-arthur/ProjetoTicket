@@ -1,0 +1,50 @@
+@page "/cadastro"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudCard Elevation="3" Class="pa-8 rounded-lg">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Crie sua Conta</MudText>
+        
+        <MudTextField @bind-Value="dto.Nome" Label="Nome Completo" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Cpf" Label="CPF" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-6" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarCadastro">
+            Cadastrar
+        </MudButton>
+    </MudCard>
+</MudContainer>
+
+@code {
+    // Essa classe espelha o seu DTO do Back-end
+    public class CadastroDTO { public string Nome { get; set; } = ""; public string Email { get; set; } = ""; public string Cpf { get; set; } = ""; public string Senha { get; set; } = ""; }
+    private CadastroDTO dto = new();
+
+    private async Task RealizarCadastro()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Usuario/CadastrarComprador", dto);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Cadastro realizado com sucesso!", Severity.Success);
+                NavManager.NavigateTo("/login"); // Leva pro Login como você pediu!
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro no cadastro.";
+                Snackbar.Add(mensagem, Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
+        }
+    }
+}

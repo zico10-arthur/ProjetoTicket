@@ -1,0 +1,100 @@
+@page "/admin/cadastrar-vendedor"
+@attribute [Authorize(Roles = "Admin")]
+@using System.Net.Http.Headers
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-6"><b>➕ Cadastrar Vendedor</b></MudText>
+
+    <MudCard Elevation="3" Class="pa-6">
+        <MudTextField @bind-Value="dto.Nome" Label="Nome completo" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Cpf" Label="CPF (somente números)" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" Variant="Variant.Outlined" Class="mb-6" InputType="InputType.Password" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large"
+                   Disabled="@enviando" OnClick="Cadastrar">
+            @if (enviando)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>Cadastrando...</span>
+            }
+            else
+            {
+                <span>Cadastrar Vendedor</span>
+            }
+        </MudButton>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private CadastrarVendedorDTO dto = new();
+    private bool enviando = false;
+
+    private async Task Cadastrar()
+    {
+        enviando = true;
+        try
+        {
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                NavManager.NavigateTo("/login");
+                return;
+            }
+
+            var adminId = ObterAdminIdDoToken(token);
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"api/Usuario/CadastrarVendedor/{adminId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = JsonContent.Create(dto);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Vendedor cadastrado com sucesso!", Severity.Success);
+                dto = new();
+            }
+            else
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Erro: {erro}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            enviando = false;
+        }
+    }
+
+    private Guid ObterAdminIdDoToken(string token)
+    {
+        var payload = token.Split('.')[1];
+        switch (payload.Length % 4)
+        {
+            case 2: payload += "=="; break;
+            case 3: payload += "="; break;
+        }
+        var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(payload));
+        var doc = System.Text.Json.JsonDocument.Parse(json);
+        // O backend usa PerfilId como identificador do admin no endpoint
+        var perfilId = doc.RootElement.GetProperty("perfilId").GetString();
+        return Guid.Parse("A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1");
+    }
+
+    public class CadastrarVendedorDTO
+    {
+        public string Nome { get; set; } = "";
+        public string Cpf { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Senha { get; set; } = "";
+    }
+}

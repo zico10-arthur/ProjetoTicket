@@ -1,0 +1,63 @@
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
+
+<MudCard Elevation="3" Class="event-card" @onclick="ToggleCard">
+    <MudCardContent>
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-3">
+            <b>@Evento.Nome</b>
+        </MudText>
+        
+        <div class="d-flex align-center mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Data</b></MudText>
+            <MudSpacer />
+            <MudText>@Evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
+        </div>
+
+        <div class="d-flex align-center mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Capacidade</b></MudText>
+            <MudSpacer />
+            <MudText>@Evento.CapacidadeTotal pessoas</MudText>
+        </div>
+
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Primary" Class="mr-3" />
+            <MudText><b>Preço</b></MudText>
+            <MudSpacer />
+            <MudText Color="Color.Primary">
+                <b>@Evento.PrecoPadrao.ToString("C")</b>
+            </MudText>
+        </div>
+    </MudCardContent>
+    
+    <MudCollapse Expanded="isExpanded">
+        <div class="pa-4 pt-0" @onclick:stopPropagation="true">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="IrParaCompra">
+                Comprar Ingresso
+            </MudButton>
+        </div>
+    </MudCollapse>
+</MudCard>
+
+@code {
+    [Parameter]
+    public EventoViewModel Evento { get; set; } = null!;
+
+    private bool isExpanded;
+
+    private void ToggleCard()
+    {
+        isExpanded = !isExpanded;
+    }
+
+    private async Task IrParaCompra()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? true)
+            NavManager.NavigateTo($"/login?returnUrl=/comprar/{Evento.Id}/ingressos");
+        else
+            NavManager.NavigateTo($"/comprar/{Evento.Id}/ingressos");
+    }
+}

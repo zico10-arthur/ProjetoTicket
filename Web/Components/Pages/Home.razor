@@ -1,0 +1,42 @@
+@page "/"
+@inject HttpClient Http
+
+<MudGrid Spacing="4">
+    @if (eventos is null)
+    {
+        <MudItem xs="12">
+            <MudText>Carregando eventos...</MudText>
+        </MudItem>
+    }
+    else if (!eventos.Any())
+    {
+        <MudItem xs="12">
+            <MudText>Nenhum evento disponível.</MudText>
+        </MudItem>
+    }
+    else
+    {
+        @foreach (var evento in eventos)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <CartaoEvento Evento="@evento" />
+            </MudItem>
+        }
+    }
+</MudGrid>
+
+@code {
+    private List<EventoViewModel>? eventos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento");
+        }
+        catch
+        {
+            eventos = new();
+        }
+    }
+}

@@ -1,0 +1,104 @@
+@page "/eventos/meus"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+<AuthorizeView Roles="Vendedor">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+            <div class="d-flex align-center mb-6">
+                <MudText Typo="Typo.h5">Meus Eventos</MudText>
+                <MudSpacer />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/eventos/criar">
+                    + Novo Evento
+                </MudButton>
+            </div>
+
+            @if (eventos is null)
+            {
+                <MudText>Carregando...</MudText>
+            }
+            else if (!eventos.Any())
+            {
+                <MudText>Nenhum evento cadastrado.</MudText>
+            }
+            else
+            {
+                <MudGrid Spacing="4">
+                    @foreach (var evento in eventos)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="3">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6"><b>@evento.Nome</b></MudText>
+                                    <MudText>Data: @evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                    <MudText>Capacidade: @evento.CapacidadeTotal pessoas</MudText>
+                                    <MudText Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="@($"/eventos/editar/{evento.Id}")">Editar</MudButton>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => Deletar(evento.Id)">Excluir</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudAlert Severity="Severity.Warning">Você precisa estar logado como Vendedor para acessar esta página.</MudAlert>
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Ir para Login</MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<EventoViewModel>? eventos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarEventos();
+    }
+
+    private async Task CarregarEventos()
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento/meus") ?? new();
+        }
+        catch
+        {
+            eventos = new();
+        }
+    }
+
+    private async Task Deletar(Guid id)
+    {
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+
+        var response = await Http.DeleteAsync($"api/Evento/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Evento excluído.", Severity.Success);
+            await CarregarEventos();
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao excluir evento.";
+            Snackbar.Add(mensagem, Severity.Error);
+        }
+    }
+}

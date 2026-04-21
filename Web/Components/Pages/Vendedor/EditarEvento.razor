@@ -1,0 +1,88 @@
+@page "/eventos/editar/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Vendedor">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+            <MudText Typo="Typo.h5" Class="mb-6">Editar Evento</MudText>
+
+            @if (dto is null)
+            {
+                <MudText>Carregando...</MudText>
+            }
+            else
+            {
+                <MudTextField @bind-Value="dto.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" />
+                <MudTextField @bind-Value="dto.CapacidadeTotal" Label="Capacidade Total" Variant="Variant.Outlined" Class="mb-4" InputType="InputType.Number" />
+                <MudDatePicker @bind-Date="dataEvento" Label="Data do Evento" Variant="Variant.Outlined" Class="mb-4" />
+                <MudNumericField T="decimal" @bind-Value="dto.PrecoPadrao" Label="Preço (R$)" Variant="Variant.Outlined" Class="mb-6" Format="F2" Min="0.01m" />
+
+                <div class="d-flex gap-3">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/eventos/meus">Cancelar</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Salvar">Salvar</MudButton>
+                </div>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudAlert Severity="Severity.Warning">Você precisa estar logado como Vendedor para acessar esta página.</MudAlert>
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Ir para Login</MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private EventoRequestDTO? dto;
+    private DateTime? dataEvento;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var evento = await Http.GetFromJsonAsync<EventoViewModel>($"api/Evento/{Id}");
+        if (evento is null)
+        {
+            Snackbar.Add("Evento não encontrado.", Severity.Error);
+            NavManager.NavigateTo("/eventos/meus");
+            return;
+        }
+
+        dto = new EventoRequestDTO
+        {
+            Nome = evento.Nome,
+            CapacidadeTotal = evento.CapacidadeTotal,
+            PrecoPadrao = evento.PrecoPadrao,
+            DataEvento = evento.DataEvento
+        };
+        dataEvento = evento.DataEvento;
+    }
+
+    private async Task Salvar()
+    {
+        if (dto is null) return;
+
+        if (dataEvento is null)
+        {
+            Snackbar.Add("Selecione a data do evento.", Severity.Warning);
+            return;
+        }
+
+        dto.DataEvento = dataEvento.Value;
+
+        var response = await Http.PutAsJsonAsync($"api/Evento/{Id}", dto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Evento atualizado com sucesso!", Severity.Success);
+            NavManager.NavigateTo("/eventos/meus");
+        }
+        else
+        {
+            var erro = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"Erro: {erro}", Severity.Error);
+        }
+    }
+}

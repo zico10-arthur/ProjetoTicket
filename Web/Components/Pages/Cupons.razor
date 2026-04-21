@@ -1,0 +1,61 @@
+@page "/cupons"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Comprador">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+            <MudText Typo="Typo.h5" Class="mb-6">Cupons Disponíveis</MudText>
+
+            @if (cupons is null)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (!cupons.Any())
+            {
+                <MudText>Nenhum cupom disponível no momento.</MudText>
+            }
+            else
+            {
+                <MudGrid Spacing="4">
+                    @foreach (var cupom in cupons)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="3">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h5" Color="Color.Primary"><b>@cupom.Codigo.ToUpper()</b></MudText>
+                                    <MudText Class="mt-2">Desconto: <b>@cupom.PorcentagemDesconto%</b></MudText>
+                                    <MudText>Mínimo: <b>@cupom.ValorMinimo.ToString("C")</b></MudText>
+                                    <MudText Typo="Typo.body2" Class="mt-1">Expira: @cupom.DataExpiracao?.ToShortDateString()</MudText>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+            <MudAlert Severity="Severity.Warning">Você precisa estar logado como Comprador para ver os cupons.</MudAlert>
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Ir para Login</MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<CupomViewModel>? cupons;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            cupons = await Http.GetFromJsonAsync<List<CupomViewModel>>("api/Cupom/ListarCuponsValidos") ?? new();
+        }
+        catch
+        {
+            cupons = new();
+            Snackbar.Add("Erro ao carregar cupons.", Severity.Error);
+        }
+    }
+}

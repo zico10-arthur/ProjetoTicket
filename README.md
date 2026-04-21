@@ -1,27 +1,80 @@
-# Matriz de Decisão de Processo
+# SoldOut Tickets
 
->Contexto do Sistema:
+Sistema de venda de ingressos para eventos, desenvolvido com ASP.NET Core, Blazor Server e SQL Server.
 
-- O sistema de ticket tem como objetivo facilitar a vida de pessoas que precisam comprar ingressos para eventos, o seu público alvo é toda a sociedade.
+## Pré-requisitos
 
->Critérios Determinantes:
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- SQL Server ou SQL Server Express
 
-- O antigo sistema de ticket tiveram alguns problemas como: cálculo do desconto do ingresso, problemas na validações do backend, venda de ingressos superior a capacidade da casa de festa. A empresa não pode ficar fora do mercado por muito tempo. Portanto, precisam de uma entrega rápida. 
+## Configuração do Banco de Dados
 
->Maiores Riscos Identificados:
+Abra o arquivo `Api/appsettings.json` e configure a connection string:
 
-- Adição de novas funcionalidades sem ajuste de prazo ou orçamento
-- Falta de entendimento entre usuário e equipe
-- Falta de feedback do usuário
-- Falta de comunicação entre membros da equipe
-  
->Modelo de Ciclo Recomendado:
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=ProjetoTicketDB;Trusted_Connection=True;TrustServerCertificate=True;"
+}
+```
 
-- Iterativo e Incremental
+> O banco e todas as tabelas são criados automaticamente ao rodar a API pela primeira vez.
 
-> Justificativa técnica:
+## Rodando a API
 
-- O projeto utiliza o modelo iterativo incremental, que realiza entregas por partes, dessa forma nos possibilitando ter feedbacks mais rápidos sobre a evolução do projeto. Será usado o scrum para termos sprints com entregas constantes. Com os feedbacks constantes conseguimos eliminar o problema de falta de entendimento entre usuário e equipe e falta de feedback. 
+```bash
+cd Api
+dotnet run
+```
 
+A API estará disponível em: `http://localhost:5007`  
+Swagger disponível em: `http://localhost:5007/swagger`
 
+## Rodando o Frontend
 
+```bash
+cd Web
+dotnet run
+```
+
+O frontend estará disponível em: `http://localhost:5057`
+
+## Rodando os Testes
+
+```bash
+cd tests
+dotnet test
+```
+
+## Restaurando dependências
+
+```bash
+dotnet restore
+```
+
+## Compilando o projeto
+
+```bash
+dotnet build
+```
+
+## Estrutura do Projeto
+
+```
+ProjetoTicket/
+├── Api/              → Controllers, Middlewares, Program.cs
+├── Application/      → Services, DTOs, Interfaces, Mappings
+├── Domain/           → Entities, Exceptions, Interfaces
+├── Infraestructure/  → Repositories, Migrations, Database
+├── Web/              → Frontend Blazor Server
+├── docs/             → Documentação (requisitos, arquitetura, operação)
+├── db/               → Scripts SQL
+└── tests/            → Testes automatizados xUnit
+```
+
+## Perfis de Usuário
+
+| Perfil | Permissões |
+|---|---|
+| Admin | Gerenciar usuários, eventos e cupons |
+| Vendedor | Criar e gerenciar seus próprios eventos |
+| Comprador | Visualizar eventos e realizar reservas |

@@ -33,4 +33,5 @@ public class Ingresso
     public void Reservar() => Status = 1;
     public void Vender() => Status = 2;
     public void Liberar() => Status = 0;
+    
 }

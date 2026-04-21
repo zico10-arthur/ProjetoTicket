@@ -1,0 +1,106 @@
+@page "/admin/usuarios"
+@using System.Net.Http.Headers
+@using Web.Models
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <MudText Typo="Typo.h4" Class="mb-6" Color="Color.Primary"><b>👥 Gestão de Usuários</b></MudText>
+
+    @if (isLoading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (usuarios == null || !usuarios.Any())
+    {
+        <MudAlert Severity="Severity.Info">Nenhum usuário encontrado no sistema.</MudAlert>
+    }
+    else
+    {
+        <MudGrid Spacing="4">
+            @foreach (var user in usuarios)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3" Class="rounded-lg" Style="border-left: 5px solid #594AE2;">
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6" Color="Color.Primary"><b>@user.Nome</b></MudText>
+                            <MudDivider Class="my-2"/>
+                            
+                            <div class="d-flex align-center mb-2 mt-3">
+                                <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Class="mr-2 text-muted" />
+                                <MudText Typo="Typo.body2">@user.Email</MudText>
+                            </div>
+                            
+                            <div class="d-flex align-center mb-2">
+                                <MudIcon Icon="@Icons.Material.Filled.Badge" Size="Size.Small" Class="mr-2 text-muted" />
+                                <MudText Typo="Typo.body2">@user.Cpf</MudText>
+                            </div>
+                            
+                            <div class="d-flex align-center mt-3">
+                                <MudChip T="string" Color="@CorDoPerfil(user.PerfilId)" Size="Size.Small">
+                                    @NomeDoPerfil(user.PerfilId)
+                                </MudChip>
+                            </div>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<UsuarioViewModel>? usuarios;
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            token = token?.Replace("\"", "");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Snackbar.Add("Token não encontrado. Faça login novamente.", Severity.Warning);
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            usuarios = await Http.GetFromJsonAsync<List<UsuarioViewModel>>("api/Usuario/Todos");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro ao buscar usuários: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // --- MÉTODOS VISUAIS PARA DEIXAR BONITO ---
+    private string NomeDoPerfil(Guid perfilId)
+    {
+        var id = perfilId.ToString().ToUpper();
+        if (id == "A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1") return "Administrador";
+        if (id == "B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2") return "Vendedor";
+        if (id == "C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3") return "Comprador";
+        return "Desconhecido";
+    }
+
+    private Color CorDoPerfil(Guid perfilId)
+    {
+        var id = perfilId.ToString().ToUpper();
+        if (id == "A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1") return Color.Error;   // Vermelho pro Admin
+        if (id == "B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2") return Color.Warning; // Amarelo pro Vendedor
+        if (id == "C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3") return Color.Success; // Verde pro Comprador
+        return Color.Default;
+    }
+}

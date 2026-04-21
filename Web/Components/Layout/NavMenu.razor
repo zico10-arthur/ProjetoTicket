@@ -1,0 +1,24 @@
+<AuthorizeView>
+    <Authorized>
+        <MudNavMenu>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+            <AuthorizeView Roles="Vendedor" Context="vendedor">
+                <MudNavLink Href="eventos/meus" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Event">Meus Eventos</MudNavLink>
+                <MudNavLink Href="eventos/criar" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddCircle">Criar Evento</MudNavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Admin" Context="admin">
+                <MudNavLink Href="admin/usuarios" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Usuários</MudNavLink>
+                <MudNavLink Href="admin/cadastrar-vendedor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Cadastrar Vendedor</MudNavLink>
+                <MudNavLink Href="admin/cupons" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.LocalOffer">Cupons</MudNavLink>
+            </AuthorizeView>
+        </MudNavMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudNavMenu>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+        </MudNavMenu>
+    </NotAuthorized>
+</AuthorizeView>

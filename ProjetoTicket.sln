@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infraestructure", "infraestructure\infraestructure.csproj", "{894A5C5C-7A99-4078-96FA-648B36E684F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{894A5C5C-7A99-4078-96FA-648B36E684F9}.Release|x64.Build.0 = Release|Any CPU
 		{894A5C5C-7A99-4078-96FA-648B36E684F9}.Release|x86.ActiveCfg = Release|Any CPU
 		{894A5C5C-7A99-4078-96FA-648B36E684F9}.Release|x86.Build.0 = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|x64.Build.0 = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD7FF8EA-8E14-461E-AEB2-116DD44A2042}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

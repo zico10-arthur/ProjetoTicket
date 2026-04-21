@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
-    <PackageReference Include="Npgsql" Version="10.0.1" />
+    <PackageReference Include="dbup-sqlserver" Version="7.2.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -14,5 +15,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Database\Scripts\*.sql" />
+  </ItemGroup>
 
 </Project>
