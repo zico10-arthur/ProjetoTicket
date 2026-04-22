@@ -1,3 +1,8 @@
+# ARTHUR REZENDE DE OLIVEIRA - 06010228
+# IAN CARLOS DE OLIVEIRA LEITE -06012992
+# EDUARDO LEAL - 06013706
+# ERICK LOPES DOS SANTOS CARVALHO - 06010632
+
 # SoldOut Tickets
 
 Sistema de venda de ingressos para eventos, desenvolvido com ASP.NET Core, Blazor Server e SQL Server.
