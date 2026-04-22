@@ -109,7 +109,8 @@ public class ReservaRepository : IReservaRepository
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN Ingressos i ON r.IngressoId = i.Id
-            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf";
+            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
+            WHERE r.UsuarioCpf = @Cpf";
 
         return await connection.QueryAsync<ReservaDetalhadaDTO>(
             new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)

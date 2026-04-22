@@ -596,8 +596,9 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "infraestructure.dll": {
-            "fileVersion": "0.0.0.0"
+          "Infraestructure.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       }
