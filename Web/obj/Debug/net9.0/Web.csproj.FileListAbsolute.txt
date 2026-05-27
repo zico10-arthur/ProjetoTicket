@@ -208,9 +208,6 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\staticwebasse
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\Web.csproj.Up2Date
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\Web.genruntimeconfig.cache
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\ref\Web.dll
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-nq21ts4qye.gz
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-cf158k2j5i.gz
-C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-jsf39xodda.gz
 C:\Users\Erick\Documents\ProjetoTicket\Web\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\Erick\Documents\ProjetoTicket\Web\bin\Debug\net9.0\appsettings.json
 C:\Users\Erick\Documents\ProjetoTicket\Web\bin\Debug\net9.0\Web.staticwebassets.runtime.json
@@ -323,3 +320,6 @@ C:\Users\Erick\Documents\ProjetoTicket\Web\obj\Debug\net9.0\ref\Web.dll
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-nq21ts4qye.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-cf158k2j5i.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-jsf39xodda.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\tzxjg6is5z-6x2ajsl5c8.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\0wz98yz2xy-jolev99wdd.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\o7k4cxtn0u-h82a7aihv0.gz
