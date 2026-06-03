@@ -1,5 +1,9 @@
 # Requisitos do Sistema — SoldOut Tickets
 
+> ⚠️ **Este documento contém os requisitos antigos da AV1.**  
+> Para os requisitos atualizados do sistema (v2.0), consulte [`especificacoes.md`](./especificacoes.md).  
+> Para as novas funcionalidades e melhorias, consulte [`storytelling.md`](./storytelling.md).
+
 ## Histórias de Usuário
 
 - HU01: Como usuário, Quero cadastrar a minha conta, Para ter acesso ao sistema.

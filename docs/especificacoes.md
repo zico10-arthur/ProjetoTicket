@@ -3,7 +3,7 @@
 ## Sumário
 
 1. [Visão Geral do Produto](#1-visão-geral-do-produto)
-2. [Modelo de Negócio — Três Entidades](#2-modelo-de-negócio--três-entidades)
+2. [Modelo de Negócio — Três Perfis de Usuário](#2-modelo-de-negócio--três-perfis-de-usuário)
 3. [Como Funciona o Cadastro de Cada Um](#3-como-funciona-o-cadastro-de-cada-um)
 4. [Arquitetura](#4-arquitetura)
 5. [Entidades do Domínio](#5-entidades-do-domínio)
@@ -12,19 +12,20 @@
 8. [Fluxos do Sistema](#8-fluxos-do-sistema)
 9. [Requisitos Funcionais](#9-requisitos-funcionais)
 10. [Requisitos Não Funcionais](#10-requisitos-não-funcionais)
-11. [Banco de Dados](#11-banco-de-dados)
-12. [APIs e Endpoints](#12-apis-e-endpoints)
-13. [Plano de Migração](#13-plano-de-migração)
-14. [Glossário](#14-glossário)
+11. [Regras de Negócio](#11-regras-de-negócio)
+12. [Banco de Dados](#12-banco-de-dados)
+13. [APIs e Endpoints](#13-apis-e-endpoints)
+14. [Plano de Migração](#14-plano-de-migração)
+15. [Glossário](#15-glossário)
 
 ---
 
 ## 1. Visão Geral do Produto
 
-O **SoldOut Tickets** é uma plataforma SaaS que conecta **Empresas** (que vendem eventos) e **Compradores** (o público), permitindo a criação, gestão e venda de reservas para eventos de qualquer natureza:
+O **SoldOut Tickets** é uma plataforma SaaS voltada para **eventos de pequeno porte** (palestras, workshops, cursos, meetups), conectando **Vendedores** (que criam e vendem eventos) e **Compradores** (o público), permitindo a criação, gestão e venda de reservas:
 
-- **Teatro / Espetáculo** — com assentos numerados e setores VIP/Geral
 - **Palestra / Workshop / Curso** — com lotação geral (controle de vagas, sem assento fixo)
+- **Teatro / Espetáculo** — com assentos numerados e setores VIP/Geral
 - **Show / Concerto** — com áreas ou assentos definidos
 - **Evento Corporativo / Meetup** — gratuito ou pago
 - **Evento Gratuito** — sem cobrança, apenas controle de presença
@@ -34,7 +35,7 @@ O **SoldOut Tickets** é uma plataforma SaaS que conecta **Empresas** (que vende
 │                    SOLDOUT TICKETS                        │
 │                                                          │
 │   ┌──────────┐    ┌──────────────┐    ┌──────────────┐  │
-│   │  ADMIN    │    │   EMPRESA    │    │  COMPRADOR   │  │
+│   │  ADMIN    │    │  VENDEDOR    │    │  COMPRADOR   │  │
 │   │(sistema)  │    │  (vende)     │    │  (compra)    │  │
 │   └─────┬─────┘   └──────┬───────┘   └──────┬───────┘  │
 │         │                │                  │           │
@@ -49,41 +50,45 @@ O **SoldOut Tickets** é uma plataforma SaaS que conecta **Empresas** (que vende
 
 ---
 
-## 2. Modelo de Negócio — Três Entidades
+## 2. Modelo de Negócio — Três Perfis de Usuário
 
 ### 2.1 Quem é Quem
 
+Todos os usuários estão na mesma tabela `Usuarios`, diferenciados pelo `PerfilId`:
+
 | Entidade | O que é | Como entra no sistema |
 |----------|---------|----------------------|
-| **Admin** | Administrador da plataforma. Gerencia empresas, visualiza dados. | **Cadastrado manualmente no banco** (seed). Não tem cadastro público. |
-| **Empresa** | Pessoa jurídica que quer vender ingressos para seus eventos. | **Se cadastra pelo site** com CNPJ, dados da empresa e senha. |
-| **Comprador** | Pessoa física que quer comprar ingressos. | **Se cadastra pelo site** com CPF, nome, email e senha. (Como já funciona hoje) |
+| **Admin** | Administrador da plataforma. Gerencia vendedores, visualiza dados globais. | **Cadastrado manualmente no banco** (seed). Não tem cadastro público. |
+| **Vendedor** | Pessoa jurídica que quer vender ingressos para seus eventos de pequeno porte. | **Se auto cadastra pelo site** com CNPJ, dados da empresa e senha. |
+| **Comprador** | Pessoa física que quer comprar ingressos. | **Se cadastra pelo site** com CPF, nome, email e senha. |
 
 ### 2.2 Perfis de Usuário (tabela [`Perfis`](../Domain/Entities/Perfil.cs))
 
-Apenas **dois perfis** na tabela de usuários:
+A tabela de usuários possui **três perfis**:
 
 | Perfil | ID (GUID) | Quem usa |
 |--------|-----------|----------|
-| **Admin** | `A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1` | Usuários administradores da plataforma |
-| **Comprador** | `C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3` | Usuários que compram ingressos |
+| **Admin** | `A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1` | Administradores da plataforma |
+| **Vendedor** | `B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2` | Pessoas jurídicas que criam e vendem eventos (pequeno porte) |
+| **Comprador** | `C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3` | Pessoas físicas que compram ingressos |
 
-> ✅ **Empresa NÃO é um perfil de usuário.** Empresa é uma entidade separada, com sua própria tabela (`Empresas`), seu próprio login e seu próprio token JWT.
-> ✅ **Perfil Vendedor (B2B2...)** será removido — substituído pela entidade Empresa.
+> ✅ **Vendedor É um perfil de usuário.** Está na tabela `Usuarios`, usa o mesmo endpoint de login (`/api/usuario/login`), e recebe JWT com role=Vendedor.
+> ✅ A classe `Usuario` possui propriedades específicas para o perfil Vendedor (CNPJ, NomeFantasia, LogoUrl, Descricao, Site, Plano, Telefone, Ativo), preenchidas apenas quando `PerfilId = B2B2...`.
+> ✅ **Auto cadastro**: o Vendedor se cadastra sozinho pelo site — não depende mais do Admin para criar sua conta.
 
-### 2.3 Login — Três Fluxos Diferentes
+### 2.3 Login — Único Fluxo, Três Roles
 
-Cada entidade faz login de forma diferente, e cada uma recebe um JWT com claims diferentes:
+Todos fazem login pelo mesmo endpoint. O JWT gerado contém a role correspondente ao perfil:
 
 ```
 Admin:
   POST /api/usuario/login  →  JWT { role: "Admin", cpf, email }
 
+Vendedor:
+  POST /api/usuario/login  →  JWT { role: "Vendedor", cpf, email }
+
 Comprador:
   POST /api/usuario/login  →  JWT { role: "Comprador", cpf, email }
-
-Empresa:
-  POST /api/empresa/login  →  JWT { role: "Empresa", empresaId, cnpj, email }
 ```
 
 ---
@@ -92,10 +97,9 @@ Empresa:
 
 ### 3.1 Admin — Cadastro manual no banco
 
-O Admin **não tem página de cadastro**. O único Admin é inserido diretamente via script SQL:
+O Admin **não tem página de cadastro**. Inserido diretamente via script SQL:
 
 ```sql
--- Script de seed (executado uma vez)
 INSERT INTO Usuarios (Cpf, Nome, Email, PerfilId, Senha)
 VALUES ('00000000000', 'Administrador', 'admin@soldout.com',
         'A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1',
@@ -103,11 +107,11 @@ VALUES ('00000000000', 'Administrador', 'admin@soldout.com',
 ```
 
 - Apenas **um** Admin (ou poucos, controlados manualmente)
-- Senha já vem com hash BCrypt
-- Admin faz login pelo mesmo endpoint de usuário (`/api/usuario/login`)
-- O sistema identifica pelo PerfilId que é Admin e gera JWT com role=Admin
+- Senha com hash BCrypt
+- Login pelo endpoint `/api/usuario/login`
+- JWT com role=Admin
 
-### 3.2 Comprador — Cadastro pelo site (fluxo atual mantido)
+### 3.2 Comprador — Cadastro pelo site
 
 ```
 Página de Cadastro (Cadastro.razor)
@@ -116,53 +120,59 @@ Página de Cadastro (Cadastro.razor)
 POST /api/usuario/cadastrar
     ↓ Validações: CPF, email, senha, nome
     ↓
-Cria Usuario com PerfilId = Comprador
+Cria Usuario com PerfilId = Comprador (C3C3...)
     ↓
 Redireciona para Login
 ```
 
-- Fluxo idêntico ao que já existe hoje
-- Após login, recebe JWT com role=Comprador
+- Após login, JWT com role=Comprador
 - Acessa Home, compra ingressos, vê Minhas Reservas
 
-### 3.3 Empresa — Cadastro pelo site (novo fluxo)
+### 3.3 Vendedor — Auto Cadastro pelo site (NOVO FLUXO)
+
+> **Mudança importante**: Antes, o Admin cadastrava o Vendedor. Agora, o Vendedor faz **auto cadastro** — ele mesmo se registra no site.
 
 ```
-Página de Cadastro Empresarial (EmpresaCadastro.razor) — página NOVA
-    ↓ Preenche: CNPJ, Nome, Nome Fantasia, Email, Senha, Telefone
+Página de Cadastro de Vendedor (VendedorCadastro.razor) — página NOVA
+    ↓ Preenche: CNPJ, Nome (Razão Social), Nome Fantasia, Email, Senha, Telefone
     ↓
-POST /api/empresa/cadastrar
+POST /api/usuario/cadastrar-vendedor
     ↓ Validações:
     │  ├── CNPJ: formato, dígitos verificadores, unicidade
-    │  ├── Email: válido, não duplicado
-    │  ├── Senha: mesmas regras (8+ dígitos, letras, números, especial)
+    │  ├── Email: válido, não duplicado entre usuários
+    │  ├── Senha: 8+ dígitos, letras, números, caractere especial
     │  └── Nome: não vazio
     ↓
-Cria Empresa com Plano = Gratuito (padrão)
+Cria Usuario com PerfilId = Vendedor (B2B2...)
+    │  ├── Cpf = CNPJ (campo Cpf armazena o identificador)
+    │  ├── Cnpj = CNPJ (campo específico para Vendedor)
+    │  ├── NomeFantasia, Telefone preenchidos
+    │  └── Plano = Gratuito (padrão)
     ↓
-Redireciona para Login Empresarial (EmpresaLogin.razor)
+Redireciona para Login (Login.razor)
     ↓
-Empresa faz login → recebe JWT { role: "Empresa", empresaId, cnpj }
+Vendedor faz login → JWT { role: "Vendedor", cpf, email }
     ↓
-Acessa Painel da Empresa:
-    ├── Criar Evento
-    ├── Meus Eventos
+Acessa Painel do Vendedor:
+    ├── Criar Evento (Palestra ou Teatro)
+    ├── Meus Eventos (gerenciar, cancelar)
     ├── Gerenciar Cupons
-    ├── Relatórios
+    ├── Relatórios de Vendas
     └── Configurações (logo, descrição, site)
 ```
 
 ### 3.4 Comparativo dos Três Cadastros
 
-| Aspecto | Admin | Comprador | Empresa |
-|---------|-------|-----------|---------|
-| **Como cadastra** | Manual (SQL seed) | Pelo site | Pelo site |
-| **Tabela** | `Usuarios` | `Usuarios` | `Empresas` |
+| Aspecto | Admin | Comprador | Vendedor |
+|---------|-------|-----------|----------|
+| **Como cadastra** | Manual (SQL seed) | Pelo site | Pelo site (auto cadastro) |
+| **Tabela** | `Usuarios` | `Usuarios` | `Usuarios` |
 | **Identificador** | CPF (000...) | CPF | CNPJ |
-| **PerfilId** | Admin (A1A1...) | Comprador (C3C3...) | N/A (não é usuario) |
-| **Role no JWT** | `Admin` | `Comprador` | `Empresa` |
-| **Endpoint login** | `/api/usuario/login` | `/api/usuario/login` | `/api/empresa/login` |
-| **Página de cadastro** | ❌ Não tem | ✅ `Cadastro.razor` | ✅ `EmpresaCadastro.razor` (NOVA) |
+| **PerfilId** | Admin (A1A1...) | Comprador (C3C3...) | Vendedor (B2B2...) |
+| **Role no JWT** | `Admin` | `Comprador` | `Vendedor` |
+| **Endpoint login** | `/api/usuario/login` | `/api/usuario/login` | `/api/usuario/login` |
+| **Página de cadastro** | ❌ Não tem | ✅ `Cadastro.razor` | ✅ `VendedorCadastro.razor` (NOVA) |
+| **Propriedades extras** | Nenhuma | Nenhuma | CNPJ, NomeFantasia, LogoUrl, Descricao, Site, Plano, Telefone |
 
 ---
 
@@ -173,81 +183,79 @@ Acessa Painel da Empresa:
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                       Perfis                                  │
-│  A1A1... = Admin   |   C3C3... = Comprador                    │
+│  A1A1... = Admin | B2B2... = Vendedor | C3C3... = Comprador │
 └──────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐
-│ Usuarios                                                      │
-│ ┌──────────────┐  ┌──────────────────┐                       │
-│ │ Admin        │  │ Comprador        │                       │
-│ │ Perfil=Admin │  │ Perfil=Comprador │                       │
-│ │ Cpf=000...   │  │ Cpf=XXX...       │                       │
-│ └──────────────┘  └──────────────────┘                       │
-└──────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────┐
-│ Empresas                                                      │
-│ ┌──────────────────────────────────────────────────────────┐ │
-│ │ Id | Nome | CNPJ | Email | Senha | Logo | Plano | Ativo  │ │
-│ └──────────────────────────────────────────────────────────┘ │
-│   │                                                          │
-│   ├── Eventos (1:N)                                          │
-│   │   ├── Ingressos (1:N) — apenas Teatro                    │
-│   │   └── Reservas (1:N)                                     │
-│   │                                                          │
-│   └── Cupons (1:N)                                           │
+│ Usuarios (tabela única — todos os perfis)                     │
+│ ┌──────────────┐ ┌──────────────────┐ ┌──────────────────┐  │
+│ │ Admin        │ │ Vendedor         │ │ Comprador        │  │
+│ │ Perfil=Admin │ │ Perfil=Vendedor  │ │ Perfil=Comprador │  │
+│ │ Cpf=000...   │ │ Cpf=CNPJ         │ │ Cpf=XXX...       │  │
+│ │              │ │ Cnpj, NomeFant,  │ │                  │  │
+│ │              │ │ Logo, Plano...   │ │                  │  │
+│ └──────────────┘ └────────┬─────────┘ └──────────────────┘  │
+│                           │                                    │
+│                           ├── Eventos (1:N)                   │
+│                           │   ├── Ingressos (1:N) — Teatro    │
+│                           │   └── Reservas (1:N)              │
+│                           │                                    │
+│                           └── Cupons (1:N)                    │
 └──────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐
 │ Reservas                                                      │
-│ Comprador (Usuario) reserva Ingresso/Evento de uma Empresa   │
+│ Comprador reserva Ingresso/Evento de um Vendedor             │
 └──────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.2 Regras de Isolamento
 
-Toda operação no sistema respeita o dono dos dados:
-
 ```
-Empresa X → só vê/edit EXCLUI seus próprios eventos e cupons
+Vendedor X → só vê/edita/exclui seus próprios eventos e cupons
 Comprador Y → só vê suas próprias reservas
 Admin → vê TUDO (visão global da plataforma)
 ```
 
-No banco de dados, isso é garantido pela coluna `EmpresaId` em todas as tabelas de negócio:
+Garantido pela coluna `VendedorId` (CPF/CNPJ do Vendedor) em todas as tabelas de negócio:
 
 ```sql
-SELECT * FROM Eventos WHERE EmpresaId = @empresaId
-SELECT * FROM Cupons WHERE EmpresaId = @empresaId
-SELECT * FROM Reservas WHERE EmpresaId = @empresaId
+SELECT * FROM Eventos WHERE VendedorId = @vendedorId
+SELECT * FROM Cupons WHERE VendedorId = @vendedorId
+SELECT * FROM Reservas WHERE VendedorId = @vendedorId
 ```
 
 ---
 
 ## 5. Entidades do Domínio
 
-### 5.1 [`Empresa`](../Domain/Entities/Empresa.cs) — NOVA ENTIDADE
+### 5.1 [`Usuario`](../Domain/Entities/Usuario.cs) — ATUALIZADO
 
 ```csharp
-public class Empresa
+public class Usuario
 {
-    public Guid Id { get; private set; }
-    public string Nome { get; private set; }           // Razão social
-    public string NomeFantasia { get; private set; }    // Nome de exibição
-    public string Cnpj { get; private set; }            // 14 dígitos, único
-    public string Email { get; private set; }           // Login da empresa
-    public string Senha { get; private set; }           // Hash BCrypt
+    // Propriedades comuns a todos os perfis
+    public string Cpf { get; private set; }              // CPF (PF) ou CNPJ (Vendedor)
+    public string Nome { get; private set; }
+    public string Email { get; private set; }
+    public string Senha { get; private set; }            // Hash BCrypt
+    public Guid PerfilId { get; private set; }            // Admin, Vendedor ou Comprador
+    public bool Ativo { get; private set; } = true;
+
+    // Propriedades específicas do perfil Vendedor (nullable para Admin/Comprador)
+    public string? Cnpj { get; private set; }             // CNPJ do Vendedor
+    public string? NomeFantasia { get; private set; }     // Nome de exibição
     public string? Telefone { get; private set; }
-    public string? LogoUrl { get; private set; }        // Branding próprio
+    public string? LogoUrl { get; private set; }          // Branding próprio
     public string? Descricao { get; private set; }
     public string? Site { get; private set; }
-    public PlanoEmpresa Plano { get; private set; } = PlanoEmpresa.Gratuito;
-    public bool Ativo { get; private set; } = true;
+    public PlanoVendedor? Plano { get; private set; }     // Gratuito, Básico ou Profissional
     public DateTime DataCriacao { get; private set; } = DateTime.Now;
 
-    // Factory method
-    public static Empresa Criar(string nome, string nomeFantasia, string cnpj,
-                                 string email, string senha, string? telefone) { ... }
+    // Factory methods
+    public static Usuario CriarComprador(string cpf, string nome, string email, string senha) { ... }
+    public static Usuario CriarVendedor(string cnpj, string nome, string nomeFantasia,
+                                         string email, string senha, string? telefone) { ... }
 }
 ```
 
@@ -257,17 +265,18 @@ public class Empresa
 public class Evento
 {
     public Guid Id { get; private set; }
-    public Guid EmpresaId { get; private set; }         // ← Quem é dono do evento
+    public string VendedorId { get; private set; }        // CPF/CNPJ do Vendedor dono
     public string Nome { get; private set; }
-    public string? Descricao { get; private set; }       // ← NOVO
-    public string? Local { get; private set; }            // ← NOVO
-    public string? ImagemUrl { get; private set; }        // ← NOVO
-    public TipoEvento Tipo { get; private set; }          // ← NOVO: Teatro ou Palestra
+    public string? Descricao { get; private set; }
+    public string? Local { get; private set; }
+    public string? ImagemUrl { get; private set; }
+    public TipoEvento Tipo { get; private set; }          // Teatro ou Palestra
     public int CapacidadeTotal { get; private set; }
     public DateTime DataEvento { get; private set; }
-    public decimal PrecoPadrao { get; private set; }     // 0 = gratuito
-    public bool Gratuito => PrecoPadrao == 0;             // ← Propriedade calculada
+    public decimal PrecoPadrao { get; private set; }      // 0 = gratuito
+    public bool Gratuito => PrecoPadrao == 0;
     public DateTime DataCriacao { get; private set; }
+    public bool Cancelado { get; private set; } = false;  // ← NOVO: evento cancelado
 
     public List<Ingresso> Ingressos { get; private set; } = new();
 }
@@ -279,23 +288,27 @@ public class Evento
 public enum TipoEvento
 {
     Teatro = 0,     // Assentos numerados com filas e setores
-    Palestra = 1,   // Lotação geral (sem assento fixo)
+    Palestra = 1,   // Lotação geral (sem assento fixo) — foco principal
 }
 ```
 
-### 5.4 [`Usuario`](../Domain/Entities/Usuario.cs) — MANTIDO + Ativo
+### 5.4 [`Perfil`](../Domain/Entities/Perfil.cs) — MANTIDO (3 perfis)
 
 ```csharp
-public class Usuario
+public class Perfil
 {
-    public string Cpf { get; private set; }
-    public string Nome { get; private set; }
-    public string Email { get; private set; }
-    public string Senha { get; private set; }           // Com hash (BCrypt)
-    public Guid PerfilId { get; private set; }           // Admin ou Comprador apenas
-    public bool Ativo { get; private set; } = true;      // ← NOVO
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Nome { get; set; }  // "Admin", "Vendedor", "Comprador"
 }
 ```
+
+Perfis fixos (GUIDs constantes):
+
+| Perfil | GUID |
+|--------|------|
+| Admin | `A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1` |
+| Vendedor | `B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2` |
+| Comprador | `C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3` |
 
 ### 5.5 [`Ingresso`](../Domain/Entities/Ingresso.cs) — ATUALIZADO
 
@@ -305,9 +318,9 @@ public class Ingresso
     public Guid Id { get; private set; }
     public Guid EventoId { get; private set; }
     public decimal Preco { get; private set; }
-    public string? Posicao { get; private set; }         // ← nullable (Palestra não tem)
-    public string? Setor { get; private set; }           // ← nullable (Palestra não tem)
-    public int Status { get; private set; }              // 0=Livre, 1=Reservado, 2=Vendido
+    public string? Posicao { get; private set; }          // Teatro: "Fila X | Assento Y"
+    public string? Setor { get; private set; }            // Teatro: "VIP" ou "Geral"
+    public int Status { get; private set; }               // 0=Livre, 1=Reservado, 2=Vendido, 3=Reembolsado
     public DateTime? DataBloqueio { get; private set; }
 }
 ```
@@ -318,15 +331,39 @@ public class Ingresso
 public class Reserva
 {
     public Guid Id { get; private set; }
-    public Guid EmpresaId { get; private set; }          // ← NOVO: dona do evento
-    public string UsuarioCpf { get; private set; }
+    public string VendedorId { get; private set; }       // Vendedor dono do evento
+    public string UsuarioCpf { get; private set; }        // Comprador que fez a reserva
     public Guid EventoId { get; private set; }
-    public Guid? IngressoId { get; private set; }        // ← nullable (Palestra)
-    public int Quantidade { get; private set; } = 1;     // ← NOVO (Palestra)
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
+    public bool Reembolsada { get; private set; } = false;
+    public DateTime DataReserva { get; private set; } = DateTime.Now;
+    public int QuantidadeTotal => Itens?.Count ?? 0;     // Calculado: total de itens
+
+    // Uma reserva pode ter até 4 itens (cada item = 1 CPF)
+    public List<ItemReserva> Itens { get; private set; } = new();
+
+    public bool PodeAdicionarMaisItens => Itens.Count < 4;
 }
 ```
+
+### 5.7 [`ItemReserva`](../Domain/Entities/ItemReserva.cs) — NOVA ENTIDADE
+
+```csharp
+public class ItemReserva
+{
+    public Guid Id { get; private set; }
+    public Guid ReservaId { get; private set; }          // Reserva pai
+    public string CpfParticipante { get; private set; }   // CPF de quem vai ao evento (não precisa estar cadastrado)
+    public Guid? IngressoId { get; private set; }         // null para Palestra (Teatro: assento específico)
+    public decimal PrecoUnitario { get; private set; }    // Preço pago por este item
+    public bool Reembolsado { get; private set; } = false; // Reembolso individual
+}
+```
+
+> ✅ **Uma reserva pode ter de 1 a 4 itens** — o Comprador compra para si e para outros CPFs.
+> ✅ **CPFs dos itens não precisam estar cadastrados** no sistema — são apenas participantes.
+> ✅ Cada `ItemReserva` pode ter um `IngressoId` (Teatro) ou ser `null` (Palestra).
 
 ### 5.7 [`Cupom`](../Domain/Entities/Cupom.cs) — ATUALIZADO
 
@@ -334,7 +371,7 @@ public class Reserva
 public class Cupom
 {
     public string Codigo { get; private set; }
-    public Guid EmpresaId { get; private set; }          // ← NOVO: dono do cupom
+    public string VendedorId { get; private set; }       // Vendedor dono do cupom
     public int PorcentagemDesconto { get; private set; }
     public decimal ValorMinimo { get; private set; }
     public DateTime? DataExpiracao { get; private set; }
@@ -342,10 +379,10 @@ public class Cupom
 }
 ```
 
-### 5.8 [`PlanoEmpresa`](../Domain/Entities/PlanoEmpresa.cs) — NOVO ENUM
+### 5.8 [`PlanoVendedor`](../Domain/Entities/PlanoVendedor.cs) — NOVO ENUM
 
 ```csharp
-public enum PlanoEmpresa
+public enum PlanoVendedor
 {
     Gratuito = 0,     // Limitado: até 3 eventos, sem cupons
     Basico = 1,       // Até 10 eventos/mês, cupons ilimitados
@@ -357,24 +394,25 @@ public enum PlanoEmpresa
 
 ## 6. Tipos de Evento
 
-### 6.1 Teatro — Assentos Numerados
+O foco da plataforma são **eventos de pequeno porte**, com destaque para o tipo **Palestra**.
 
-**Comportamento (mantido do sistema atual):**
-- Geração automática de `N` ingressos no momento da criação do evento
+### 6.1 Palestra — Lotação Geral (FOCO PRINCIPAL)
+
+- **Não gera ingressos individuais** — apenas controle de vagas
+- Comprador seleciona **quantidade de vagas** (1 a N)
+- `IngressoId` na reserva = `null`
+- `Quantidade` na reserva = número de vagas
+- Controle: `VagasDisponiveis = CapacidadeTotal - SUM(Quantidade reservada)`
+- Ideal para workshops, cursos, meetups e palestras
+
+### 6.2 Teatro — Assentos Numerados
+
+- Geração automática de `N` ingressos no momento da criação
 - 10% VIP (preço × 1.5), 90% Geral (preço padrão)
 - 20 assentos por fila
 - Posição: `"Fila X | Assento Y"`
 - Comprador seleciona assento específico no mapa visual
 - 1 reserva = 1 ingresso (`IngressoId` preenchido)
-
-### 6.2 Palestra — Lotação Geral
-
-**Comportamento novo:**
-- **Não gera ingressos individuais** — apenas um contador de vagas
-- Comprador seleciona **quantidade de vagas** (1 a N)
-- `IngressoId` na reserva fica `null`
-- `Quantidade` na reserva = número de vagas
-- Controle: `VagasDisponiveis = CapacidadeTotal - SUM(Quantidade reservada)`
 
 ### 6.3 Comparativo
 
@@ -382,11 +420,12 @@ public enum PlanoEmpresa
 |---|---|---|
 | Assento numerado | ✅ Sim | ❌ Não |
 | Mapa visual de assentos | ✅ Sim | ❌ Não |
-| Seleção de quantidade | ❌ 1 assento por vez | ✅ Múltiplas vagas |
-| Geração de ingressos | ✅ Automática (N ingressos) | ❌ Apenas controle |
+| Seleção de quantidade | ❌ 1 por vez | ✅ Múltiplas vagas |
+| Geração de ingressos | ✅ Automática (N ingressos) | ❌ Controle por vagas |
 | IngressoId na reserva | ✅ Preenchido | ❌ Null |
 | Preço por unidade | ✅ Sim | ✅ Sim |
 | Gratuito | ✅ Sim | ✅ Sim |
+| Foco da plataforma | Secundário | ✅ **Principal** |
 
 ---
 
@@ -395,16 +434,16 @@ public enum PlanoEmpresa
 ### 7.1 Evento Pago (`PrecoPadrao > 0`)
 
 - Fluxo normal: seleção → checkout → pagamento → confirmação
-- Ingresso marcado como **Vendido** (Status=2) após confirmação
+- Ingresso marcado como **Vendido** (Status=2)
 - Background Worker libera assentos não pagos após 15 minutos
 
 ### 7.2 Evento Gratuito (`PrecoPadrao = 0`)
 
 - Fluxo simplificado: seleção → confirmação direta
 - **Pula a tela de pagamento**
-- Ingresso vai direto para **Vendido** (Status=2)
+- Ingresso direto para **Vendido** (Status=2)
 - `ValorFinalPago = 0`
-- **Cupons não se aplicam** (desconto sobre zero = zero)
+- **Cupons não se aplicam**
 
 ```csharp
 if (evento.Gratuito && cupom != null)
@@ -422,32 +461,56 @@ if (evento.Gratuito && cupom != null)
     ↓
 [Cadastro.razor] Preenche CPF, Nome, Email, Senha
     ↓
-POST /api/usuario/cadastrar → conta criada
+POST /api/usuario/cadastrar → conta criada (Perfil = Comprador)
     ↓
 [Login.razor] Email + Senha
     ↓
 POST /api/usuario/login → JWT { role: Comprador, cpf, email }
     ↓
-Redireciona para Home
+Home (lista de eventos disponíveis)
 ```
 
-### 8.2 Fluxo de Cadastro e Login — EMPRESA
+### 8.2 Fluxo de Cadastro e Login — VENDEDOR (Auto Cadastro)
 
 ```
-[Página Pública] Home.razor (botão "Sou Empresa")
+[Página Pública] Home.razor (botão "Quero Vender")
     ↓
-[EmpresaCadastro.razor] Preenche CNPJ, Nome, Nome Fantasia, Email, Senha, Telefone
+[VendedorCadastro.razor] Preenche CNPJ, Nome, Nome Fantasia, Email, Senha, Telefone
     ↓
-POST /api/empresa/cadastrar → empresa criada (Plano Gratuito)
+POST /api/usuario/cadastrar-vendedor → conta criada (Perfil = Vendedor, Plano = Gratuito)
     ↓
-[EmpresaLogin.razor] Email + Senha
+[Login.razor] Email + Senha
     ↓
-POST /api/empresa/login → JWT { role: Empresa, empresaId, cnpj }
+POST /api/usuario/login → JWT { role: Vendedor, cpf, email }
     ↓
-Redireciona para Painel da Empresa
+Painel do Vendedor:
+    ├── Criar Evento
+    ├── Meus Eventos
+    ├── Gerenciar Cupons
+    ├── Relatórios
+    └── Configurações
 ```
 
-### 8.3 Fluxo de Compra — TEATRO
+### 8.3 Fluxo de Compra — PALESTRA (Principal)
+
+```
+Home → Clica no evento
+    ↓
+Tela do evento (detalhes, vagas disponíveis)
+    ↓ Adiciona itens à reserva (máximo 4):
+    │  ├── Item 1: CPF do participante (obrigatório, não precisa estar cadastrado)
+    │  ├── Item 2: CPF do participante (opcional)
+    │  ├── Item 3: CPF do participante (opcional)
+    │  └── Item 4: CPF do participante (opcional)
+    ↓
+Checkout (aplica cupom opcional)
+    ↓
+É gratuito? ── Sim ──→ Reserva confirmada (todos os itens)
+    ↓ Não
+Pagamento → Confirmar → Reserva criada com todos os itens
+```
+
+### 8.4 Fluxo de Compra — TEATRO
 
 ```
 Home → Clica no evento
@@ -461,28 +524,71 @@ Checkout (aplica cupom opcional)
 Pagamento → Confirmar → Reserva criada (Status=2)
 ```
 
-### 8.4 Fluxo de Compra — PALESTRA
+### 8.5 Fluxo de Cancelamento de Evento — REEMBOLSO
 
 ```
-Home → Clica no evento
+Vendedor acessa Painel → Meus Eventos
     ↓
-Tela do evento (detalhes, sem mapa, mostra vagas disponíveis)
-    ↓ Seleciona quantidade de vagas (1 a N)
-Checkout (aplica cupom opcional)
+Clica em "Cancelar Evento" no evento desejado
     ↓
-É gratuito? ── Sim ──→ Reserva confirmada
-    ↓ Não
-Pagamento → Confirmar → Reserva criada
+Sistema verifica:
+    ├── Evento é gratuito? → Cancela sem reembolso (não houve cobrança)
+    └── Evento é pago?
+        ↓
+        ├── Nenhum ingresso vendido? → Cancela diretamente
+        └── Há ingressos vendidos (Status=2)?
+            ↓
+            ⚠️ ALERTA: "Este evento possui X ingressos vendidos.
+               O cancelamento exigirá reembolso dos compradores.
+               Deseja continuar?"
+            ↓
+            Vendedor confirma cancelamento
+            ↓
+            Sistema processa reembolso:
+            │  ├── Marca Evento.Cancelado = true
+            │  ├── Marca Ingressos como Reembolsados (Status=3)
+            │  ├── Marca Reservas como Reembolsada = true
+            │  └── Notifica compradores sobre reembolso
+            ↓
+            Evento cancelado. Compradores recebem notificação de reembolso.
 ```
 
-### 8.5 Fluxo do ADMIN (Plataforma)
+### 8.6 Fluxo de Cancelamento de Reserva pelo COMPRADOR
+
+```
+Comprador acessa Minhas Reservas
+    ↓
+Clica em "Cancelar Reserva" na reserva desejada
+    ↓
+Sistema verifica:
+    ├── Reserva já está reembolsada? → ❌ "Reserva já foi cancelada."
+    ├── Evento já começou (DataEvento <= agora)?
+    │   └── ❌ "Não é possível cancelar. O evento já começou."
+    └── Evento ainda não começou (DataEvento > agora)?
+        ↓
+        ⚠️ Confirmação: "Deseja cancelar sua reserva?"
+        ↓
+        Comprador confirma cancelamento
+        ↓
+        Sistema processa cancelamento:
+        │  ├── Evento é gratuito?
+        │  │   └── Cancela reserva (sem reembolso, não houve cobrança)
+        │  └── Evento é pago?
+        │      ├── Marca Ingresso como Livre (Status=0) — volta à disponibilidade
+        │      ├── Marca Reserva como Reembolsada = true
+        │      └── Registra valor do reembolso (ValorFinalPago)
+        ↓
+        Reserva cancelada. Vaga/Assento liberado para outros compradores.
+```
+
+### 8.7 Fluxo do ADMIN
 
 ```
 Login: POST /api/usuario/login (cpf=000..., admin)
     ↓
 Dashboard Admin:
-├── Empresas (listar, ativar/desativar, alterar plano)
-├── Usuários Compradores (listar)
+├── Vendedores (listar, ativar/desativar, alterar plano)
+├── Compradores (listar)
 ├── Eventos (visão geral de todos)
 └── Suporte
 ```
@@ -491,56 +597,72 @@ Dashboard Admin:
 
 ## 9. Requisitos Funcionais
 
-### 9.1 Empresa
+### 9.1 Vendedor
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| EMP-01 | Empresa se cadastra com CNPJ, Nome, Nome Fantasia, Email, Senha, Telefone | Alta |
-| EMP-02 | Sistema valida CNPJ (formato + dígitos verificadores + unicidade) | Alta |
-| EMP-03 | Sistema valida email (formato + unicidade entre empresas) | Alta |
-| EMP-04 | Empresa faz login com email + senha → JWT com role=Empresa | Alta |
-| EMP-05 | Empresa pode editar seus dados (nome, logo, descrição, site) | Média |
-| EMP-06 | Admin ativa/desativa empresa | Alta |
-| EMP-07 | Admin altera plano da empresa | Média |
-| EMP-08 | Empresa inativa não pode fazer login nem criar/editar eventos | Alta |
+| VEN-01 | Vendedor faz auto cadastro com CNPJ, Nome, Nome Fantasia, Email, Senha, Telefone | Alta |
+| VEN-02 | Sistema valida CNPJ (formato + dígitos verificadores + unicidade) | Alta |
+| VEN-03 | Sistema valida email (formato + unicidade entre usuários) | Alta |
+| VEN-04 | Vendedor faz login → JWT com role=Vendedor | Alta |
+| VEN-05 | Vendedor pode editar seus dados (nome, logo, descrição, site) | Média |
+| VEN-06 | Admin ativa/desativa vendedor | Alta |
+| VEN-07 | Admin altera plano do vendedor | Média |
+| VEN-08 | Vendedor inativo não pode fazer login nem criar/editar eventos | Alta |
 
 ### 9.2 Evento
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| EVT-01 | Empresa cria evento vinculado a ela (EmpresaId) | Alta |
+| EVT-01 | Vendedor cria evento vinculado a ele (VendedorId) | Alta |
 | EVT-02 | Ao criar, escolhe tipo: Teatro (0) ou Palestra (1) | Alta |
 | EVT-03 | Teatro: sistema gera N ingressos (10% VIP, 90% Geral) | Alta |
 | EVT-04 | Palestra: não gera ingressos, usa controle de vagas | Alta |
 | EVT-05 | Evento pode ser gratuito (PrecoPadrao = 0) | Alta |
-| EVT-06 | Empresa adiciona descrição, local, imagem | Média |
-| EVT-07 | Empresa edita apenas seus próprios eventos | Alta |
+| EVT-06 | Vendedor adiciona descrição, local, imagem | Média |
+| EVT-07 | Vendedor edita apenas seus próprios eventos | Alta |
 | EVT-08 | Admin pode ver/excluir qualquer evento | Média |
-| EVT-09 | Eventos de empresas inativas não aparecem na Home | Alta |
+| EVT-09 | Eventos de vendedores inativos não aparecem na Home | Alta |
+| EVT-10 | Vendedor pode cancelar evento | Alta |
+| EVT-11 | Cancelamento de evento pago com ingressos vendidos → reembolso obrigatório | Alta |
+| EVT-12 | Cancelamento de evento gratuito → sem reembolso (não houve cobrança) | Alta |
 
 ### 9.3 Reserva / Compra
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| RES-01 | Teatro: comprador seleciona 1 assento específico | Alta |
-| RES-02 | Palestra: comprador seleciona quantidade (1 a N) | Alta |
-| RES-03 | Sistema valida vagas disponíveis antes de confirmar | Alta |
-| RES-04 | Palestra: impede ultrapassar CapacidadeTotal | Alta |
-| RES-05 | Gratuito: pula pagamento, confirma imediatamente | Média |
-| RES-06 | Cupom não pode ser aplicado em evento gratuito | Média |
-| RES-07 | Reserva vinculada à empresa do evento | Alta |
-| RES-08 | Background Worker libera assentos expirados por empresa | Alta |
+| RES-01 | Teatro: cada ItemReserva seleciona 1 assento específico | Alta |
+| RES-02 | Palestra: comprador adiciona de 1 a 4 itens (CPFs participantes) | Alta |
+| RES-03 | Todos os participantes informam CPF, mas não precisam estar cadastrados no sistema | Alta |
+| RES-04 | Sistema valida vagas disponíveis antes de confirmar (soma dos itens) | Alta |
+| RES-05 | Reserva limitada a no máximo 4 ItemReserva | Alta |
+| RES-06 | Palestra: impede ultrapassar CapacidadeTotal | Alta |
+| RES-07 | Gratuito: pula pagamento, confirma imediatamente | Média |
+| RES-08 | Cupom não pode ser aplicado em evento gratuito | Média |
+| RES-09 | Reserva vinculada ao vendedor do evento | Alta |
+| RES-10 | Background Worker libera assentos expirados | Alta |
 
-### 9.4 Cupom
+### 9.4 Reembolso
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| CUP-01 | Cupom pertence a uma empresa (EmpresaId) | Alta |
-| CUP-02 | Empresa gerencia seus próprios cupons (CRUD) | Alta |
-| CUP-03 | Cupom válido apenas para eventos da mesma empresa | Alta |
+| REEM-01 | Cancelamento de evento pago com ingressos vendidos exige reembolso | Alta |
+| REEM-02 | Sistema alerta o Vendedor sobre a necessidade de reembolso antes de confirmar | Alta |
+| REEM-03 | Ingressos reembolsados são marcados como Status=3 (Reembolsado) | Alta |
+| REEM-04 | Reservas reembolsadas são marcadas como Reembolsada = true | Alta |
+| REEM-05 | Compradores são notificados sobre o reembolso | Média |
+| REEM-06 | Evento cancelado não aparece mais na Home | Alta |
+
+### 9.5 Cupom
+
+| ID | Requisito | Prioridade |
+|---|---|---|
+| CUP-01 | Cupom pertence a um vendedor (VendedorId) | Alta |
+| CUP-02 | Vendedor gerencia seus próprios cupons (CRUD) | Alta |
+| CUP-03 | Cupom válido apenas para eventos do mesmo vendedor | Alta |
 | CUP-04 | Cupom não se aplica a eventos gratuitos | Média |
 
-### 9.5 Comprador
+### 9.6 Comprador
 
 | ID | Requisito | Prioridade |
 |---|---|---|
@@ -550,17 +672,17 @@ Dashboard Admin:
 | COM-04 | Comprador vê histórico de reservas | Alta |
 | COM-05 | Comprador remove própria conta | Média |
 
-### 9.6 Admin
+### 9.7 Admin
 
 | ID | Requisito | Prioridade |
 |---|---|---|
 | ADM-01 | Admin cadastrado manualmente no banco (seed) | Alta |
 | ADM-02 | Admin faz login pelo mesmo endpoint de usuário | Alta |
-| ADM-03 | Admin lista todas empresas | Alta |
-| ADM-04 | Admin ativa/desativa empresa | Alta |
-| ADM-05 | Admin altera plano da empresa | Média |
+| ADM-03 | Admin lista todos vendedores | Alta |
+| ADM-04 | Admin ativa/desativa vendedor | Alta |
+| ADM-05 | Admin altera plano do vendedor | Média |
 | ADM-06 | Admin lista todos compradores | Média |
-| ADM-07 | Admin visualiza eventos de qualquer empresa | Média |
+| ADM-07 | Admin visualiza eventos de qualquer vendedor | Média |
 
 ---
 
@@ -568,258 +690,292 @@ Dashboard Admin:
 
 | ID | Requisito |
 |---|---|
-| RNF-01 | Senhas armazenadas com hash (BCrypt) — Admin, Comprador e Empresa |
-| RNF-02 | Autenticação via JWT com roles: Admin, Comprador, Empresa |
-| RNF-03 | Isolamento de dados: toda query filtra por EmpresaId |
-| RNF-04 | Proteção contra SQL Injection (Dapper parametrizado) — mantido |
-| RNF-05 | Migrations versionadas (DbUp) — mantido |
-| RNF-06 | Operações críticas em transações — mantido |
-| RNF-07 | Background Worker filtra por empresa (libera apenas assentos da empresa correta) |
+| RNF-01 | Senhas armazenadas com hash (BCrypt) — Admin, Vendedor e Comprador |
+| RNF-02 | Autenticação via JWT com roles: Admin, Vendedor, Comprador |
+| RNF-03 | Isolamento de dados: toda query filtra por VendedorId |
+| RNF-04 | Proteção contra SQL Injection (Dapper parametrizado) |
+| RNF-05 | Migrations versionadas (DbUp) |
+| RNF-06 | Operações críticas em transações (cancelamento + reembolso é atômico) |
+| RNF-07 | Background Worker filtra por vendedor |
 | RNF-08 | CNPJ validado com dígitos verificadores (regra de negócio no Domain) |
 
 ---
 
-## 11. Banco de Dados
+## 11. Regras de Negócio
 
-### 11.1 Nova Tabela: [`Empresas`](../Infraestructure/DataBase/Scripts/Script0009_CriarEmpresas.sql)
+### 11.1 Regra de Cancelamento e Reembolso
+
+```
+SE evento.Gratuito == true:
+    → Cancelamento permitido sem restrições
+    → Não há reembolso (não houve cobrança)
+
+SE evento.Gratuito == false:
+    SE nenhum ingresso vendido (Status != 2):
+        → Cancelamento permitido sem reembolso
+    SE há ingressos vendidos (Status == 2):
+        → ⚠️ Reembolso obrigatório
+        → Sistema alerta o Vendedor: "X ingressos vendidos. Reembolso necessário."
+        → Vendedor confirma
+        → Sistema processa cancelamento + reembolso em transação atômica
+```
+
+### 11.2 Regra de Auto Cadastro do Vendedor
+
+```
+- Qualquer pessoa jurídica pode se cadastrar como Vendedor
+- Não depende mais de aprovação do Admin
+- Plano inicial: Gratuito
+- Admin pode depois alterar plano ou desativar
+```
+
+### 11.3 Regra de Permissão para Fazer Reservas (TODOS os perfis)
+
+```
+- Qualquer usuário logado pode fazer reserva, independentemente do perfil:
+  ✅ Comprador → pode fazer reserva normalmente
+  ✅ Admin → pode fazer reserva usando seu próprio perfil
+  ✅ Vendedor → pode fazer reserva usando seu próprio perfil
+- Todos os perfis acessam a Home e visualizam eventos disponíveis
+- A única restrição é a regra anti-cambista: um CPF não pode ter mais de uma reserva no mesmo evento
+```
+
+### 11.4 Regra de Cancelamento de Reserva pelo Usuário (TODOS os perfis)
+
+```
+- Qualquer usuário (Comprador, Admin ou Vendedor) pode cancelar sua própria reserva
+- Condição: evento ainda não começou (DataEvento > agora)
+- Se evento já começou → cancelamento bloqueado
+- Se evento é pago → reembolso do valor pago (ValorFinalPago)
+- Se evento é gratuito → cancelamento sem reembolso (não houve cobrança)
+- Após cancelamento: ingresso volta ao status Livre (Status=0), vaga liberada
+- Reserva marcada como Reembolsada = true
+```
+
+### 11.5 Regra de Isolamento de Dados
+
+```
+- Vendedor X acessa apenas Eventos onde VendedorId = X.Cpf
+- Vendedor X acessa apenas Cupons onde VendedorId = X.Cpf
+- Comprador Y acessa apenas Reservas onde UsuarioCpf = Y.Cpf
+- Admin acessa tudo
+```
+
+---
+
+## 12. Banco de Dados
+
+### 12.1 Alterações na Tabela `Usuarios`
 
 ```sql
-CREATE TABLE Empresas (
-    Id              UNIQUEIDENTIFIER    NOT NULL PRIMARY KEY DEFAULT NEWID(),
-    Nome            VARCHAR(200)        NOT NULL,
-    NomeFantasia    VARCHAR(200)        NOT NULL,
-    Cnpj            VARCHAR(14)         NOT NULL UNIQUE,
-    Email           VARCHAR(200)        NOT NULL,
-    Senha           VARCHAR(200)        NOT NULL,
+-- Adicionar colunas de Vendedor
+ALTER TABLE Usuarios ADD
+    Cnpj            VARCHAR(14)         NULL,
+    NomeFantasia    VARCHAR(200)        NULL,
     Telefone        VARCHAR(20)         NULL,
     LogoUrl         VARCHAR(500)        NULL,
     Descricao       VARCHAR(1000)       NULL,
     Site            VARCHAR(500)        NULL,
-    Plano           INT                 NOT NULL DEFAULT 0,
+    Plano           INT                 NULL DEFAULT 0,
     Ativo           BIT                 NOT NULL DEFAULT 1,
-    DataCriacao     DATETIME            NOT NULL DEFAULT GETDATE()
-);
+    DataCriacao     DATETIME            NOT NULL DEFAULT GETDATE();
 ```
 
-### 11.2 Alterações em Tabelas Existentes
+### 12.2 Alterações em Tabelas Existentes
 
 ```sql
--- ============================================
--- Eventos: adicionar colunas
--- ============================================
+-- Eventos
 ALTER TABLE Eventos ADD
-    EmpresaId       UNIQUEIDENTIFIER    NOT NULL,
+    VendedorId      VARCHAR(14)         NOT NULL,
     Descricao       VARCHAR(2000)       NULL,
     Local           VARCHAR(500)        NULL,
     ImagemUrl       VARCHAR(500)        NULL,
-    Tipo            INT                 NOT NULL DEFAULT 0,
-    DataCriacao     DATETIME            NOT NULL DEFAULT GETDATE();
+    Tipo            INT                 NOT NULL DEFAULT 1,  -- 1=Palestra (padrão)
+    DataCriacao     DATETIME            NOT NULL DEFAULT GETDATE(),
+    Cancelado       BIT                 NOT NULL DEFAULT 0;
 
-ALTER TABLE Eventos ADD CONSTRAINT FK_Eventos_Empresas
-    FOREIGN KEY (EmpresaId) REFERENCES Empresas(Id);
-CREATE INDEX IX_Eventos_EmpresaId ON Eventos(EmpresaId);
+ALTER TABLE Eventos ADD CONSTRAINT FK_Eventos_Usuarios
+    FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
+CREATE INDEX IX_Eventos_VendedorId ON Eventos(VendedorId);
 
--- ============================================
--- Cupons: adicionar EmpresaId
--- ============================================
+-- Cupons
 ALTER TABLE Cupons ADD
-    EmpresaId       UNIQUEIDENTIFIER    NOT NULL;
-ALTER TABLE Cupons ADD CONSTRAINT FK_Cupons_Empresas
-    FOREIGN KEY (EmpresaId) REFERENCES Empresas(Id);
-CREATE INDEX IX_Cupons_EmpresaId ON Cupons(EmpresaId);
+    VendedorId      VARCHAR(14)         NOT NULL;
+ALTER TABLE Cupons ADD CONSTRAINT FK_Cupons_Usuarios
+    FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
+CREATE INDEX IX_Cupons_VendedorId ON Cupons(VendedorId);
 
--- ============================================
--- Reservas: adicionar colunas + alterar IngressoId
--- ============================================
+-- Reservas
 ALTER TABLE Reservas ADD
-    EmpresaId       UNIQUEIDENTIFIER    NOT NULL,
-    Quantidade      INT                 NOT NULL DEFAULT 1;
+    VendedorId      VARCHAR(14)         NOT NULL,
+    Quantidade      INT                 NOT NULL DEFAULT 1,
+    Reembolsada     BIT                 NOT NULL DEFAULT 0;
 ALTER TABLE Reservas ALTER COLUMN IngressoId UNIQUEIDENTIFIER NULL;
-ALTER TABLE Reservas ADD CONSTRAINT FK_Reservas_Empresas
-    FOREIGN KEY (EmpresaId) REFERENCES Empresas(Id);
-CREATE INDEX IX_Reservas_EmpresaId ON Reservas(EmpresaId);
+ALTER TABLE Reservas ADD CONSTRAINT FK_Reservas_Usuarios
+    FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
+CREATE INDEX IX_Reservas_VendedorId ON Reservas(VendedorId);
 
--- ============================================
--- Usuarios: adicionar Ativo (já existe?)
--- ============================================
-ALTER TABLE Usuarios ADD
-    Ativo           BIT                 NOT NULL DEFAULT 1;
-
--- ============================================
--- Perfis: remover Vendedor
--- ============================================
-DELETE FROM Perfis WHERE Nome = 'Vendedor';
--- Perfis restantes: Admin (A1A1...), Comprador (C3C3...)
+-- Ingressos: adicionar Status=3 para Reembolsado
+-- (Status: 0=Livre, 1=Reservado, 2=Vendido, 3=Reembolsado)
 ```
 
-### 11.3 Relacionamentos
+### 12.3 Relacionamentos
 
 ```
-Empresas (1) ──── (N) Eventos
-Empresas (1) ──── (N) Cupons
-Empresas (1) ──── (N) Reservas (via evento)
+Usuarios (Vendedor) (1) ──── (N) Eventos
+Usuarios (Vendedor) (1) ──── (N) Cupons
+Usuarios (Vendedor) (1) ──── (N) Reservas (via evento)
 
 Eventos (1) ──── (N) Ingressos (apenas Teatro)
 Eventos (1) ──── (N) Reservas
 
-Usuarios (1) ──── (N) Reservas (como comprador)
+Usuarios (Comprador) (1) ──── (N) Reservas
 Ingressos (1) ──── (1) Reservas (apenas Teatro)
-
-Reservas (1) ──── (0..1) Pagamentos
 
 Perfis (1) ──── (N) Usuarios
 ```
 
 ---
 
-## 12. APIs e Endpoints
+## 13. APIs e Endpoints
 
-### 12.1 Usuário (Admin + Comprador)
+### 13.1 Usuário (Admin, Vendedor e Comprador)
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|-----------|-------------|
-| `POST` | `/api/usuario/cadastrar` | Cadastro de comprador | ❌ Público |
-| `POST` | `/api/usuario/login` | Login (admin ou comprador) | ❌ Público |
+| `POST` | `/api/usuario/cadastrar` | Cadastro de comprador (PF) | ❌ Público |
+| `POST` | `/api/usuario/cadastrar-vendedor` | Auto cadastro de vendedor (PJ) | ❌ Público |
+| `POST` | `/api/usuario/login` | Login (admin, vendedor ou comprador) | ❌ Público |
 | `GET`  | `/api/usuario/{cpf}` | Dados do usuário | ✅ JWT |
 | `PUT`  | `/api/usuario/alterar-nome` | Alterar nome | ✅ JWT |
 | `PUT`  | `/api/usuario/alterar-email` | Alterar email | ✅ JWT |
 | `PUT`  | `/api/usuario/alterar-senha` | Alterar senha | ✅ JWT |
+| `PUT`  | `/api/usuario/atualizar-vendedor` | Atualizar dados do vendedor | ✅ JWT Vendedor |
 | `DELETE` | `/api/usuario/{cpf}` | Remover conta | ✅ JWT |
 
-### 12.2 Empresa
+### 13.2 Evento
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|-----------|-------------|
-| `POST` | `/api/empresa/cadastrar` | Cadastro de empresa | ❌ Público |
-| `POST` | `/api/empresa/login` | Login da empresa | ❌ Público |
-| `GET`  | `/api/empresa/dados` | Dados da empresa logada | ✅ JWT Empresa |
-| `PUT`  | `/api/empresa/atualizar` | Atualizar dados | ✅ JWT Empresa |
-| `PUT`  | `/api/empresa/logo` | Atualizar logo | ✅ JWT Empresa |
-
-### 12.3 Evento
-
-| Método | Rota | Descrição | Autenticação |
-|--------|------|-----------|-------------|
-| `POST` | `/api/evento/criar` | Criar evento (com Tipo) | ✅ JWT Empresa |
-| `GET`  | `/api/evento/listar` | Lista pública de eventos | ❌ Público |
-| `GET`  | `/api/evento/empresa` | Eventos da empresa logada | ✅ JWT Empresa |
+| `POST` | `/api/evento/criar` | Criar evento (Tipo, gratuito ou pago) | ✅ JWT Vendedor |
+| `GET`  | `/api/evento/listar` | Lista pública de eventos (ativos, não cancelados) | ❌ Público |
+| `GET`  | `/api/evento/meus` | Eventos do vendedor logado | ✅ JWT Vendedor |
 | `GET`  | `/api/evento/{id}` | Detalhes do evento | ❌ Público |
-| `PUT`  | `/api/evento/{id}` | Editar evento | ✅ JWT Empresa |
-| `DELETE` | `/api/evento/{id}` | Excluir evento | ✅ JWT Empresa/Admin |
+| `PUT`  | `/api/evento/{id}` | Editar evento | ✅ JWT Vendedor |
+| `DELETE` | `/api/evento/{id}` | Cancelar evento (com verificação de reembolso) | ✅ JWT Vendedor |
 
-### 12.4 Reserva
-
-| Método | Rota | Descrição | Autenticação |
-|--------|------|-----------|-------------|
-| `POST` | `/api/reserva/criar` | Criar reserva (com Quantidade opcional) | ✅ JWT Comprador |
-| `GET`  | `/api/reserva/minhas` | Reservas do comprador | ✅ JWT Comprador |
-| `GET`  | `/api/reserva/evento/{eventoId}` | Reservas de um evento | ✅ JWT Empresa/Admin |
-
-### 12.5 Cupom
+### 13.3 Reserva
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|-----------|-------------|
-| `POST` | `/api/cupom/cadastrar` | Cadastrar cupom | ✅ JWT Empresa |
-| `GET`  | `/api/cupom/empresa` | Cupons da empresa | ✅ JWT Empresa |
-| `DELETE` | `/api/cupom/{codigo}` | Remover cupom | ✅ JWT Empresa |
+| `POST` | `/api/reserva/criar` | Criar reserva (com Quantidade para Palestra) | ✅ JWT (todos os perfis) |
+| `GET`  | `/api/reserva/minhas` | Reservas do usuário logado | ✅ JWT (todos os perfis) |
+| `GET`  | `/api/reserva/evento/{eventoId}` | Reservas de um evento | ✅ JWT Vendedor/Admin |
+| `DELETE` | `/api/reserva/{id}` | Cancelar reserva (com reembolso se evento não começou) | ✅ JWT (dono da reserva) |
 
-### 12.6 Admin
+### 13.4 Cupom
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|-----------|-------------|
-| `GET`  | `/api/admin/empresas` | Listar empresas | ✅ JWT Admin |
-| `GET`  | `/api/admin/empresa/{id}` | Dados de empresa | ✅ JWT Admin |
-| `PUT`  | `/api/admin/empresa/{id}/plano` | Alterar plano | ✅ JWT Admin |
-| `PUT`  | `/api/admin/empresa/{id}/ativar` | Ativar/desativar | ✅ JWT Admin |
-| `GET`  | `/api/admin/usuarios` | Listar compradores | ✅ JWT Admin |
+| `POST` | `/api/cupom/cadastrar` | Cadastrar cupom | ✅ JWT Vendedor |
+| `GET`  | `/api/cupom/meus` | Cupons do vendedor | ✅ JWT Vendedor |
+| `DELETE` | `/api/cupom/{codigo}` | Remover cupom | ✅ JWT Vendedor |
+
+### 13.5 Admin
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|-------------|
+| `GET`  | `/api/admin/vendedores` | Listar vendedores | ✅ JWT Admin |
+| `GET`  | `/api/admin/vendedor/{cpf}` | Dados do vendedor | ✅ JWT Admin |
+| `PUT`  | `/api/admin/vendedor/{cpf}/plano` | Alterar plano | ✅ JWT Admin |
+| `PUT`  | `/api/admin/vendedor/{cpf}/ativar` | Ativar/desativar | ✅ JWT Admin |
+| `GET`  | `/api/admin/compradores` | Listar compradores | ✅ JWT Admin |
 
 ---
 
-## 13. Plano de Migração
+## 14. Plano de Migração
 
 ### Fase 1 — Fundação (Domain + Infra)
 
 | # | Tarefa | Arquivos |
 |---|--------|----------|
-| 1 | Criar entidade [`Empresa`](../Domain/Entities/Empresa.cs) | `Domain/Entities/Empresa.cs` |
+| 1 | Atualizar [`Usuario`](../Domain/Entities/Usuario.cs): adicionar Cnpj, NomeFantasia, Telefone, LogoUrl, Descricao, Site, Plano, Ativo, DataCriacao | `Domain/Entities/Usuario.cs` |
 | 2 | Criar enum [`TipoEvento`](../Domain/Entities/TipoEvento.cs) | `Domain/Entities/TipoEvento.cs` |
-| 3 | Criar enum [`PlanoEmpresa`](../Domain/Entities/PlanoEmpresa.cs) | `Domain/Entities/PlanoEmpresa.cs` |
-| 4 | Criar interface [`IEmpresaRepository`](../Domain/Interface/IEmpresaRepository.cs) | `Domain/Interface/IEmpresaRepository.cs` |
-| 5 | Atualizar [`Evento`](../Domain/Entities/Evento.cs): adicionar `EmpresaId`, `Tipo`, `Descricao`, `Local`, `ImagemUrl` | `Domain/Entities/Evento.cs` |
-| 6 | Atualizar [`Usuario`](../Domain/Entities/Usuario.cs): adicionar `Ativo` | `Domain/Entities/Usuario.cs` |
-| 7 | Atualizar [`Reserva`](../Domain/Entities/Reserva.cs): adicionar `EmpresaId`, `Quantidade`, `IngressoId` nullable | `Domain/Entities/Reserva.cs` |
-| 8 | Atualizar [`Cupom`](../Domain/Entities/Cupom.cs): adicionar `EmpresaId` | `Domain/Entities/Cupom.cs` |
-| 9 | Atualizar [`Ingresso`](../Domain/Entities/Ingresso.cs): `Posicao`/`Setor` nullable | `Domain/Entities/Ingresso.cs` |
-| 10 | Simplificar [`Perfil`](../Domain/Entities/Perfil.cs): remover Vendedor | `Domain/Entities/Perfil.cs` |
-| 11 | Criar script SQL `Script0009_CriarEmpresas.sql` | `Infraestructure/DataBase/Scripts/` |
-| 12 | Criar `EmpresaRepository` | `Infraestructure/Repository/EmpresaRepository.cs` |
+| 3 | Criar enum [`PlanoVendedor`](../Domain/Entities/PlanoVendedor.cs) | `Domain/Entities/PlanoVendedor.cs` |
+| 4 | Atualizar [`Evento`](../Domain/Entities/Evento.cs): adicionar VendedorId, Tipo, Descricao, Local, ImagemUrl, Cancelado | `Domain/Entities/Evento.cs` |
+| 5 | Atualizar [`Reserva`](../Domain/Entities/Reserva.cs): adicionar VendedorId, Quantidade, Reembolsada; IngressoId nullable | `Domain/Entities/Reserva.cs` |
+| 6 | Atualizar [`Cupom`](../Domain/Entities/Cupom.cs): adicionar VendedorId | `Domain/Entities/Cupom.cs` |
+| 7 | Atualizar [`Ingresso`](../Domain/Entities/Ingresso.cs): Posicao/Setor nullable; Status=3 para Reembolsado | `Domain/Entities/Ingresso.cs` |
+| 8 | Atualizar [`Perfil`](../Domain/Entities/Perfil.cs): garantir 3 perfis (Admin, Vendedor, Comprador) | `Domain/Entities/Perfil.cs` |
+| 9 | Criar script SQL para alterar tabelas existentes | `Infraestructure/DataBase/Scripts/` |
+| 10 | Atualizar `UsuarioRepository`: suportar campos de Vendedor, auto cadastro | `Infraestructure/Repository/UsuarioRepository.cs` |
 
 ### Fase 2 — Application
 
 | # | Tarefa | Arquivos |
 |---|--------|----------|
-| 1 | Criar `EmpresaService` (cadastro, login, CRUD) | `Application/Service/EmpresaService.cs` |
-| 2 | Criar `IEmpresaService` | `Application/Interfaces/IEmpresaService.cs` |
-| 3 | Atualizar `TokenService` para gerar JWT com role=Empresa | `Application/Service/TokenService.cs` |
-| 4 | Atualizar `EventoService`: filtrar por EmpresaId, suportar Tipo | `Application/Service/EventoService.cs` |
-| 5 | Atualizar `ReservaService`: suportar Palestra (Quantidade), validar vagas | `Application/Service/ReservaService.cs` |
-| 6 | Atualizar `CupomService`: filtrar por EmpresaId | `Application/Service/CupomService.cs` |
-| 7 | Criar DTOs de Empresa | `Application/DTOs/Empresa*.cs` |
-| 8 | Atualizar `EventoRequestDTO`: adicionar Tipo, Descricao, Local | `Application/DTOs/EventoRequestDTO.cs` |
+| 1 | Atualizar `UsuarioService`: adicionar cadastro de vendedor (auto cadastro), validação de CNPJ | `Application/Service/UsuarioService.cs` |
+| 2 | Atualizar `TokenService` para gerar JWT com role=Vendedor | `Application/Service/TokenService.cs` |
+| 3 | Atualizar `EventoService`: filtrar por VendedorId, suportar Tipo, implementar cancelamento com reembolso | `Application/Service/EventoService.cs` |
+| 4 | Atualizar `ReservaService`: suportar Palestra (Quantidade), validar vagas, marcar reembolso | `Application/Service/ReservaService.cs` |
+| 5 | Atualizar `CupomService`: filtrar por VendedorId | `Application/Service/CupomService.cs` |
+| 6 | Criar DTOs de Vendedor (CadastrarVendedorDTO, VendedorResponseDTO) | `Application/DTOs/` |
+| 7 | Atualizar `EventoRequestDTO`: adicionar Tipo, Descricao, Local | `Application/DTOs/EventoRequestDTO.cs` |
 
 ### Fase 3 — API
 
 | # | Tarefa | Arquivos |
 |---|--------|----------|
-| 1 | Criar `EmpresaController` (cadastro, login, dados) | `Api/Controllers/EmpresaController.cs` |
-| 2 | Atualizar `EventoController`: filtrar por empresa logada | `Api/Controllers/EventoController.cs` |
+| 1 | Atualizar `UsuarioController`: adicionar endpoint cadastrar-vendedor e atualizar-vendedor | `Api/Controllers/UsuarioController.cs` |
+| 2 | Atualizar `EventoController`: filtrar por vendedor logado; endpoint de cancelamento com reembolso | `Api/Controllers/EventoController.cs` |
 | 3 | Atualizar `ReservaController`: Palestra e Quantidade | `Api/Controllers/ReservaController.cs` |
-| 4 | Atualizar `Program.cs`: registrar novos serviços | `Api/Program.cs` |
+| 4 | Atualizar `Program.cs`: ajustar injeção de dependências | `Api/Program.cs` |
 
 ### Fase 4 — Frontend
 
 | # | Tarefa | Arquivos |
 |---|--------|----------|
-| 1 | Criar página de cadastro de empresa | `Web/Components/Pages/EmpresaCadastro.razor` |
-| 2 | Criar página de login de empresa | `Web/Components/Pages/EmpresaLogin.razor` |
-| 3 | Criar painel da empresa (dashboard) | `Web/Components/Pages/Empresa/` |
-| 4 | Atualizar [`CriarEvento.razor`](../Web/Components/Pages/Vendedor/CriarEvento.razor): Tipo, nova logo | Web |
+| 1 | Criar página de auto cadastro de vendedor | `Web/Components/Pages/VendedorCadastro.razor` |
+| 2 | Atualizar página de login para suportar Vendedor | `Web/Components/Pages/Login.razor` |
+| 3 | Criar painel do vendedor (dashboard, meus eventos, cancelar evento) | `Web/Components/Pages/Vendedor/` |
+| 4 | Atualizar CriarEvento: Tipo, gratuito/pago, foco em Palestra | Web |
 | 5 | Criar tela de detalhes para Palestra (quantidade, sem mapa) | Web |
-| 6 | Atualizar [`ComprarIngressos.razor`](../Web/Components/Pages/ComprarIngressos.razor) sem mapa para Palestra | Web |
-| 7 | Criar dashboard Admin com gestão de empresas | `Web/Components/Pages/Admin/` |
-| 8 | Atualizar [`Home.razor`](../Web/Components/Pages/Home.razor): mostrar empresa do evento | Web |
-| 9 | Adicionar navegação para login/cadastro de empresa | Web |
-| 10 | Ajustar `CustomAuthStateProvider` para suportar role=Empresa | `Web/Auth/CustomAuthStateProvider.cs` |
+| 6 | Atualizar ComprarIngressos: sem mapa para Palestra | Web |
+| 7 | Criar dashboard Admin com gestão de vendedores | `Web/Components/Pages/Admin/` |
+| 8 | Atualizar Home: mostrar vendedor do evento, filtrar não cancelados | Web |
+| 9 | Adicionar navegação "Quero Vender" para cadastro de vendedor | Web |
+| 10 | Ajustar `CustomAuthStateProvider` para suportar role=Vendedor | `Web/Auth/CustomAuthStateProvider.cs` |
 
 ---
 
-## 14. Glossário
+## 15. Glossário
 
 | Termo | Definição |
 |-------|-----------|
-| **Admin** | Administrador da plataforma. Cadastrado manualmente no banco (seed). Gerencia empresas. |
-| **Comprador** | Pessoa física que se cadastra pelo site para comprar ingressos. |
-| **Empresa** | Pessoa jurídica que se cadastra pelo site para criar e vender eventos. Possui login próprio. |
-| **Evento** | Atividade (teatro, palestra, show) criada por uma Empresa. |
+| **Admin** | Administrador da plataforma. Cadastrado manualmente no banco (seed). Gerencia vendedores. |
+| **Comprador** | Pessoa física que se cadastra pelo site para comprar ingressos. Perfil Comprador (C3C3...). |
+| **Vendedor** | Pessoa jurídica que faz auto cadastro pelo site para criar e vender eventos de pequeno porte. Perfil Vendedor (B2B2...) na tabela `Usuarios`. |
+| **Auto Cadastro** | O Vendedor se cadastra sozinho no site — não depende mais do Admin para criar sua conta. |
+| **Evento** | Atividade (palestra, teatro, show) criada por um Vendedor. Foco em eventos de pequeno porte. |
+| **Palestra** | Tipo de evento principal: lotação geral, sem assentos fixos, controle por vagas. Ideal para workshops e cursos. |
 | **Teatro** | Tipo de evento com assentos numerados, filas, setores (VIP/Geral) e mapa visual. |
-| **Palestra** | Tipo de evento com lotação geral, sem assentos fixos, apenas controle de vagas. |
 | **Evento Gratuito** | Evento com PrecoPadrao = 0. Não requer pagamento, confirma imediatamente. |
+| **Evento Pago** | Evento com PrecoPadrao > 0. Requer pagamento para confirmação. |
 | **Ingresso** | Representação individual de um assento (apenas para Teatro). |
 | **Reserva** | Vínculo entre Comprador e um evento/ingresso, com ou sem cupom. |
-| **Cupom** | Desconto percentual vinculado a uma Empresa, aplicável em seus eventos pagos. |
-| **Plano** | Nível de assinatura da Empresa: Gratuito, Básico ou Profissional. |
+| **Reembolso** | Processo obrigatório ao cancelar evento pago com ingressos vendidos. Ingressos → Status=3, Reservas → Reembolsada=true. |
+| **Cupom** | Desconto percentual vinculado a um Vendedor, aplicável em seus eventos pagos. |
+| **Plano** | Nível de assinatura do Vendedor: Gratuito, Básico ou Profissional. |
 
 ---
 
-> **Documento v1.0** — Especificações para evolução do SoldOut Tickets para SaaS.
+> **Documento v2.0** — Especificações atualizadas do SoldOut Tickets.
 >
-> **Três entidades:**
-> - **Admin** → cadastro manual no banco (seed)
-> - **Comprador** → cadastro pelo site (CPF)
-> - **Empresa** → cadastro pelo site (CNPJ) — NOVO
+> **Três perfis na tabela `Usuarios`:**
+> - **Admin** (`A1A1...`) → cadastro manual no banco (seed)
+> - **Vendedor** (`B2B2...`) → **auto cadastro** pelo site (CNPJ) — não depende mais do Admin
+> - **Comprador** (`C3C3...`) → cadastro pelo site (CPF)
 >
-> **Dois perfis de usuário:**
-> - Admin (A1A1...)
-> - Comprador (C3C3...)
+> **Foco da plataforma:** eventos de pequeno porte (palestras, workshops, cursos, meetups).
 >
-> **Empresa é entidade própria** → tabela `Empresas`, login próprio, JWT próprio, dona dos eventos e cupons.
+> **Regra de reembolso:** cancelar evento pago com ingressos vendidos → reembolso obrigatório dos compradores.
