@@ -26,30 +26,17 @@
 
 ---
 
-### ST-02: Painel do Vendedor
-
-**Como** um vendedor logado,
-**Quero** um painel com todas as funcionalidades de gestão dos meus eventos,
-**Para** gerenciar minhas vendas de forma centralizada.
-
-**Critérios de Aceitação:**
-- Dado que estou logado como Vendedor, Quando acesso o painel, Então vejo: Criar Evento, Meus Eventos, Gerenciar Cupons, Relatórios e Configurações
-- Dado que estou nos Meus Eventos, Quando vejo a lista, Então apenas eventos com meu VendedorId aparecem
-- Dado que acesso Configurações, Quando edito minha logo, descrição e site, Então os dados são salvos e exibidos nos meus eventos
-
----
-
 ### ST-03: Eventos de Pequeno Porte — Foco em Palestras
 
 **Como** um vendedor,
-**Quero** criar eventos do tipo Palestra (sem assentos numerados, apenas controle de vagas),
+**Quero** criar eventos do tipo Palestra (com assentos numerados),
 **Para** vender ingressos para workshops, cursos e meetups de forma simples.
 
 **Critérios de Aceitação:**
-- Dado que estou criando um evento, Quando escolho o tipo "Palestra", Então o sistema NÃO gera ingressos individuais — apenas um contador de vagas
-- Dado que o evento é do tipo Palestra, Quando um comprador faz uma reserva, Então a reserva tem IngressoId = null e Quantidade informada
-- Dado que há X vagas reservadas, Quando consulto vagas disponíveis, Então o sistema calcula: CapacidadeTotal - SUM(Quantidade reservada)
-- Dado que as vagas chegam a 0, Quando um comprador tenta reservar, Então recebe "Evento esgotado"
+- Dado que estou criando um evento, Quando escolho o tipo "Palestra", Então o sistema gera assentos numerados (Assento 1, Assento 2... Assento N), todos no setor "Geral"
+- Dado que o evento é do tipo Palestra, Quando um comprador faz uma reserva, Então a reserva tem IngressoId preenchido com o assento escolhido
+- Dado que há X ingressos reservados, Quando consulto disponíveis, Então o sistema retorna COUNT(Ingressos WHERE Status = 0)
+- Dado que nenhum ingresso está livre, Quando um comprador tenta reservar, Então recebe "Evento esgotado"
 
 ---
 
@@ -193,8 +180,7 @@
 | # | História | Tipo | O que mudou |
 |---|----------|------|-------------|
 | ST-01 | Auto Cadastro de Vendedor | **NOVA** | Vendedor se cadastra sozinho (antes: Admin cadastrava) |
-| ST-02 | Painel do Vendedor | **NOVA** | Dashboard centralizado para Vendedor gerenciar eventos |
-| ST-03 | Eventos de Pequeno Porte | **NOVA** | Foco em Palestras (workshops, cursos) sem assentos fixos |
+| ST-03 | Eventos de Pequeno Porte | **NOVA** | Foco em Palestras (workshops, cursos) com assentos numerados |
 | ST-04 | Reserva Multi-Participante | **NOVA** | Entidade ItemReserva, até 4 CPFs por reserva |
 | ST-05 | Cancelamento com Reembolso | **NOVA** | Usuário cancela reserva antes do evento começar |
 | ST-06 | Cancelamento de Evento | **NOVA** | Vendedor cancela evento com reembolso obrigatório |
