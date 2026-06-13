@@ -8,6 +8,11 @@ public interface IUsuarioService
 
     Task CadastrarVendedor(CadastrarUsuarioDTO dto, CancellationToken ct, Guid AdminLogado);
 
+    /// <summary>
+    /// ST-01: Auto cadastro público de vendedor (sem necessidade de Admin).
+    /// </summary>
+    Task<VendedorCadastradoDTO> CadastrarVendedor(CadastrarVendedorDTO dto, CancellationToken ct);
+
     Task<string> Login(LoginDTO dto, CancellationToken ct);
 
     Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct);

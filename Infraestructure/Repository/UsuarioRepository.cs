@@ -35,6 +35,80 @@ public class UsuarioRepository : IUsuarioRepository
         });
     }
 
+    /// <summary>
+    /// ST-01: Persiste vendedor com todos os campos.
+    /// </summary>
+    public int CadastrarVendedor(Usuario vendedor)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            INSERT INTO Usuarios (Cpf, Nome, NomeFantasia, Email, Senha, PerfilId,
+                                  Cnpj, Telefone, Plano, Ativo, DataCriacao)
+            VALUES (@Cpf, @Nome, @NomeFantasia, @Email, @Senha, @PerfilId,
+                    @Cnpj, @Telefone, @Plano, @Ativo, @DataCriacao)";
+
+        return connection.Execute(sql, new
+        {
+            vendedor.Cpf,
+            vendedor.Nome,
+            vendedor.NomeFantasia,
+            vendedor.Email,
+            vendedor.Senha,
+            vendedor.PerfilId,
+            vendedor.Cnpj,
+            vendedor.Telefone,
+            vendedor.Plano,
+            vendedor.Ativo,
+            vendedor.DataCriacao
+        });
+    }
+
+    public async Task<Usuario?> BuscarCnpjOuEmail(string cnpj, string email, CancellationToken ct)
+    {
+        var cnpjLimpo = (cnpj ?? string.Empty)
+            .Replace(".", "").Replace("-", "").Replace("/", "").Trim();
+        email = (email ?? string.Empty).Trim();
+
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            SELECT Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
+                   Telefone, Plano, Ativo, DataCriacao
+            FROM Usuarios
+            WHERE Cnpj = @Cnpj OR Email = @Email";
+
+        return await connection.QueryFirstOrDefaultAsync<Usuario>(
+            new CommandDefinition(
+                sql,
+                new { Cnpj = cnpjLimpo, Email = email },
+                cancellationToken: ct
+            )
+        );
+    }
+
+    public async Task<Usuario?> BuscarPorCnpj(string cnpj, CancellationToken ct)
+    {
+        var cnpjLimpo = (cnpj ?? string.Empty)
+            .Replace(".", "").Replace("-", "").Replace("/", "").Trim();
+
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            SELECT Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
+                   Telefone, Plano, Ativo, DataCriacao
+            FROM Usuarios
+            WHERE Cnpj = @Cnpj";
+
+        return await connection.QueryFirstOrDefaultAsync<Usuario>(
+            new CommandDefinition(
+                sql,
+                new { Cnpj = cnpjLimpo },
+                cancellationToken: ct
+            )
+        );
+    }
+
     public async Task<Usuario?> BuscarCpfOuEmail(string cpf, string email, CancellationToken ct)
     {
         cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();

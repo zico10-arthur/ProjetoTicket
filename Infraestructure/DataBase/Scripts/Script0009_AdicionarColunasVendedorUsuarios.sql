@@ -1,0 +1,51 @@
+-- ST-09 + ST-01: Adiciona colunas de vendedor na tabela Usuarios
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Usuarios')
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'Cnpj'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD Cnpj NVARCHAR(14) NOT NULL DEFAULT '';
+    END
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'NomeFantasia'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD NomeFantasia NVARCHAR(150) NOT NULL DEFAULT '';
+    END
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'Telefone'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD Telefone NVARCHAR(20) NOT NULL DEFAULT '';
+    END
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'Plano'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD Plano INT NOT NULL DEFAULT 0;
+    END
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'Ativo'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD Ativo BIT NOT NULL DEFAULT 1;
+    END
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'Usuarios' AND COLUMN_NAME = 'DataCriacao'
+    )
+    BEGIN
+        ALTER TABLE Usuarios ADD DataCriacao DATETIME2 NOT NULL DEFAULT GETDATE();
+    END
+END

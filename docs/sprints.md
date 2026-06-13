@@ -72,7 +72,7 @@
 
 **Subtotal:** ~2.5h
 
-### ST-01 — Auto Cadastro de Vendedor `pendente`
+### ST-01 — Auto Cadastro de Vendedor `implementada`
 
 | # | Tarefa | Arquivos | Corrige | h |
 |---|--------|----------|---------|----|
@@ -234,7 +234,7 @@
 
 | # | Spec | Status | Sprint |
 |---|------|--------|--------|
-| ST-01 | Auto Cadastro de Vendedor | `pendente` | 1 |
+| ST-01 | Auto Cadastro de Vendedor | `implementada` | 1 |
 | ST-03 | Palestras com assentos numerados | `pendente` | 1 |
 | ST-04 | ItemReserva (até 4 CPFs) | `pendente` | 1 |
 | ST-05 | Cancelamento de Reserva com Reembolso | `pendente` | 2 |

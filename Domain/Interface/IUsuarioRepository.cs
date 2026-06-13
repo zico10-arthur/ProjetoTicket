@@ -6,7 +6,22 @@ public interface IUsuarioRepository
 {
     void CadastrarUsuario(Usuario usuario);
 
+    /// <summary>
+    /// ST-01: Persiste vendedor com todos os campos (CNPJ, NomeFantasia, etc.).
+    /// </summary>
+    int CadastrarVendedor(Usuario vendedor);
+
     Task<Usuario?> BuscarCpfOuEmail(string cpf, string email, CancellationToken ct);
+
+    /// <summary>
+    /// ST-01: Busca usuário por CNPJ ou Email para verificação de unicidade.
+    /// </summary>
+    Task<Usuario?> BuscarCnpjOuEmail(string cnpj, string email, CancellationToken ct);
+
+    /// <summary>
+    /// ST-01: Busca usuário por CNPJ.
+    /// </summary>
+    Task<Usuario?> BuscarPorCnpj(string cnpj, CancellationToken ct);
     
     Task<Usuario?> BuscarId(Guid perfilid, CancellationToken ct);
 

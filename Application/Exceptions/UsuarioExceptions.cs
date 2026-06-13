@@ -26,3 +26,14 @@ public class UsuarioNotFound : DomainException
     : base("Usuário não encontrado") {}
 }
 
+public class CnpjJaCadastrado : DomainException
+{
+    public CnpjJaCadastrado()
+    : base("CNPJ já cadastrado") {}
+}
+
+public class EmailJaCadastrado : DomainException
+{
+    public EmailJaCadastrado()
+    : base("E-mail já cadastrado") {}
+}

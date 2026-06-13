@@ -57,3 +57,27 @@ public class SenhaInvalida : DomainException
     : base("Senha inválida"){}
 }
 
+public class CnpjInvalido : DomainException
+{
+    public CnpjInvalido()
+    : base("CNPJ inválido") { }
+}
+
+public class RazaoSocialObrigatoria : DomainException
+{
+    public RazaoSocialObrigatoria()
+    : base("Razão Social é obrigatória") { }
+}
+
+public class NomeFantasiaObrigatorio : DomainException
+{
+    public NomeFantasiaObrigatorio()
+    : base("Nome Fantasia é obrigatório") { }
+}
+
+public class TelefoneInvalido : DomainException
+{
+    public TelefoneInvalido()
+    : base("Telefone inválido") { }
+}
+

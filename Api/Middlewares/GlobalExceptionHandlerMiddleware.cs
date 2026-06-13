@@ -32,6 +32,10 @@ public class GlobalExceptionHandlerMiddleware
 
         var (statusCode, message) = ex switch
         {
+            Application.Exceptions.CnpjJaCadastrado or
+            Application.Exceptions.EmailJaCadastrado or
+            Application.Exceptions.UsuarioCadastrado
+                => (StatusCodes.Status409Conflict, ex.Message),
             DomainException => (StatusCodes.Status400BadRequest, ex.Message),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso não encontrado."),
             _ => (StatusCodes.Status500InternalServerError, "Ocorreu um erro interno no servidor.")

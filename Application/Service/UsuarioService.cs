@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Interface;
 using Application.Exceptions;
 using Domain.Entities;
+using Domain.Validators;
 using AutoMapper;
 namespace Application.Service;
 
@@ -43,6 +44,50 @@ public class UsuarioService : IUsuarioService
         Guid IdVendedor = Guid.Parse("B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2");
         Usuario? novovendedor =  Usuario.Criar(dto.Cpf, dto.Nome, dto.Email, IdVendedor, dto.Senha);
         _repository.CadastrarUsuario(novovendedor);
+    }
+
+    /// <summary>
+    /// ST-01: Auto cadastro público de vendedor.
+    /// </summary>
+    public async Task<VendedorCadastradoDTO> CadastrarVendedor(CadastrarVendedorDTO dto, CancellationToken ct)
+    {
+        // 1. Validar CNPJ
+        CnpjValidator.Validar(dto.Cnpj);
+
+        // 2. Verificar unicidade de CNPJ e Email
+        Usuario? existente = await _repository.BuscarCnpjOuEmail(dto.Cnpj, dto.Email, ct);
+        if (existente != null)
+        {
+            var cnpjLimpo = dto.Cnpj.Replace(".", "").Replace("-", "").Replace("/", "").Trim();
+            if (existente.Cnpj == cnpjLimpo)
+                throw new CnpjJaCadastrado();
+            throw new EmailJaCadastrado();
+        }
+
+        // 3. Validar senha bruta (antes do hash)
+        Usuario.ValidarSenhaBruta(dto.Senha);
+
+        // 4. Hash da senha com BCrypt
+        string senhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha);
+
+        // 5. Criar entidade (factory method)
+        Usuario vendedor = Usuario.CriarVendedor(
+            dto.Cnpj, dto.RazaoSocial, dto.NomeFantasia,
+            dto.Email, senhaHash, dto.Telefone);
+
+        // 6. Persistir
+        _repository.CadastrarVendedor(vendedor);
+
+        // 7. Retornar resposta
+        return new VendedorCadastradoDTO
+        {
+            Cpf = vendedor.Cpf,
+            Nome = vendedor.Nome,
+            NomeFantasia = vendedor.NomeFantasia,
+            Email = vendedor.Email,
+            Perfil = "Vendedor",
+            Plano = "Gratuito"
+        };
     }
 
     public async Task<string> Login(LoginDTO dto, CancellationToken ct)

@@ -77,6 +77,7 @@ DatabaseMigration.Initialize(connectionString);
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
