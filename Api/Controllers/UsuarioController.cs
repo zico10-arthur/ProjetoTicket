@@ -28,15 +28,6 @@ public class UsuarioController : ControllerBase
        return Ok(new {message ="Usuário Cadastrado com sucesso"});
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost("CadastrarVendedor/{Id}")]
-    public async Task<IActionResult> CadastrarVendedor([FromBody] CadastrarUsuarioDTO dto,[FromRoute] Guid Id, CancellationToken ct)
-    {
-        await _service.CadastrarVendedor(dto, ct, Id);
-
-        return Ok(new {message ="Usuário Cadastrado com sucesso"});
-    }
-
     /// <summary>
     /// ST-01: Auto cadastro público de vendedor.
     /// </summary>
