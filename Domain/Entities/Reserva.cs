@@ -1,93 +1,79 @@
 using Domain.Exceptions;
-using System;
+using Domain.Validators;
 
 namespace Domain.Entities;
 
 public class Reserva
 {
+    private const int LimiteMaximoItens = 4;
+
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string UsuarioCpf { get; private set; }
     public Guid EventoId { get; private set; }
-    public Guid IngressoId { get; private set; }
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
+    public List<ItemReserva> Itens { get; private set; } = new();
+
+    public bool PodeAdicionarMaisItens => Itens.Count < LimiteMaximoItens;
 
     protected Reserva() { }
 
-    private Reserva(string usuarioCpf, Guid eventoId, Guid ingressoId, string? cupomUtilizado, decimal valorFinalPago)
+    private Reserva(string usuarioCpf, Guid eventoId, string? cupomUtilizado, decimal valorFinalPago)
     {
         UsuarioCpf = usuarioCpf;
         EventoId = eventoId;
-        IngressoId = ingressoId;
         CupomUtilizado = cupomUtilizado;
         ValorFinalPago = valorFinalPago;
     }
 
-    public static Reserva Criar(string usuarioCpf, Evento evento, Ingresso ingresso, Cupom? cupom = null)
+    /// <summary>
+    /// Cria uma reserva com 1 a 4 itens. Valida CPFs, duplicatas, e aplica cupom sobre o valor total.
+    /// </summary>
+    public static Reserva Criar(string usuarioCpf, Guid eventoId, List<ItemReserva> itens, Cupom? cupom = null)
     {
-        decimal valorFinal = ingresso.Preco;
+        ValidarItens(itens);
+
+        foreach (var item in itens)
+            CpfValidator.Validar(item.CpfParticipante);
+
+        decimal valorTotal = itens.Sum(i => i.PrecoUnitario);
         string? codigoCupom = null;
+        decimal valorFinal = valorTotal;
 
         if (cupom != null)
         {
-            ValidarUsoDoCupom(cupom, valorFinal);
-
-            decimal desconto = valorFinal * (cupom.PorcentagemDesconto / 100m);
-            valorFinal = valorFinal - desconto;
-            
+            ValidarUsoDoCupom(cupom, valorTotal);
+            decimal desconto = valorTotal * (cupom.PorcentagemDesconto / 100m);
+            valorFinal = Math.Max(0, valorTotal - desconto);
             codigoCupom = cupom.Codigo;
         }
 
-        Reserva reserva = new Reserva(usuarioCpf, evento.id, ingresso.Id, codigoCupom, valorFinal);
-
-        reserva.ValidarCpf(usuarioCpf);
-        if (!DigitosSaoValidos(usuarioCpf)) throw new CpfInvalido();
-
-        return reserva;
+        return new Reserva(usuarioCpf, eventoId, codigoCupom, valorFinal)
+        {
+            Itens = itens
+        };
     }
 
-
-    private void ValidarCpf(string cpf)
+    private static void ValidarItens(List<ItemReserva> itens)
     {
+        if (itens == null || itens.Count < 1)
+            throw new DomainException("É necessário pelo menos 1 participante.");
 
-        if (string.IsNullOrWhiteSpace(cpf))
-                throw new CpfVazio();
-        
-        if (cpf.Length != 11)
-                throw new CpfInvalido();
+        if (itens.Count > LimiteMaximoItens)
+            throw new DomainException($"Limite máximo de {LimiteMaximoItens} participantes por reserva.");
 
-        if (cpf.Distinct().Count() == 1)
-                throw new CpfInvalido();
-
+        var cpfs = itens.Select(i => i.CpfParticipante).ToList();
+        var duplicado = cpfs.GroupBy(c => c).FirstOrDefault(g => g.Count() > 1);
+        if (duplicado != null)
+            throw new DomainException($"CPF {duplicado.Key} informado mais de uma vez.");
     }
 
-    private static bool DigitosSaoValidos(string cpf)
-    {
-        int soma = 0;
-
-        for (int i = 0; i < 9; i++)
-            soma += (cpf[i] - '0') * (10 - i);
-
-        int resto = soma % 11;
-        int digito1 = resto < 2 ? 0 : 11 - resto;
-
-        soma = 0;
-        for (int i = 0; i < 10; i++)
-            soma += (cpf[i] - '0') * (11 - i);
-
-        resto = soma % 11;
-        int digito2 = resto < 2 ? 0 : 11 - resto;
-
-        return cpf[9] - '0' == digito1 &&
-                cpf[10] - '0' == digito2;
-    }
-
-    private static void ValidarUsoDoCupom(Cupom cupom, decimal precoBase)
+    private static void ValidarUsoDoCupom(Cupom cupom, decimal valorBase)
     {
         if (!cupom.EstaValidoParaUso)
             throw new CupomInvalidoParaUso();
 
-        if (precoBase < cupom.ValorMinimo)
+        if (valorBase < cupom.ValorMinimo)
             throw new ValorMinimoCupomExcedido(cupom.ValorMinimo);
     }
 }

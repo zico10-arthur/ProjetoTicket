@@ -10,6 +10,8 @@ public interface IIngressoRepository
 
     Task<bool> BloquearIngressoTemporariamente(Guid ingressoId, CancellationToken ct);
 
+    Task<int> BloquearMultiplosIngressos(IEnumerable<Guid> ingressoIds, CancellationToken ct);
+
     Task LiberarAssentosExpirados(int minutosExpiracao, CancellationToken ct);
 
     Task VenderIngresso(Guid ingressoId, CancellationToken ct);

@@ -35,3 +35,27 @@ public class IngressoIndisponivel : DomainException
     public IngressoIndisponivel() 
         : base("Desculpe, este ingresso ja esta reservado ou vendido!") {}
 }
+
+public class CupomNaoAplicavelEventoGratuito : DomainException
+{
+    public CupomNaoAplicavelEventoGratuito()
+        : base("Cupom não aplicável em evento gratuito.") {}
+}
+
+public class IngressoNaoPertenceAoEvento : DomainException
+{
+    public IngressoNaoPertenceAoEvento()
+        : base("Ingresso não pertence a este evento.") {}
+}
+
+public class CpfJaReservadoNoEvento : DomainException
+{
+    public CpfJaReservadoNoEvento(string cpf)
+        : base($"CPF {cpf} já possui reserva neste evento.") {}
+}
+
+public class AssentoNaoDisponivel : DomainException
+{
+    public AssentoNaoDisponivel()
+        : base("Um ou mais assentos não estão mais disponíveis.") {}
+}

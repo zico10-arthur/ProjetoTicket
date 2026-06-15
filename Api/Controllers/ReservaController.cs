@@ -21,9 +21,9 @@ public class ReservaController : ControllerBase
         _ingressoRepository = ingressoRepository;
     }
 
-    [HttpPost("FazerReserva")]
-    [Authorize(Roles = "Comprador")]
-    public async Task<IActionResult> FazerReserva([FromBody] ReservarDTO dto, CancellationToken ct)
+    [HttpPost("criar")]
+    [Authorize]
+    public async Task<IActionResult> CriarReserva([FromBody] ReservarDTO dto, CancellationToken ct)
     {
         var cpfUsuarioLogado = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
@@ -32,13 +32,19 @@ public class ReservaController : ControllerBase
             return Unauthorized(new { message = "Não foi possível identificar o CPF no token do usuário logado." });
         }
 
-        await _service.FazerReserva(cpfUsuarioLogado, dto, ct);
-        
-        return Ok(new { message = "Reserva realizada com sucesso!" });
+        try
+        {
+            var id = await _service.FazerReserva(cpfUsuarioLogado, dto, ct);
+            return Ok(new { reservaId = id, message = "Reserva realizada com sucesso!" });
+        }
+        catch (Domain.Exceptions.DomainException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
-    [HttpGet("ListarPorCpf")]
-    [Authorize(Roles = "Comprador")]
+    [HttpGet("minhas")]
+    [Authorize]
     public async Task<IActionResult> ListarMinhasReservas(CancellationToken ct)
     {
         var cpfUsuarioLogado = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
@@ -62,7 +68,7 @@ public class ReservaController : ControllerBase
     }
 
     [HttpPost("ConfirmarPagamento/{ingressoId}")]
-    [Authorize(Roles = "Comprador")]
+    [Authorize]
     public async Task<IActionResult> ConfirmarPagamento([FromRoute] Guid ingressoId, CancellationToken ct)
     {
         await _ingressoRepository.VenderIngresso(ingressoId, ct);

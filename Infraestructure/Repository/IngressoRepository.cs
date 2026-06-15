@@ -71,6 +71,26 @@ public class IngressoRepository : IIngressoRepository
         return linhasAfetadas > 0;
     }
 
+    public async Task<int> BloquearMultiplosIngressos(IEnumerable<Guid> ingressoIds, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            UPDATE Ingressos 
+            SET Status = 1, DataBloqueio = GETDATE() 
+            WHERE Id = @Id AND Status = 0";
+
+        int total = 0;
+        foreach (var id in ingressoIds)
+        {
+            total += await connection.ExecuteAsync(
+                new CommandDefinition(sql, new { Id = id }, cancellationToken: ct)
+            );
+        }
+
+        return total;
+    }
+
     public async Task VenderIngresso(Guid ingressoId, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();

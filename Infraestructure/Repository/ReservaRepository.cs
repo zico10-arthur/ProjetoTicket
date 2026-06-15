@@ -3,6 +3,7 @@ using Domain.Entities;
 using Domain.Interface;
 using Domain.DTOs;
 using Infrastructure.Database;
+using Microsoft.Data.SqlClient;
 
 namespace Infraestructure.Repository;
 
@@ -15,36 +16,59 @@ public class ReservaRepository : IReservaRepository
         _factory = factory;
     }
 
-    public async Task CadastrarReserva(Reserva reserva, CancellationToken ct)
+    public async Task CadastrarReservaComItens(Reserva reserva, CancellationToken ct)
     {
-        using var connection = _factory.CreateConnection();
+        using var conn = (SqlConnection)_factory.CreateConnection();
+        await conn.OpenAsync(ct);
+        using var transacao = conn.BeginTransaction();
 
-        const string sql = @"
-            INSERT INTO Reservas (Id, UsuarioCpf, EventoId, IngressoId, CupomUtilizado, ValorFinalPago)
-            VALUES (@Id, @UsuarioCpf, @EventoId, @IngressoId, @CupomUtilizado, @ValorFinalPago)";
+        try
+        {
+            // 1. Inserir Reserva
+            const string sqlReserva = @"
+                INSERT INTO Reservas (Id, UsuarioCpf, EventoId, CupomUtilizado, ValorFinalPago)
+                VALUES (@Id, @UsuarioCpf, @EventoId, @CupomUtilizado, @ValorFinalPago)";
 
-        await connection.ExecuteAsync(
-            new CommandDefinition(sql, new
+            await conn.ExecuteAsync(new CommandDefinition(sqlReserva, new
             {
-                Id = reserva.Id,
-                UsuarioCpf = reserva.UsuarioCpf,
-                EventoId = reserva.EventoId,
-                IngressoId = reserva.IngressoId,
-                CupomUtilizado = reserva.CupomUtilizado,
-                ValorFinalPago = reserva.ValorFinalPago
-            }, cancellationToken: ct)
-        );
-    }
+                reserva.Id,
+                reserva.UsuarioCpf,
+                reserva.EventoId,
+                reserva.CupomUtilizado,
+                reserva.ValorFinalPago
+            }, transacao, cancellationToken: ct));
 
-    public async Task<IEnumerable<Reserva?>> BuscarCpfEEventoId(string cpf, CancellationToken ct)
-    {
-        using var connection = _factory.CreateConnection();
+            // 2. Inserir ItensReserva
+            foreach (var item in reserva.Itens)
+            {
+                item.VincularReserva(reserva.Id);
+            }
 
-        const string sql = "SELECT * FROM Reservas WHERE UsuarioCpf = @Cpf";
+            const string sqlItem = @"
+                INSERT INTO ItensReserva (Id, ReservaId, CpfParticipante, IngressoId, PrecoUnitario, Reembolsado)
+                VALUES (@Id, @ReservaId, @CpfParticipante, @IngressoId, @PrecoUnitario, @Reembolsado)";
 
-        return await connection.QueryAsync<Reserva>(
-            new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
-        );
+            await conn.ExecuteAsync(new CommandDefinition(sqlItem, reserva.Itens, transacao, cancellationToken: ct));
+
+            // 3. Bloquear ingressos
+            const string sqlBloqueio = @"
+                UPDATE Ingressos SET Status = 1, DataBloqueio = GETDATE()
+                WHERE Id IN @Ids AND Status = 0";
+
+            var ids = reserva.Itens.Select(i => i.IngressoId).ToList();
+            var bloqueados = await conn.ExecuteAsync(new CommandDefinition(
+                sqlBloqueio, new { Ids = ids }, transacao, cancellationToken: ct));
+
+            if (bloqueados != ids.Count)
+                throw new InvalidOperationException("Um ou mais assentos não estão mais disponíveis.");
+
+            await transacao.CommitAsync(ct);
+        }
+        catch
+        {
+            await transacao.RollbackAsync(ct);
+            throw;
+        }
     }
 
     public async Task<IEnumerable<Reserva>> ListarPorCpf(string cpf, CancellationToken ct)
@@ -58,14 +82,17 @@ public class ReservaRepository : IReservaRepository
         );
     }
 
-    public async Task<bool> ReservaExistenteParaUsuario(string cpf, Guid eventoId, CancellationToken ct)
+    public async Task<bool> ReservaExistenteParaCpfNoEvento(string cpf, Guid eventoId, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            SELECT CAST(CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END AS BIT) 
-            FROM Reservas 
-            WHERE UsuarioCpf = @Cpf AND EventoId = @EventoId";
+            SELECT CAST(CASE WHEN EXISTS (
+                SELECT 1 
+                FROM Reservas r
+                INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
+                WHERE ir.CpfParticipante = @Cpf AND r.EventoId = @EventoId
+            ) THEN 1 ELSE 0 END AS BIT)";
 
         return await connection.QuerySingleAsync<bool>(
             new CommandDefinition(sql, new { Cpf = cpf, EventoId = eventoId }, cancellationToken: ct)
@@ -79,12 +106,18 @@ public class ReservaRepository : IReservaRepository
         const string sql = @"
             UPDATE i SET i.Status = 0
             FROM Ingressos i
-            INNER JOIN Reservas r ON r.IngressoId = i.Id
+            INNER JOIN ItensReserva ir ON ir.IngressoId = i.Id
+            INNER JOIN Reservas r ON r.Id = ir.ReservaId
             WHERE i.Status = 1 AND r.DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());
 
+            DELETE FROM ItensReserva
+            WHERE ReservaId IN (
+                SELECT Id FROM Reservas
+                WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
+            );
+
             DELETE FROM Reservas
-            WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
-            AND IngressoId IN (SELECT Id FROM Ingressos WHERE Status = 0)";
+            WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());";
 
         await connection.ExecuteAsync(
             new CommandDefinition(sql, new { Minutos = minutosExpiracao }, cancellationToken: ct)
@@ -100,17 +133,16 @@ public class ReservaRepository : IReservaRepository
                 r.Id,
                 e.Nome AS NomeEvento,
                 e.DataEvento,
-                i.Posicao AS PosicaoIngresso,
-                i.Setor AS SetorIngresso,
+                STRING_AGG(i.Posicao, ', ') AS PosicaoIngresso,
+                STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
-                r.ValorFinalPago,
-                u.Nome AS NomeUsuario,
-                u.Cpf AS CpfUsuario
+                r.ValorFinalPago
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
-            INNER JOIN Ingressos i ON r.IngressoId = i.Id
-            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            WHERE r.UsuarioCpf = @Cpf";
+            INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
+            INNER JOIN Ingressos i ON ir.IngressoId = i.Id
+            WHERE r.UsuarioCpf = @Cpf
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago";
 
         return await connection.QueryAsync<ReservaDetalhadaDTO>(
             new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
@@ -126,19 +158,20 @@ public class ReservaRepository : IReservaRepository
                 r.Id,
                 e.Nome AS NomeEvento,
                 e.DataEvento,
-                i.Posicao AS PosicaoIngresso,
-                i.Setor AS SetorIngresso,
+                STRING_AGG(i.Posicao, ', ') AS PosicaoIngresso,
+                STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
                 r.ValorFinalPago,
                 u.Nome AS NomeUsuario,
                 u.Cpf AS CpfUsuario
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
-            INNER JOIN Ingressos i ON r.IngressoId = i.Id
+            INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
+            INNER JOIN Ingressos i ON ir.IngressoId = i.Id
             INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            ORDER BY e.Nome, r.Id"; // Ordenado por evento para facilitar o agrupamento
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, u.Nome, u.Cpf
+            ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaAdminDTO>(new CommandDefinition(sql, cancellationToken: ct));
     }
-
 }
