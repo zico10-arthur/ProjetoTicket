@@ -55,8 +55,8 @@ public class EventoRepository : IEventoRepository
         try
         {
             const string sqlEvento = @"
-                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf)
-                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf)";
+                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf, Tipo, Descricao, Local, Cancelado)
+                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf, @Tipo, @Descricao, @Local, @Cancelado)";
 
             await conn.ExecuteAsync(sqlEvento, evento, transacao);
 
@@ -83,8 +83,8 @@ public class EventoRepository : IEventoRepository
         using var conn = _connectionFactory.CreateConnection();
 
         await conn.ExecuteAsync(
-            "UPDATE dbo.Eventos SET Nome = @Nome, CapacidadeTotal = @CapacidadeTotal, DataEvento = @DataEvento, PrecoPadrao = @PrecoPadrao WHERE id = @Id",
-            new { id, evento.Nome, evento.CapacidadeTotal, evento.DataEvento, evento.PrecoPadrao });
+            "UPDATE dbo.Eventos SET Nome = @Nome, CapacidadeTotal = @CapacidadeTotal, DataEvento = @DataEvento, PrecoPadrao = @PrecoPadrao, Tipo = @Tipo, Descricao = @Descricao, Local = @Local WHERE id = @Id",
+            new { id, evento.Nome, evento.CapacidadeTotal, evento.DataEvento, evento.PrecoPadrao, evento.Tipo, evento.Descricao, evento.Local });
 
     }
 

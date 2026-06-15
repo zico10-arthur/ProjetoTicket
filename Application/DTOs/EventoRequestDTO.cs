@@ -12,8 +12,16 @@ public class EventoRequestDTO
 
     public DateTime DataEvento { get; set; }
 
-    [Range(0.01, double.MaxValue, ErrorMessage = "O preço deve ser maior que zero.")]
+    [Range(0, double.MaxValue, ErrorMessage = "O preço não pode ser negativo.")]
     public decimal PrecoPadrao { get; set; }
+
+    public int Tipo { get; set; }
+
+    [MaxLength(500)]
+    public string? Descricao { get; set; }
+
+    [MaxLength(200)]
+    public string? Local { get; set; }
 
     public string VendedorCpf { get; set; } = string.Empty;
 }

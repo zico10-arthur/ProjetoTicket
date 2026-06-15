@@ -14,6 +14,16 @@ public class Evento
 
     public string VendedorCpf {get; private set;} = string.Empty;
 
+    public TipoEvento Tipo { get; private set; }
+
+    public string? Descricao { get; private set; }
+
+    public string? Local { get; private set; }
+
+    public bool Cancelado { get; private set; }
+
+    public bool Gratuito => PrecoPadrao == 0;
+
     public List<Ingresso> Ingressos { get; private set; } = new();
 
     private Evento()
@@ -21,46 +31,78 @@ public class Evento
         
     }
 
-    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao, string vendedorCpf)
+    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao, string vendedorCpf,
+        TipoEvento tipo = TipoEvento.Teatro, string? descricao = null, string? local = null)
     {
         Nome = nome;
         CapacidadeTotal = capacidadetotal;
         DataEvento = dataevento;
         PrecoPadrao = precopadrao;
         VendedorCpf = vendedorCpf;
+        Tipo = tipo;
+        Descricao = descricao;
+        Local = local;
+    }
+
+    public void Cancelar()
+    {
+        Cancelado = true;
     }
 
     public void GerarLoteIngressos(int quantidadeDesejada)
-{
-    if (quantidadeDesejada <= 0)
-        throw new ArgumentException("Quantidade deve ser maior que zero");
-
-    if (Ingressos.Any())
-        throw new InvalidOperationException("Ingressos já foram gerados.");
-
-    int quantidadeVip = (int)(quantidadeDesejada * 0.1);
-    int assentosPorFila = 20;
-
-    for (int i = 1; i <= quantidadeDesejada; i++)
     {
-        string setorAtual = (i <= quantidadeVip) ? "VIP" : "Geral";
+        if (quantidadeDesejada <= 0)
+            throw new ArgumentException("Quantidade deve ser maior que zero");
 
-        int fila = ((i - 1) / assentosPorFila) + 1;
-        int assento = ((i - 1) % assentosPorFila) + 1;
+        if (Ingressos.Any())
+            throw new InvalidOperationException("Ingressos já foram gerados.");
 
-        string posicao = $"Fila {fila} | Assento {assento}";
-
-        decimal preco = setorAtual == "VIP" ? PrecoPadrao * 1.5m : PrecoPadrao;
-
-        var ingresso = new Ingresso(
-            this.id,
-            preco,
-            posicao,
-            setorAtual
-        );
-
-        Ingressos.Add(ingresso);
+        if (Tipo == TipoEvento.Palestra)
+            GerarPalestra(quantidadeDesejada);
+        else
+            GerarTeatro(quantidadeDesejada);
     }
-}
+
+    private void GerarPalestra(int capacidade)
+    {
+        for (int i = 1; i <= capacidade; i++)
+        {
+            Ingressos.Add(new Ingresso(
+                this.id,
+                PrecoPadrao,
+                $"Assento {i}",
+                "Geral"
+            ));
+        }
+    }
+
+    private void GerarTeatro(int capacidade)
+    {
+        int quantidadeVip = (int)(capacidade * 0.1);
+        int assentosPorFila = 20;
+        int fila = 1, assento = 1;
+
+        for (int i = 0; i < quantidadeVip; i++)
+        {
+            Ingressos.Add(new Ingresso(
+                this.id,
+                PrecoPadrao * 1.5m,
+                $"Fila {fila} | Assento {assento}",
+                "VIP"
+            ));
+            if (++assento > assentosPorFila) { fila++; assento = 1; }
+        }
+
+        for (int i = quantidadeVip; i < capacidade; i++)
+        {
+            Ingressos.Add(new Ingresso(
+                this.id,
+                PrecoPadrao,
+                $"Fila {fila} | Assento {assento}",
+                "Geral"
+            ));
+            if (++assento > assentosPorFila) { fila++; assento = 1; }
+        }
+    }
 
 }

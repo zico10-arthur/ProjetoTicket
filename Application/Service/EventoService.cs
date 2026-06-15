@@ -57,6 +57,12 @@ public class EventoService : IEventoService
     {
         if (eventoDto.DataEvento <= DateTime.UtcNow)
             throw new ArgumentException("A data do evento deve ser futura.");
+
+        if (eventoDto.CapacidadeTotal <= 0)
+            throw new ArgumentException("A capacidade deve ser maior que zero.");
+
+        if (eventoDto.Tipo != 0 && eventoDto.Tipo != 1)
+            throw new ArgumentException("Tipo deve ser 0 (Teatro) ou 1 (Palestra).");
     }
 
     public async Task<IEnumerable<EventoResponseDTO>> GetAllByVendedorAsync(string vendedorCpf)
@@ -70,11 +76,10 @@ public class EventoService : IEventoService
         if (eventoDto == null)
             throw new ArgumentNullException(nameof(eventoDto));
 
+        ValidarEvento(eventoDto);
+
         eventoDto.VendedorCpf = vendedorCpf;
         var evento = _mapper.Map<Evento>(eventoDto);
-
-        if (evento.CapacidadeTotal <= 0)
-            throw new InvalidOperationException("Capacidade deve ser maior que zero");
 
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
         await _eventoRepository.CriarEventoCompletoAsync(evento);

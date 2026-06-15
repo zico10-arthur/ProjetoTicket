@@ -15,4 +15,14 @@ public class EventoResponseDTO
 
     public string VendedorCpf { get; set; } = string.Empty;
 
+    public int Tipo { get; set; }
+
+    public string? Descricao { get; set; }
+
+    public string? Local { get; set; }
+
+    public bool Cancelado { get; set; }
+
+    public bool Gratuito { get; set; }
+
 }
