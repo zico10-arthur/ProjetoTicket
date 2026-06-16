@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj": {}
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -34,8 +34,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj"
               },
               "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
                 "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
@@ -97,14 +97,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -195,8 +195,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj"
               }
             }
           }
@@ -251,14 +251,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\Web.csproj",
         "projectName": "Web",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\Web.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -281,8 +281,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj"
               }
             }
           }

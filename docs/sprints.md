@@ -102,8 +102,9 @@
 | 3.10 | Endpoint `POST /api/evento/criar` retorna `201 Created` | `Api/Controllers/` | — | 0.5 |
 | 3.11 | `ReservaRepository.CadastrarReservaComItens()`: transação atômica para evento gratuito (vende ingressos status=2) | `Infraestructure/Repository/` | — | 1.5 |
 | 3.12 | `ReservaService.FazerReserva()`: evento gratuito → cupom rejeitado, confirmação imediata | `Application/Service/` | — | 1 |
+| 3.13 | `EventoProfile.cs`: mapear `DataCriacao` como `DateTime.UtcNow` no AutoMapper | `Application/Mappings/` | — | 0.5 |
 
-**Subtotal:** ~23h
+**Subtotal:** ~23.5h
 
 ### ST-04 — Reserva Multi-Participante (ItemReserva) `implementada`
 
@@ -133,9 +134,9 @@
 | ST-09 Vendedor na tabela Usuarios | `em revisão` | ~6.5h |
 | ST-10 Perfis Simplificados | `implementada` | ~2.5h |
 | ST-01 Auto Cadastro de Vendedor | `pendente` | ~17h |
-| ST-03 + ST-11 Tipo Evento + Gratuito | `implementada` | ~23h |
+| ST-03 + ST-11 Tipo Evento + Gratuito | `implementada` | ~23.5h |
 | ST-04 ItemReserva | `implementada` | ~24.5h |
-| **Total Sprint 1** | | **~79.5h** |
+| **Total Sprint 1** | | **~80h** |
 
 ---
 
@@ -226,10 +227,10 @@
 
 | Sprint | Specs | Carga |
 |--------|-------|-------|
-| Sprint 1 — Fundação | ST-01, ST-03, ST-04, ST-08, ST-09, ST-10, ST-11 | ~79.5h |
+| Sprint 1 — Fundação | ST-01, ST-03, ST-04, ST-08, ST-09, ST-10, ST-11 | ~80h |
 | Sprint 2 — Transações | ST-05, ST-06, ST-07, ST-12 | ~52h |
 | Infraestrutura | — | ~7h |
-| **Total** | **11 specs** | **~138.5h** |
+| **Total** | **11 specs** | **~139h** |
 
 ---
 

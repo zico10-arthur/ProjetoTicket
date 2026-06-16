@@ -33,8 +33,8 @@
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
 | 10 | ST-01 Auto Cadastro de Vendedor | ❌ `pendente` | **Autonomia** — vender sem depender de Admin | [`10-st01-auto-cadastro-vendedor.md`](./roadmap/10-st01-auto-cadastro-vendedor.md) |
-| 100 | ST-11 Tipo de Evento + Gratuito | ❌ `pendente` | **Criar eventos** — com tipo e sem barreira financeira | [`100-st11-tipo-evento-gratuito.md`](./roadmap/100-st11-tipo-evento-gratuito.md) |
-| 20 | ST-03 Palestras com assentos numerados | ❌ `pendente` | **Criar eventos** — lugares marcados | [`20-st03-palestras.md`](./roadmap/20-st03-palestras.md) |
+| 100 | ST-11 Tipo de Evento + Gratuito | ✅ `implementada` | **Criar eventos** — com tipo e sem barreira financeira | [`100-st11-tipo-evento-gratuito.md`](./roadmap/100-st11-tipo-evento-gratuito.md) |
+| 20 | ST-03 Palestras com assentos numerados | ✅ `implementada` | **Criar eventos** — lugares marcados | [`20-st03-palestras.md`](./roadmap/20-st03-palestras.md) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ⚠️ `em revisão` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
 | 30 | ST-04 ItemReserva (até 4 CPFs) | ❌ `pendente` | **Gerenciar vagas** — compra para até 4 pessoas | [`30-st04-item-reserva.md`](./roadmap/30-st04-item-reserva.md) |
 | 160 | Cupons de Desconto | ⚠️ `em revisão` | **Emitir ingressos** — desconto por Admin | [`160-cupons.md`](./roadmap/160-cupons.md) |
@@ -72,9 +72,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `implementada` | 1 | ST-10 |
+| ✅ `implementada` | 3 | ST-03, ST-10, ST-11 |
 | ⚠️ `em revisão` | 6 | ST-06, ST-08, 130, 140, 150, 160 |
-| ❌ `pendente` | 9 | ST-01, ST-03, ST-04, ST-05, ST-07, ST-09, ST-11, ST-12, 120 |
+| ❌ `pendente` | 7 | ST-01, ST-04, ST-05, ST-07, ST-09, ST-12, 120 |
 
 ---
 
@@ -100,12 +100,12 @@
 | 150 | `GlobalExceptionHandlerMiddleware.cs` existe | ⚠️ `em revisão` (sem sanitização) |
 | 160 | `Cupom.cs` + CRUD no `CupomController` | ⚠️ `em revisão` (AdminId via rota) |
 | ST-01 | `CadastrarVendedor(AdminLogado)` — exige Admin | ❌ `pendente` |
-| ST-03 | `Evento.cs` sem campo `Tipo` | ❌ `pendente` |
+| ST-03 | `Evento.cs` com `Tipo`, `Descricao`, `Local`, `Cancelado`, `DataCriacao`; `GerarLoteIngressos()` por tipo (Palestra/Teatro); `Script0010`; testes 14/14 ✅ | ✅ `implementada` |
 | ST-04 | `Reserva.cs`: `IngressoId` único, sem `ItemReserva` | ❌ `pendente` |
 | ST-05 | Sem `DELETE /api/reserva/{id}` | ❌ `pendente` |
 | ST-07 | `ReservaController`: `[Authorize(Roles="Comprador")]` | ❌ `pendente` |
 | ST-09 | `Usuario.cs` sem Cnpj, NomeFantasia, etc. | ❌ `pendente` |
-| ST-11 | Sem `TipoEvento`, sem `Gratuito` | ❌ `pendente` |
+| ST-11 | `TipoEvento.cs` (enum Teatro/Palestra); `Evento.Gratuito` (PrecoPadrao==0); `POST /api/evento/criar` com 201; `ReservaRepository` com transação atômica p/ gratuito | ✅ `implementada` |
 | ST-12 | Sem endpoint de cancelamento pelo usuário | ❌ `pendente` |
 | 120 | Sem BCrypt; `Jwt:Key` exposto; sem rate limit | ❌ `pendente` |
 
