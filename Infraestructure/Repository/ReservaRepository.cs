@@ -16,7 +16,7 @@ public class ReservaRepository : IReservaRepository
         _factory = factory;
     }
 
-    public async Task CadastrarReservaComItens(Reserva reserva, CancellationToken ct)
+    public async Task CadastrarReservaComItens(Reserva reserva, CancellationToken ct, bool eventoGratuito = false)
     {
         using var conn = (SqlConnection)_factory.CreateConnection();
         await conn.OpenAsync(ct);
@@ -50,17 +50,31 @@ public class ReservaRepository : IReservaRepository
 
             await conn.ExecuteAsync(new CommandDefinition(sqlItem, reserva.Itens, transacao, cancellationToken: ct));
 
-            // 3. Bloquear ingressos
-            const string sqlBloqueio = @"
-                UPDATE Ingressos SET Status = 1, DataBloqueio = GETDATE()
-                WHERE Id IN @Ids AND Status = 0";
-
             var ids = reserva.Itens.Select(i => i.IngressoId).ToList();
-            var bloqueados = await conn.ExecuteAsync(new CommandDefinition(
-                sqlBloqueio, new { Ids = ids }, transacao, cancellationToken: ct));
 
-            if (bloqueados != ids.Count)
-                throw new InvalidOperationException("Um ou mais assentos não estão mais disponíveis.");
+            // 3. Evento gratuito: vender ingressos direto; evento pago: bloquear
+            if (eventoGratuito)
+            {
+                const string sqlVender = @"
+                    UPDATE Ingressos SET Status = 2, DataBloqueio = NULL
+                    WHERE Id IN @Ids AND Status = 0";
+                var vendidos = await conn.ExecuteAsync(new CommandDefinition(
+                    sqlVender, new { Ids = ids }, transacao, cancellationToken: ct));
+                if (vendidos != ids.Count)
+                    throw new InvalidOperationException("Um ou mais assentos não estão mais disponíveis.");
+            }
+            else
+            {
+                const string sqlBloqueio = @"
+                    UPDATE Ingressos SET Status = 1, DataBloqueio = GETDATE()
+                    WHERE Id IN @Ids AND Status = 0";
+
+                var bloqueados = await conn.ExecuteAsync(new CommandDefinition(
+                    sqlBloqueio, new { Ids = ids }, transacao, cancellationToken: ct));
+
+                if (bloqueados != ids.Count)
+                    throw new InvalidOperationException("Um ou mais assentos não estão mais disponíveis.");
+            }
 
             await transacao.CommitAsync(ct);
         }

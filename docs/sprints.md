@@ -86,23 +86,26 @@
 
 **Subtotal:** ~17h
 
-### ST-03 + ST-11 — Tipo de Evento + Palestras com Assentos + Gratuito `pendente` / `em revisão`
+### ST-03 + ST-11 — Tipo de Evento + Palestras com Assentos + Gratuito `implementada`
 
 | # | Tarefa | Arquivos | Corrige | h |
 |---|--------|----------|---------|----|
 | 3.1 | `TipoEvento.cs` (enum: Teatro=0, Palestra=1) | `Domain/Entities/` | — | 0.5 |
-| 3.2 | `Evento.cs`: VendedorId, Tipo, Descricao, Local, Cancelado, `Gratuito` (PrecoPadrao==0) | `Domain/Entities/` | — | 3 |
+| 3.2 | `Evento.cs`: VendedorCpf, Tipo, Descricao, Local, Cancelado, `DataCriacao`, `Gratuito` (PrecoPadrao==0) | `Domain/Entities/` | — | 3 |
 | 3.3 | `GerarLoteIngressos()`: **ambos os tipos** — Palestra (Assento 1..N, Geral), Teatro (VIP/Geral, filas de 20) | `Domain/Entities/` | — | 3 |
-| 3.4 | SQL: `ALTER TABLE Eventos` (VendedorId, Tipo, Descricao, Local, Cancelado) | SQL migration | — | 2 |
+| 3.4 | SQL: `ALTER TABLE Eventos` (Tipo, Descricao, Local, Cancelado, DataCriacao) — Script0010 | `Infraestructure/Database/Scripts/` | — | 2 |
 | 3.5 | `EventoService.CriarEvento()`: suportar Tipo, lógica gratuito (pula pagamento) | `Application/Service/` | — | 3 |
-| 3.6 | `EventoRequestDTO` + `EventoResponseDTO`: Tipo, Descricao, Local | `Application/DTOs/` | — | 1 |
-| 3.7 | `IEventoRepository` + `EventoRepository`: queries com VendedorId | `Infraestructure/` | — | 3 |
+| 3.6 | `EventoRequestDTO` + `EventoResponseDTO`: Tipo, Descricao, Local, DataCriacao | `Application/DTOs/` | — | 1 |
+| 3.7 | `IEventoRepository` + `EventoRepository`: queries com VendedorCpf, INSERT com DataCriacao | `Infraestructure/` | — | 3 |
 | 3.8 | `Max Pool Size=100` na connection string | `appsettings.json` | #8 | 0.5 |
-| 3.9 | Testes: Palestra e Teatro com assentos, gratuito vs pago, VendedorId | `tests/` | — | 4 |
+| 3.9 | Testes: Palestra e Teatro com assentos, gratuito vs pago, VendedorCpf (14/14 ✅) | `tests/` | — | 4 |
+| 3.10 | Endpoint `POST /api/evento/criar` retorna `201 Created` | `Api/Controllers/` | — | 0.5 |
+| 3.11 | `ReservaRepository.CadastrarReservaComItens()`: transação atômica para evento gratuito (vende ingressos status=2) | `Infraestructure/Repository/` | — | 1.5 |
+| 3.12 | `ReservaService.FazerReserva()`: evento gratuito → cupom rejeitado, confirmação imediata | `Application/Service/` | — | 1 |
 
-**Subtotal:** ~20h
+**Subtotal:** ~23h
 
-### ST-04 — Reserva Multi-Participante (ItemReserva) `pendente`
+### ST-04 — Reserva Multi-Participante (ItemReserva) `implementada`
 
 | # | Tarefa | Arquivos | Corrige | h |
 |---|--------|----------|---------|----|
@@ -130,9 +133,9 @@
 | ST-09 Vendedor na tabela Usuarios | `em revisão` | ~6.5h |
 | ST-10 Perfis Simplificados | `implementada` | ~2.5h |
 | ST-01 Auto Cadastro de Vendedor | `pendente` | ~17h |
-| ST-03 + ST-11 Tipo Evento + Gratuito | `pendente` / `em revisão` | ~20h |
-| ST-04 ItemReserva | `pendente` | ~24.5h |
-| **Total Sprint 1** | | **~76.5h** |
+| ST-03 + ST-11 Tipo Evento + Gratuito | `implementada` | ~23h |
+| ST-04 ItemReserva | `implementada` | ~24.5h |
+| **Total Sprint 1** | | **~79.5h** |
 
 ---
 
@@ -223,10 +226,10 @@
 
 | Sprint | Specs | Carga |
 |--------|-------|-------|
-| Sprint 1 — Fundação | ST-01, ST-03, ST-04, ST-08, ST-09, ST-10, ST-11 | ~76.5h |
+| Sprint 1 — Fundação | ST-01, ST-03, ST-04, ST-08, ST-09, ST-10, ST-11 | ~79.5h |
 | Sprint 2 — Transações | ST-05, ST-06, ST-07, ST-12 | ~52h |
 | Infraestrutura | — | ~7h |
-| **Total** | **11 specs** | **~135.5h** |
+| **Total** | **11 specs** | **~138.5h** |
 
 ---
 
@@ -235,15 +238,15 @@
 | # | Spec | Status | Sprint |
 |---|------|--------|--------|
 | ST-01 | Auto Cadastro de Vendedor | `implementada` | 1 |
-| ST-03 | Palestras com assentos numerados | `pendente` | 1 |
-| ST-04 | ItemReserva (até 4 CPFs) | `pendente` | 1 |
+| ST-03 | Palestras com assentos numerados | `implementada` | 1 |
+| ST-04 | ItemReserva (até 4 CPFs) | `implementada` | 1 |
 | ST-05 | Cancelamento de Reserva com Reembolso | `pendente` | 2 |
 | ST-06 | Cancelamento de Evento com Reembolso | `pendente` | 2 |
 | ST-07 | Admin e Vendedor fazem reservas | `pendente` | 2 |
 | ST-08 | Login Unificado | `em revisão` | 1 |
 | ST-09 | Vendedor na tabela Usuarios | `em revisão` | 1 |
 | ST-10 | Perfis Simplificados (3 perfis) | `implementada` | 1 |
-| ST-11 | Tipo Evento + Gratuito | `em revisão` | 1 |
+| ST-11 | Tipo Evento + Gratuito | `implementada` | 1 |
 | ST-12 | Cancelamento Unificado | `pendente` | 2 |
 
 ---

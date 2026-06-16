@@ -23,6 +23,8 @@ public class EventoResponseDTO
 
     public bool Cancelado { get; set; }
 
+    public DateTime DataCriacao { get; set; }
+
     public bool Gratuito { get; set; }
 
 }

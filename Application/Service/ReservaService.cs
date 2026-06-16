@@ -85,7 +85,8 @@ public class ReservaService : IReservaService
         // ST-04.7: Criar reserva com cupom sobre valor total
         Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom);
 
-        await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
+        // ST-11 100.6: eventoGratuito → vende ingressos na mesma transação
+        await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct, evento.Gratuito);
 
         return novaReserva.Id;
     }

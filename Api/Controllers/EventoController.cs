@@ -51,7 +51,7 @@ public class EventoController : ControllerBase
         catch (Exception erro) { return StatusCode(500, $"Evento não encontrado | {erro.Message}"); }
     }
 
-    [HttpPost]
+    [HttpPost("criar")]
     [Authorize(Roles = "Vendedor")]
     [Consumes("application/json")]
     public async Task<ActionResult<EventoResponseDTO>> CreateAsync(EventoRequestDTO evento)
@@ -62,7 +62,7 @@ public class EventoController : ControllerBase
             if (string.IsNullOrEmpty(cpf)) return Unauthorized();
 
             var id = await _eventoService.CriarEventoAsync(evento, cpf);
-            return Ok(new { id });
+            return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
         }
         catch (Exception erro) { return BadRequest($"Erro ao criar novo evento | {erro.Message}"); }
     }

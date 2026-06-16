@@ -22,6 +22,8 @@ public class Evento
 
     public bool Cancelado { get; private set; }
 
+    public DateTime DataCriacao { get; private set; }
+
     public bool Gratuito => PrecoPadrao == 0;
 
     public List<Ingresso> Ingressos { get; private set; } = new();
@@ -42,6 +44,7 @@ public class Evento
         Tipo = tipo;
         Descricao = descricao;
         Local = local;
+        DataCriacao = DateTime.UtcNow;
     }
 
     public void Cancelar()

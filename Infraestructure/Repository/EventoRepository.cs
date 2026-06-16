@@ -55,8 +55,8 @@ public class EventoRepository : IEventoRepository
         try
         {
             const string sqlEvento = @"
-                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf, Tipo, Descricao, Local, Cancelado)
-                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf, @Tipo, @Descricao, @Local, @Cancelado)";
+                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf, Tipo, Descricao, Local, Cancelado, DataCriacao)
+                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf, @Tipo, @Descricao, @Local, @Cancelado, @DataCriacao)";
 
             await conn.ExecuteAsync(sqlEvento, evento, transacao);
 

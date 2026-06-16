@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net9.0": {
       "AutoMapper/16.1.1": {
@@ -52,6 +52,19 @@
         },
         "runtime": {
           "lib/net8.0/Azure.Identity.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "BCrypt.Net-Next/4.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
             "related": ".xml"
           }
         }
@@ -778,6 +791,7 @@
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
           "AutoMapper": "16.1.1",
+          "BCrypt.Net-Next": "4.0.3",
           "Domain": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.0.1",
@@ -881,6 +895,37 @@
         "lib/net8.0/Azure.Identity.xml",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "sha512": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "type": "package",
+      "path": "bcrypt.net-next/4.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.4.0.3.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt.Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/net5.0/BCrypt.Net-Next.dll",
+        "lib/net5.0/BCrypt.Net-Next.xml",
+        "lib/net6.0/BCrypt.Net-Next.dll",
+        "lib/net6.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt.Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
       ]
     },
     "Dapper/2.1.72": {
@@ -2191,23 +2236,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\rezen\\.nuget\\packages\\": {},
+    "C:\\Users\\tempu\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
+      "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\Api.csproj",
-      "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Api\\obj\\",
+      "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
+      "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\rezen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2216,17 +2261,19 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
+            "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
+              "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj"
             },
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
+            "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+              "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
             }
           }
         }
@@ -2241,10 +2288,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net9.0": {
+        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
@@ -2279,7 +2327,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.309/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
