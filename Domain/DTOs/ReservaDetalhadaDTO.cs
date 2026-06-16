@@ -9,4 +9,5 @@ public class ReservaDetalhadaDTO
     public string SetorIngresso { get; set; } = "";
     public string? CupomUtilizado { get; set; }
     public decimal ValorFinalPago { get; set; }
+    public bool Pago { get; set; }
 }

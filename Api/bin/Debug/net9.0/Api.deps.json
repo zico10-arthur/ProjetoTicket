@@ -9,10 +9,10 @@
       "Api/1.0.0": {
         "dependencies": {
           "Application": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.0",
           "Microsoft.AspNetCore.OpenApi": "9.0.12",
-          "Swashbuckle.AspNetCore": "6.9.0"
+          "Swashbuckle.AspNetCore": "6.9.0",
+          "infraestructure": "1.0.0"
         },
         "runtime": {
           "Api.dll": {}
@@ -54,6 +54,14 @@
           "lib/net8.0/Azure.Identity.dll": {
             "assemblyVersion": "1.17.1.0",
             "fileVersion": "1.1700.125.56903"
+          }
+        }
+      },
+      "BCrypt.Net-Next/4.0.3": {
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.0.3.0"
           }
         }
       },
@@ -526,10 +534,11 @@
       "Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "16.1.1",
+          "BCrypt.Net-Next": "4.0.3",
           "Domain": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1",
+          "infraestructure": "1.0.0"
         },
         "runtime": {
           "Application.dll": {
@@ -546,7 +555,7 @@
           }
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -554,7 +563,7 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "Infraestructure.dll": {
+          "infraestructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -588,6 +597,13 @@
       "sha512": "sha512-MSZkBrctcpiGxs9Cvr2VKKoN6qFLZlP3I6xuCWJ9iTgitI5Rgxtk5gfOSpXPZE3+CJmZ/mnqpQyGyjawFn5Vvg==",
       "path": "azure.identity/1.17.1",
       "hashPath": "azure.identity.1.17.1.nupkg.sha512"
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "path": "bcrypt.net-next/4.0.3",
+      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
     "Dapper/2.1.72": {
       "type": "package",
@@ -872,7 +888,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

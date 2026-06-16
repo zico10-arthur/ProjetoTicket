@@ -1,6 +1,6 @@
 # Roadmap — SoldOut Tickets
 
-> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (16 arquivos) | **Data:** 04/06/2026
+> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (17 arquivos) | **Data:** 16/06/2026
 
 ---
 
@@ -13,46 +13,47 @@
 
 ---
 
-## Fase 2 — v2.0 (ordenado por prioridade)
+## Fase 2 — v2.0
 
 > Cada spec aponta para qual dos [5 problemas do usuário](../visao.md#2-problema) ela resolve.
-> Ordem definida por dependência: o que está em cima precisa existir antes do que está embaixo.
+> **Planejamento detalhado:** [`sprints.md`](../sprints.md) — 3 sprints, ~70h.
 
-### 🔴 Prioridade 1 — Fundação
+### 🔴 Sprint 1 — Segurança e Correções Críticas
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 90 | ST-10 Perfis Simplificados (3 perfis) | ✅ `implementada` | **Autonomia** — controle de acesso claro | [`90-st10-perfis-simplificados.md`](./roadmap/90-st10-perfis-simplificados.md) |
 | 120 | Segurança (BCrypt, JWT, rate limit) | ❌ `pendente` | **Autonomia** — segurança para todos os perfis | [`120-seguranca-autenticacao.md`](./roadmap/120-seguranca-autenticacao.md) |
-| 70 | ST-08 Login Unificado | ⚠️ `em revisão` | **Autonomia** — login único simplificado | [`70-st08-login-unificado.md`](./roadmap/70-st08-login-unificado.md) |
-| 80 | ST-09 Vendedor na tabela Usuarios | ❌ `pendente` | **Emitir ingressos** — arquitetura unificada | [`80-st09-vendedor-perfil.md`](./roadmap/80-st09-vendedor-perfil.md) |
-| 150 | Resiliência e Tratamento de Erros | ⚠️ `em revisão` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
+| 160 | Cupons de Desconto | ❌ `pendente` | **Emitir ingressos** — AdminId via JWT, não rota | [`160-cupons.md`](./roadmap/160-cupons.md) |
+| 130 | Isolamento Multi-Tenant (VendedorId) | ❌ `pendente` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
+| 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
 
-### 🟠 Prioridade 2 — Core
-
-| # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
-|---|------|--------|-------------------------------------------------|---------|
-| 10 | ST-01 Auto Cadastro de Vendedor | ❌ `pendente` | **Autonomia** — vender sem depender de Admin | [`10-st01-auto-cadastro-vendedor.md`](./roadmap/10-st01-auto-cadastro-vendedor.md) |
-| 100 | ST-11 Tipo de Evento + Gratuito | ❌ `pendente` | **Criar eventos** — com tipo e sem barreira financeira | [`100-st11-tipo-evento-gratuito.md`](./roadmap/100-st11-tipo-evento-gratuito.md) |
-| 20 | ST-03 Palestras com assentos numerados | ❌ `pendente` | **Criar eventos** — lugares marcados | [`20-st03-palestras.md`](./roadmap/20-st03-palestras.md) |
-| 130 | Isolamento Multi-Tenant (VendedorId) | ⚠️ `em revisão` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
-| 30 | ST-04 ItemReserva (até 4 CPFs) | ❌ `pendente` | **Gerenciar vagas** — compra para até 4 pessoas | [`30-st04-item-reserva.md`](./roadmap/30-st04-item-reserva.md) |
-| 160 | Cupons de Desconto | ⚠️ `em revisão` | **Emitir ingressos** — desconto por Admin | [`160-cupons.md`](./roadmap/160-cupons.md) |
-
-### 🟡 Prioridade 3 — Transações
+### 🟠 Sprint 2 — Cancelamento e Reembolso
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 60 | ST-07 Admin/Vendedor fazem reserva | ❌ `pendente` | **Autonomia** — todos os perfis compram | [`60-st07-admin-vendedor-reservas.md`](./roadmap/60-st07-admin-vendedor-reservas.md) |
 | 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — comprador reembolsado | [`40-st05-cancelamento-reserva.md`](./roadmap/40-st05-cancelamento-reserva.md) |
-| 50 | ST-06 Cancelamento de Evento c/ Reembolso | ⚠️ `em revisão` | **Processar cancelamentos** — evento cancelado | [`50-st06-cancelamento-evento.md`](./roadmap/50-st06-cancelamento-evento.md) |
+| 50 | ST-06 Cancelamento de Evento c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — evento cancelado | [`50-st06-cancelamento-evento.md`](./roadmap/50-st06-cancelamento-evento.md) |
 | 110 | ST-12 Cancelamento — Visão Unificada | ❌ `pendente` | **Processar cancelamentos** — qualquer perfil | [`110-st12-cancelamento-unificado.md`](./roadmap/110-st12-cancelamento-unificado.md) |
 
-### 🟢 Prioridade 4 — Entrega
+### 🟡 Implementadas
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 140 | Infraestrutura e Deploy (Docker) | ⚠️ `em revisão` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
+| 10 | ST-01 Auto Cadastro de Vendedor | ✅ `implementada` | **Autonomia** — vender sem depender de Admin | [`10-st01-auto-cadastro-vendedor.md`](./roadmap/10-st01-auto-cadastro-vendedor.md) |
+| 20 | ST-03 Palestras com assentos numerados | ✅ `implementada` | **Criar eventos** — lugares marcados | [`20-st03-palestras.md`](./roadmap/20-st03-palestras.md) |
+| 30 | ST-04 ItemReserva (até 4 CPFs) | ✅ `implementada` | **Gerenciar vagas** — compra para até 4 pessoas | [`30-st04-item-reserva.md`](./roadmap/30-st04-item-reserva.md) |
+| 60 | ST-07 Admin/Vendedor fazem reserva | ✅ `implementada` | **Autonomia** — todos os perfis compram | [`60-st07-admin-vendedor-reservas.md`](./roadmap/60-st07-admin-vendedor-reservas.md) |
+| 70 | ST-08 Login Unificado | ✅ `implementada` | **Autonomia** — login único simplificado | [`70-st08-login-unificado.md`](./roadmap/70-st08-login-unificado.md) |
+| 80 | ST-09 Vendedor na tabela Usuarios | ✅ `implementada` | **Emitir ingressos** — arquitetura unificada | [`80-st09-vendedor-perfil.md`](./roadmap/80-st09-vendedor-perfil.md) |
+| 90 | ST-10 Perfis Simplificados (3 perfis) | ✅ `implementada` | **Autonomia** — controle de acesso claro | [`90-st10-perfis-simplificados.md`](./roadmap/90-st10-perfis-simplificados.md) |
+| 100 | ST-11 Tipo de Evento + Gratuito | ✅ `implementada` | **Criar eventos** — com tipo e sem barreira financeira | [`100-st11-tipo-evento-gratuito.md`](./roadmap/100-st11-tipo-evento-gratuito.md) |
+| 170 | Pagamento Simulado (Checkout Interno) | ✅ `implementada` | **Emitir ingressos** — confirmação de pagamento | [`spec-170/`](./roadmap/spec-170/) |
+
+### 🟢 Sprint 3 — Infraestrutura e Deploy
+
+| # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
+|---|------|--------|-------------------------------------------------|---------|
+| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
 
 ---
 
@@ -72,9 +73,8 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `implementada` | 1 | ST-10 |
-| ⚠️ `em revisão` | 6 | ST-06, ST-08, 130, 140, 150, 160 |
-| ❌ `pendente` | 9 | ST-01, ST-03, ST-04, ST-05, ST-07, ST-09, ST-11, ST-12, 120 |
+| ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
+| ❌ `pendente` | 8 | ST-05, ST-06, ST-12, 120, 130, 140, 150, 160 |
 
 ---
 
@@ -88,26 +88,27 @@
 
 ---
 
-## Evidências no Código (04/06/2026)
+## Evidências no Código (16/06/2026)
 
 | # | O que foi encontrado | Status |
 |---|---------------------|--------|
-| ST-10 | `Script0003`: 3 perfis com GUIDs fixos | ✅ `implementada` |
-| ST-06 | `EventoController`: `DELETE /api/evento/{id}` existe | ⚠️ `em revisão` (falta reembolso) |
-| ST-08 | `UsuarioService.Login()`: senha em texto plano | ⚠️ `em revisão` (sem BCrypt) |
-| 130 | `Evento.cs`: campo `VendedorCpf`; `Script0008` | ⚠️ `em revisão` (só Evento) |
-| 140 | `DatabaseMigration.cs` + 8 scripts DbUp | ⚠️ `em revisão` (sem Docker) |
-| 150 | `GlobalExceptionHandlerMiddleware.cs` existe | ⚠️ `em revisão` (sem sanitização) |
-| 160 | `Cupom.cs` + CRUD no `CupomController` | ⚠️ `em revisão` (AdminId via rota) |
-| ST-01 | `CadastrarVendedor(AdminLogado)` — exige Admin | ❌ `pendente` |
-| ST-03 | `Evento.cs` sem campo `Tipo` | ❌ `pendente` |
-| ST-04 | `Reserva.cs`: `IngressoId` único, sem `ItemReserva` | ❌ `pendente` |
+| ST-01 | `UsuarioController`: `[HttpPost("cadastrar-vendedor")]` público, sem `[Authorize]` | ✅ `implementada` |
+| ST-03 | `Evento.cs`: campo `TipoEvento Tipo`, método `GerarPalestra()` | ✅ `implementada` |
+| ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List&lt;ItemReserva&gt;) ativo | ✅ `implementada` |
 | ST-05 | Sem `DELETE /api/reserva/{id}` | ❌ `pendente` |
-| ST-07 | `ReservaController`: `[Authorize(Roles="Comprador")]` | ❌ `pendente` |
-| ST-09 | `Usuario.cs` sem Cnpj, NomeFantasia, etc. | ❌ `pendente` |
-| ST-11 | Sem `TipoEvento`, sem `Gratuito` | ❌ `pendente` |
-| ST-12 | Sem endpoint de cancelamento pelo usuário | ❌ `pendente` |
-| 120 | Sem BCrypt; `Jwt:Key` exposto; sem rate limit | ❌ `pendente` |
+| ST-06 | `DELETE /api/evento/{id}` existe mas sem NENHUMA lógica de reembolso | ❌ `pendente` |
+| ST-07 | `ReservaController`: `[Authorize]` sem restrição de role — todos podem | ✅ `implementada` |
+| ST-08 | `UsuarioService.Login()`: BCrypt.Verify + Ativo + LoginResponseDTO | ✅ `implementada` |
+| ST-09 | `Usuario.cs` com Cnpj, NomeFantasia, Telefone, Plano, Ativo, DataCriacao | ✅ `implementada` |
+| ST-10 | `Script0003`: 3 perfis com GUIDs fixos | ✅ `implementada` |
+| ST-11 | `Evento.cs`: `Gratuito` (PrecoPadrao == 0), `TipoEvento` (Teatro/Palestra) | ✅ `implementada` |
+| ST-12 | Sem endpoint de cancelamento pelo próprio usuário | ❌ `pendente` |
+| 120 | BCrypt ✅, RateLimit ✅ — mas `Jwt:Key` ainda exposto em `appsettings.json` | ❌ `pendente` |
+| 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: SEM filtro | ❌ `pendente` |
+| 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
+| 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |
+| 160 | `Cupom.cs` + CRUD no `CupomController` — `AdminId` ainda via rota (7 ocorrências) | ❌ `pendente` |
+| 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 
 ---
 

@@ -32,6 +32,14 @@ public class GlobalExceptionHandlerMiddleware
 
         var (statusCode, message) = ex switch
         {
+            // ST-08: LoginErro retorna 401 (credenciais inválidas)
+            Application.Exceptions.LoginErro
+                => (StatusCodes.Status401Unauthorized, ex.Message),
+
+            // ST-08: UsuarioInativoException retorna 403 (usuário bloqueado)
+            Application.Exceptions.UsuarioInativoException
+                => (StatusCodes.Status403Forbidden, ex.Message),
+
             Application.Exceptions.CnpjJaCadastrado or
             Application.Exceptions.EmailJaCadastrado or
             Application.Exceptions.UsuarioCadastrado

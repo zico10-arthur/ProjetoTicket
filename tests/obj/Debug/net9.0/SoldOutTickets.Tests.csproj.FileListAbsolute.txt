@@ -158,3 +158,6 @@ c:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\obj\Debug\net9.0\refint\Sold
 c:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.pdb
 c:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.genruntimeconfig.cache
 c:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\obj\Debug\net9.0\ref\SoldOutTickets.Tests.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\BCrypt.Net-Next.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Castle.Core.dll
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Moq.dll

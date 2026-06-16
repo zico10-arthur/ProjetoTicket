@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "c31zIlcCvCQ=",
+  "dgSpecHash": "N2xaDrPbhHc=",
   "success": true,
   "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rezen\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",
+    "C:\\Users\\rezen\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dbup-core\\6.1.1\\dbup-core.6.1.1.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dbup-sqlserver\\7.2.0\\dbup-sqlserver.7.2.0.nupkg.sha512",

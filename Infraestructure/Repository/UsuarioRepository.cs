@@ -150,7 +150,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha, Ativo
                          FROM Usuarios
                          WHERE Email = @Email";
 

@@ -71,6 +71,17 @@ public class ReservaRepository : IReservaRepository
         }
     }
 
+    public async Task<Reserva?> BuscarPorId(Guid id, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "SELECT * FROM Reservas WHERE Id = @Id";
+
+        return await connection.QuerySingleOrDefaultAsync<Reserva>(
+            new CommandDefinition(sql, new { Id = id }, cancellationToken: ct)
+        );
+    }
+
     public async Task<IEnumerable<Reserva>> ListarPorCpf(string cpf, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
@@ -136,13 +147,14 @@ public class ReservaRepository : IReservaRepository
                 STRING_AGG(i.Posicao, ', ') AS PosicaoIngresso,
                 STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
-                r.ValorFinalPago
+                r.ValorFinalPago,
+                r.Pago
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
             WHERE r.UsuarioCpf = @Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago";
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago";
 
         return await connection.QueryAsync<ReservaDetalhadaDTO>(
             new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
@@ -162,6 +174,7 @@ public class ReservaRepository : IReservaRepository
                 STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
                 r.ValorFinalPago,
+                r.Pago,
                 u.Nome AS NomeUsuario,
                 u.Cpf AS CpfUsuario
             FROM Reservas r
@@ -169,7 +182,7 @@ public class ReservaRepository : IReservaRepository
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
             INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, u.Nome, u.Cpf
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, u.Nome, u.Cpf
             ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaAdminDTO>(new CommandDefinition(sql, cancellationToken: ct));

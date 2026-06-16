@@ -37,3 +37,12 @@ public class EmailJaCadastrado : DomainException
     public EmailJaCadastrado()
     : base("E-mail já cadastrado") {}
 }
+
+/// <summary>
+/// ST-08: Usuário está inativo.
+/// </summary>
+public class UsuarioInativoException : DomainException
+{
+    public UsuarioInativoException()
+    : base("Usuário inativo. Contate o administrador.") {}
+}

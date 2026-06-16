@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "EhgEnLj0wbw=",
+  "dgSpecHash": "NuyR3IGx2Bg=",
   "success": true,
   "projectFilePath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Web\\Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rezen\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",
+    "C:\\Users\\rezen\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dbup-core\\6.1.1\\dbup-core.6.1.1.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\dbup-sqlserver\\7.2.0\\dbup-sqlserver.7.2.0.nupkg.sha512",
@@ -39,7 +40,7 @@
     "C:\\Users\\rezen\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.14.0\\microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\microsoft.jsinterop\\9.0.1\\microsoft.jsinterop.9.0.1.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
-    "C:\\Users\\rezen\\.nuget\\packages\\mudblazor\\9.4.0\\mudblazor.9.4.0.nupkg.sha512",
+    "C:\\Users\\rezen\\.nuget\\packages\\mudblazor\\9.5.0\\mudblazor.9.5.0.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\system.clientmodel\\1.8.0\\system.clientmodel.1.8.0.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\system.configuration.configurationmanager\\9.0.11\\system.configuration.configurationmanager.9.0.11.nupkg.sha512",
     "C:\\Users\\rezen\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.0\\system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512",

@@ -21,7 +21,7 @@
 | Tabela | Coluna | Índice |
 |--------|--------|--------|
 | `Eventos` | `VendedorId` | `CREATE INDEX IX_Eventos_VendedorId ON Eventos(VendedorId)` |
-| `Cupons` | `VendedorId` | `CREATE INDEX IX_Cupons_VendedorId ON Cupons(VendedorId)` |
+| `Cupons` | *(global)* | Cupons são globais — sem `VendedorId`, gerenciados pelo Admin |
 | `Reservas` | `VendedorId` | `CREATE INDEX IX_Reservas_VendedorId ON Reservas(VendedorId)` |
 
 ---
@@ -85,22 +85,18 @@ WHERE Status = 1
 ## 130.5 SQL Migration
 
 ```sql
--- Adicionar VendedorId nas tabelas
+-- Adicionar VendedorId nas tabelas (exceto Cupons — globais)
 ALTER TABLE Eventos ADD VendedorId VARCHAR(14) NOT NULL DEFAULT '';
-ALTER TABLE Cupons ADD VendedorId VARCHAR(14) NOT NULL DEFAULT '';
 ALTER TABLE Reservas ADD VendedorId VARCHAR(14) NOT NULL DEFAULT '';
 
 -- Foreign Keys
 ALTER TABLE Eventos ADD CONSTRAINT FK_Eventos_Usuarios
-    FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
-ALTER TABLE Cupons ADD CONSTRAINT FK_Cupons_Usuarios
     FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
 ALTER TABLE Reservas ADD CONSTRAINT FK_Reservas_Usuarios
     FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
 
 -- Índices
 CREATE INDEX IX_Eventos_VendedorId ON Eventos(VendedorId);
-CREATE INDEX IX_Cupons_VendedorId ON Cupons(VendedorId);
 CREATE INDEX IX_Reservas_VendedorId ON Reservas(VendedorId);
 ```
 

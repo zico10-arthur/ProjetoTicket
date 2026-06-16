@@ -11,7 +11,10 @@ public interface IUsuarioService
     /// </summary>
     Task<VendedorCadastradoDTO> CadastrarVendedor(CadastrarVendedorDTO dto, CancellationToken ct);
 
-    Task<string> Login(LoginDTO dto, CancellationToken ct);
+    /// <summary>
+    /// ST-08: Login unificado com BCrypt. Retorna JWT + dados do usuário.
+    /// </summary>
+    Task<LoginResponseDTO> Login(LoginDTO dto, CancellationToken ct);
 
     Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct);
 

@@ -212,16 +212,16 @@ Acessa Painel do Vendedor:
 ### 4.2 Regras de Isolamento
 
 ```
-Vendedor X → só vê/edita/exclui seus próprios eventos e cupons
+Vendedor X → só vê/edita/exclui seus próprios eventos
 Comprador Y → só vê suas próprias reservas
-Admin → vê TUDO (visão global da plataforma)
+Admin → vê TUDO (visão global da plataforma), gerencia cupons globais
 ```
 
-Garantido pela coluna `VendedorId` (CPF/CNPJ do Vendedor) em todas as tabelas de negócio:
+Garantido pela coluna `VendedorId` (CPF/CNPJ do Vendedor) nas tabelas de negócio. Cupons são globais (sem `VendedorId`):
 
 ```sql
 SELECT * FROM Eventos WHERE VendedorId = @vendedorId
-SELECT * FROM Cupons WHERE VendedorId = @vendedorId
+SELECT * FROM Cupons  -- global, sem filtro de vendedor
 SELECT * FROM Reservas WHERE VendedorId = @vendedorId
 ```
 
@@ -365,13 +365,13 @@ public class ItemReserva
 > ✅ **CPFs dos itens não precisam estar cadastrados** no sistema — são apenas participantes.
 > ✅ Cada `ItemReserva` pode ter um `IngressoId` (Teatro) ou ser `null` (Palestra).
 
-### 5.7 [`Cupom`](../Domain/Entities/Cupom.cs) — ATUALIZADO
+### 5.7 [`Cupom`](../Domain/Entities/Cupom.cs) — GLOBAL (Admin)
 
 ```csharp
 public class Cupom
 {
     public string Codigo { get; private set; }
-    public string VendedorId { get; private set; }       // Vendedor dono do cupom
+    // Sem VendedorId — cupons são globais, gerenciados pelo Admin
     public int PorcentagemDesconto { get; private set; }
     public decimal ValorMinimo { get; private set; }
     public DateTime? DataExpiracao { get; private set; }
@@ -384,8 +384,8 @@ public class Cupom
 ```csharp
 public enum PlanoVendedor
 {
-    Gratuito = 0,     // Limitado: até 3 eventos, sem cupons
-    Basico = 1,       // Até 10 eventos/mês, cupons ilimitados
+    Gratuito = 0,     // Limitado: até 3 eventos
+    Basico = 1,       // Até 10 eventos/mês
     Profissional = 2, // Eventos ilimitados, relatórios, branding próprio
 }
 ```
@@ -657,9 +657,9 @@ Dashboard Admin:
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| CUP-01 | Cupom pertence a um vendedor (VendedorId) | Alta |
-| CUP-02 | Vendedor gerencia seus próprios cupons (CRUD) | Alta |
-| CUP-03 | Cupom válido apenas para eventos do mesmo vendedor | Alta |
+| CUP-01 | Cupom é global, gerenciado pelo Admin | Alta |
+| CUP-02 | Admin gerencia cupons (CRUD completo) | Alta |
+| CUP-03 | Cupom válido para qualquer evento pago da plataforma | Alta |
 | CUP-04 | Cupom não se aplica a eventos gratuitos | Média |
 
 ### 9.6 Comprador
@@ -798,12 +798,8 @@ ALTER TABLE Eventos ADD CONSTRAINT FK_Eventos_Usuarios
     FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
 CREATE INDEX IX_Eventos_VendedorId ON Eventos(VendedorId);
 
--- Cupons
-ALTER TABLE Cupons ADD
-    VendedorId      VARCHAR(14)         NOT NULL;
-ALTER TABLE Cupons ADD CONSTRAINT FK_Cupons_Usuarios
-    FOREIGN KEY (VendedorId) REFERENCES Usuarios(Cpf);
-CREATE INDEX IX_Cupons_VendedorId ON Cupons(VendedorId);
+-- Cupons: globais (sem VendedorId), schema atual mantido
+-- Tabela Cupons NÃO recebe VendedorId
 
 -- Reservas
 ALTER TABLE Reservas ADD
@@ -877,9 +873,12 @@ Perfis (1) ──── (N) Usuarios
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|-----------|-------------|
-| `POST` | `/api/cupom/cadastrar` | Cadastrar cupom | ✅ JWT Vendedor |
-| `GET`  | `/api/cupom/meus` | Cupons do vendedor | ✅ JWT Vendedor |
-| `DELETE` | `/api/cupom/{codigo}` | Remover cupom | ✅ JWT Vendedor |
+| `POST` | `/api/cupom/cadastrar` | Cadastrar cupom | ✅ JWT Admin |
+| `GET`  | `/api/cupom/listar` | Listar todos cupons | ✅ JWT Admin |
+| `GET`  | `/api/cupom/validos` | Listar cupons válidos (público) | — |
+| `DELETE` | `/api/cupom/{codigo}` | Remover cupom | ✅ JWT Admin |
+| `PATCH` | `/api/cupom/{codigo}/status` | Ativar/desativar cupom | ✅ JWT Admin |
+| `PATCH` | `/api/cupom/{codigo}/desconto` | Alterar desconto | ✅ JWT Admin |
 
 ### 13.5 Admin
 
@@ -904,7 +903,7 @@ Perfis (1) ──── (N) Usuarios
 | 3 | Criar enum [`PlanoVendedor`](../Domain/Entities/PlanoVendedor.cs) | `Domain/Entities/PlanoVendedor.cs` |
 | 4 | Atualizar [`Evento`](../Domain/Entities/Evento.cs): adicionar VendedorId, Tipo, Descricao, Local, ImagemUrl, Cancelado | `Domain/Entities/Evento.cs` |
 | 5 | Atualizar [`Reserva`](../Domain/Entities/Reserva.cs): adicionar VendedorId, Quantidade, Reembolsada; IngressoId nullable | `Domain/Entities/Reserva.cs` |
-| 6 | Atualizar [`Cupom`](../Domain/Entities/Cupom.cs): adicionar VendedorId | `Domain/Entities/Cupom.cs` |
+| 6 | Atualizar [`Cupom`](../Domain/Entities/Cupom.cs): cupons globais (Admin), sem VendedorId | `Domain/Entities/Cupom.cs` |
 | 7 | Atualizar [`Ingresso`](../Domain/Entities/Ingresso.cs): Posicao/Setor nullable; Status=3 para Reembolsado | `Domain/Entities/Ingresso.cs` |
 | 8 | Atualizar [`Perfil`](../Domain/Entities/Perfil.cs): garantir 3 perfis (Admin, Vendedor, Comprador) | `Domain/Entities/Perfil.cs` |
 | 9 | Criar script SQL para alterar tabelas existentes | `Infraestructure/DataBase/Scripts/` |
@@ -918,7 +917,7 @@ Perfis (1) ──── (N) Usuarios
 | 2 | Atualizar `TokenService` para gerar JWT com role=Vendedor | `Application/Service/TokenService.cs` |
 | 3 | Atualizar `EventoService`: filtrar por VendedorId, suportar Tipo, implementar cancelamento com reembolso | `Application/Service/EventoService.cs` |
 | 4 | Atualizar `ReservaService`: suportar Palestra (Quantidade), validar vagas, marcar reembolso | `Application/Service/ReservaService.cs` |
-| 5 | Atualizar `CupomService`: filtrar por VendedorId | `Application/Service/CupomService.cs` |
+| 5 | Atualizar `CupomService`: cupons globais, gerenciados pelo Admin | `Application/Service/CupomService.cs` |
 | 6 | Criar DTOs de Vendedor (CadastrarVendedorDTO, VendedorResponseDTO) | `Application/DTOs/` |
 | 7 | Atualizar `EventoRequestDTO`: adicionar Tipo, Descricao, Local | `Application/DTOs/EventoRequestDTO.cs` |
 
@@ -964,7 +963,7 @@ Perfis (1) ──── (N) Usuarios
 | **Ingresso** | Representação individual de um assento (apenas para Teatro). |
 | **Reserva** | Vínculo entre Comprador e um evento/ingresso, com ou sem cupom. |
 | **Reembolso** | Processo obrigatório ao cancelar evento pago com ingressos vendidos. Ingressos → Status=3, Reservas → Reembolsada=true. |
-| **Cupom** | Desconto percentual vinculado a um Vendedor, aplicável em seus eventos pagos. |
+| **Cupom** | Desconto percentual global, gerenciado pelo Admin, aplicável em qualquer evento pago da plataforma. |
 | **Plano** | Nível de assinatura do Vendedor: Gratuito, Básico ou Profissional. |
 
 ---

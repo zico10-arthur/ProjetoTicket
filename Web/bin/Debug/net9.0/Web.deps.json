@@ -9,7 +9,7 @@
       "Web/1.0.0": {
         "dependencies": {
           "Application": "1.0.0",
-          "MudBlazor": "9.4.0"
+          "MudBlazor": "9.5.0"
         },
         "runtime": {
           "Web.dll": {}
@@ -51,6 +51,14 @@
           "lib/net8.0/Azure.Identity.dll": {
             "assemblyVersion": "1.17.1.0",
             "fileVersion": "1.1700.125.56903"
+          }
+        }
+      },
+      "BCrypt.Net-Next/4.0.3": {
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.0.3.0"
           }
         }
       },
@@ -459,7 +467,7 @@
           }
         }
       },
-      "MudBlazor/9.4.0": {
+      "MudBlazor/9.5.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "9.0.1",
           "Microsoft.AspNetCore.Components.Web": "9.0.1",
@@ -467,8 +475,8 @@
         },
         "runtime": {
           "lib/net9.0/MudBlazor.dll": {
-            "assemblyVersion": "9.4.0.0",
-            "fileVersion": "9.4.0.0"
+            "assemblyVersion": "9.5.0.0",
+            "fileVersion": "9.5.0.0"
           }
         }
       },
@@ -568,10 +576,11 @@
       "Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "16.1.1",
+          "BCrypt.Net-Next": "4.0.3",
           "Domain": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1",
+          "infraestructure": "1.0.0"
         },
         "runtime": {
           "Application.dll": {
@@ -588,7 +597,7 @@
           }
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
@@ -596,7 +605,7 @@
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "Infraestructure.dll": {
+          "infraestructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -630,6 +639,13 @@
       "sha512": "sha512-MSZkBrctcpiGxs9Cvr2VKKoN6qFLZlP3I6xuCWJ9iTgitI5Rgxtk5gfOSpXPZE3+CJmZ/mnqpQyGyjawFn5Vvg==",
       "path": "azure.identity/1.17.1",
       "hashPath": "azure.identity.1.17.1.nupkg.sha512"
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "path": "bcrypt.net-next/4.0.3",
+      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
     "Dapper/2.1.72": {
       "type": "package",
@@ -855,12 +871,12 @@
       "path": "microsoft.sqlserver.server/1.0.0",
       "hashPath": "microsoft.sqlserver.server.1.0.0.nupkg.sha512"
     },
-    "MudBlazor/9.4.0": {
+    "MudBlazor/9.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-p6BF8zmt4c/yi/hD9hP7yPioUK5loOnif19gwIEANq6I46407QnSu0HTW1NuALC5seRKcWb2pBP5LwC8aBE2Mg==",
-      "path": "mudblazor/9.4.0",
-      "hashPath": "mudblazor.9.4.0.nupkg.sha512"
+      "sha512": "sha512-mZiuKdOG42RkA/cZhiwNwbBZAKBExDx387ylvxzokcenRFHi8n4tq8olGuXs/oWNX1Qgo7Tj7J0AhOjjSnTpcw==",
+      "path": "mudblazor/9.5.0",
+      "hashPath": "mudblazor.9.5.0.nupkg.sha512"
     },
     "System.ClientModel/1.8.0": {
       "type": "package",
@@ -935,7 +951,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

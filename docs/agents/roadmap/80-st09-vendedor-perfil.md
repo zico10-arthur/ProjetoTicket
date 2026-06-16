@@ -91,5 +91,5 @@ public class Usuario
 | Login Vendedor | `POST /api/empresa/login` | `POST /api/usuario/login` |
 | Role JWT | `"Empresa"` | `"Vendedor"` |
 | FK Eventos | `Eventos.EmpresaId` | `Eventos.VendedorId` → `Usuarios.Cpf` |
-| FK Cupons | sem vínculo | `Cupons.VendedorId` → `Usuarios.Cpf` |
+| FK Cupons | sem vínculo | Cupons globais (Admin), sem FK para Usuarios |
 | FK Reservas | sem vínculo | `Reservas.VendedorId` → `Usuarios.Cpf` |

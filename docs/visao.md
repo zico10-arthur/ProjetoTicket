@@ -34,7 +34,7 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
   - **Teatro**: assentos numerados com setores VIP e Geral, com mapa visual.
 - Eventos podem ser **gratuitos** (confirmação direta, sem pagamento) ou **pagos**.
 - **Reservas com múltiplos participantes** (até 4 CPFs por compra) — o comprador adquire ingressos para si e para terceiros em uma única transação.
-- **Cupons de desconto** vinculados ao vendedor, aplicáveis em eventos pagos.
+- **Cupons de desconto** globais, gerenciados pelo Admin, aplicáveis em eventos pagos de qualquer vendedor.
 - **Cancelamento com reembolso** — compradores cancelam reservas antes do evento começar; vendedores cancelam eventos com reembolso obrigatório dos ingressos vendidos.
 - **Três perfis de usuário** unificados na mesma tabela e mesmo endpoint de login: Admin, Vendedor e Comprador.
 
@@ -71,7 +71,6 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 - Painel do Vendedor com:
   - Criação de eventos (Palestra ou Teatro, gratuito ou pago)
   - Lista dos seus eventos (Meus Eventos)
-  - Gerenciamento de cupons de desconto
   - Relatórios de vendas
   - Configurações de perfil (logo, descrição, site)
 - Cancelamento de evento com alerta e reembolso obrigatório (se houver ingressos vendidos)
@@ -83,6 +82,7 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 - Login pelo mesmo endpoint de usuário
 - Listagem e gestão de vendedores (ativar/desativar, alterar plano)
 - Listagem de compradores
+- **Gestão de cupons globais** (criar, alterar, ativar/desativar, remover)
 - Visão global de todos os eventos e reservas
 - Possibilidade de comprar ingressos como qualquer usuário
 
@@ -132,19 +132,21 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 | Vendedor cancela evento pago → alerta de reembolso obrigatório → transação atômica (`Evento.Cancelado=true` + `Ingresso.Status=3` + `Reserva.Reembolsada=true`) | **Transparência e responsabilidade**: o vendedor é alertado sobre o impacto financeiro antes de cancelar. Compradores têm a garantia de que serão reembolsados — o sistema força isso na transação. |
 | Evento gratuito cancelado sem reembolso | **Coerência**: como não houve cobrança, não há reembolso — o sistema não cobra nem devolve o que não existe, evitando confusão. |
 
-### 6.6 Cupons Vinculados ao Vendedor
+### 6.6 Cupons Globais do Admin
 
 | Especificação | Valor para o Usuário |
 |---|---|
-| `Cupom.VendedorId` — cada cupom pertence a um vendedor | **Controle de marketing**: o vendedor cria cupons para seus próprios eventos. Um vendedor não pode usar cupom de outro, garantindo que promoções sejam exclusivas de cada organizador. |
+| `POST /api/cupom/cadastrar` — restrito a `[Authorize(Roles = "Admin")]` | **Controle centralizado**: apenas o Admin cria cupons, garantindo que a plataforma controle as políticas de desconto de forma unificada. |
+| Cupons são **globais** — aplicáveis a qualquer evento pago, de qualquer vendedor | **Simplicidade para o comprador**: um cupom como `PROMO10` funciona em qualquer evento da plataforma, sem confusão sobre "de qual vendedor" o cupom é. |
 | Validação: cupom ativo + não expirado + `ValorMinimo` atingido + não aplicável a evento gratuito | **Uso justo**: o comprador só usa cupons válidos. O vendedor não tem surpresas com descontos aplicados indevidamente em eventos gratuitos. |
 | Desconto não pode gerar valor negativo (`ValorFinalPago >= 0`) | **Previsibilidade financeira**: o vendedor nunca é lesado por um cupom que geraria saldo negativo. |
+| Endpoints `ListarCuponsValidos` é público — qualquer usuário pode consultar cupons disponíveis | **Transparência**: compradores descobrem cupons ativos sem precisar de login específico. |
 
 ### 6.7 Isolamento de Dados Multi-Tenant (VendedorId)
 
 | Especificação | Valor para o Usuário |
 |---|---|
-| Toda query filtra por `VendedorId`: `SELECT * FROM Eventos WHERE VendedorId = @vendedorId` | **Privacidade e segurança**: o Vendedor X nunca vê os eventos, cupons ou reservas do Vendedor Y. Cada organizador opera como se estivesse em sua própria plataforma. |
+| Toda query filtra por `VendedorId`: `SELECT * FROM Eventos WHERE VendedorId = @vendedorId` | **Privacidade e segurança**: o Vendedor X nunca vê os eventos ou reservas do Vendedor Y. Cada organizador opera como se estivesse em sua própria plataforma. |
 | `VendedorId` extraído do JWT (`User.Claims`), nunca da rota | **Impossibilidade de falsificação**: um vendedor mal-intencionado não consegue acessar dados de outro manipulando a URL. A identidade vem do token criptografado. |
 
 ### 6.8 Background Worker de Liberação de Assentos
@@ -161,7 +163,7 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 | Item | Descrição |
 |------|-----------|
 | **Plataforma** | SaaS — Vendedor se cadastra e começa a vender |
-| **Planos do Vendedor** | Gratuito (até 3 eventos, sem cupons), Básico (até 10 eventos/mês, cupons ilimitados), Profissional (eventos ilimitados, relatórios, branding próprio) |
+| **Planos do Vendedor** | Gratuito (até 3 eventos), Básico (até 10 eventos/mês), Profissional (eventos ilimitados, relatórios, branding próprio) |
 | **Monetização** | A ser definida (planos pagos, comissão sobre vendas, ou freemium) |
 | **Auto cadastro** | Vendedor se cadastra sozinho — sem depender do Admin |
 | **Admin** | Cadastrado manualmente no banco (SQL seed) — não há cadastro público para Admin |
@@ -218,7 +220,7 @@ ProjetoTicket/
 4. **Foco em Palestras** — eventos sem assentos fixos, controle por vagas, sem geração massiva de ingressos — adequado ao nicho de pequeno porte.
 5. **Reserva multi-participante** — entidade `ItemReserva` permite até 4 CPFs por compra, cada um gerando um item independente com possibilidade de reembolso individual.
 6. **Cancelamento com reembolso atômico** — operações de cancelamento de evento e reserva executadas em transação, garantindo consistência.
-7. **Isolamento de dados por VendedorId** — segurança multi-tenant: cada vendedor acessa apenas seus próprios eventos, cupons e reservas.
+7. **Isolamento de dados por VendedorId** — segurança multi-tenant: cada vendedor acessa apenas seus próprios eventos e reservas. Cupons são globais, gerenciados pelo Admin.
 8. **Segurança** — BCrypt para senhas, Dapper parametrizado contra SQL Injection, JWT com roles, chave JWT em user-secrets.
 
 ---
@@ -269,7 +271,7 @@ ProjetoTicket/
 | Falsificação de identidade (AdminId via rota) | Crítico | Extrair identidade do JWT (`User.Claims`) |
 | Exposição de chave JWT no código-fonte | Alto | Migrar para `dotnet user-secrets` |
 | Conflito de reservas (sobrevenda de vagas) | Alto | Validação atômica da capacidade antes de confirmar reserva |
-| Isolamento de dados entre vendedores | Alto | Toda query filtra por `VendedorId` |
+| Isolamento de dados entre vendedores | Alto | Toda query de eventos e reservas filtra por `VendedorId`; cupons são globais |
 | Esgotamento de conexões com banco | Médio | Configurar `Max Pool Size=100` |
 
 ---

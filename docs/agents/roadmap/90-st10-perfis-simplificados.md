@@ -51,7 +51,7 @@ IF NOT EXISTS (SELECT 1 FROM Perfis WHERE Id = 'C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3
 | Editar/excluir evento | ✅ (qualquer) | ✅ (próprio) | ❌ |
 | Fazer reserva | ✅ | ✅ | ✅ |
 | Cancelar reserva | ✅ (qualquer) | ✅ (própria/evento) | ✅ (própria) |
-| Criar cupom | ❌ | ✅ (próprio) | ❌ |
+| Criar cupom | ✅ (próprio) | ❌ | ❌ |
 | Listar vendedores | ✅ | ❌ | ❌ |
 | Ativar/desativar vendedor | ✅ | ❌ | ❌ |
 | Alterar plano vendedor | ✅ | ❌ | ❌ |

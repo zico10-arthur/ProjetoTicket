@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Api.Middlewares;
 using Infrastructure.Database;
 using Application.Mappings;
+using Infraestructure.DataBase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -31,6 +32,8 @@ builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Se
 builder.Services.AddScoped<IIngressoRepository, IngressoRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IIngressoService, IngressoService>();
+builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
+builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 
 builder.Services.AddHostedService<LiberacaoAssentosWorker>();
 
@@ -73,6 +76,13 @@ var app = builder.Build();
 
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection")!;
 DatabaseMigration.Initialize(connectionString);
+
+// ST-08: Seed Admin com BCrypt + Perfis
+using (var scope = app.Services.CreateScope())
+{
+    var seederFactory = scope.ServiceProvider.GetRequiredService<ConnectionFactory>();
+    DatabaseSeeder.Seed(seederFactory);
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

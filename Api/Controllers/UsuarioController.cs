@@ -38,12 +38,14 @@ public class UsuarioController : ControllerBase
         return CreatedAtAction(nameof(CadastrarVendedor), resultado);
     }
 
+    /// <summary>
+    /// ST-08: Login unificado — um endpoint para todos os perfis.
+    /// </summary>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO dto, CancellationToken ct)
     {
-        var token = await _service.Login(dto,ct);
-
-        return Ok(new{token = token});
+        var resposta = await _service.Login(dto, ct);
+        return Ok(resposta);
     }
 
     

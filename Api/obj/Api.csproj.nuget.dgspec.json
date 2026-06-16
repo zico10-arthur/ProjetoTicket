@@ -35,8 +35,8 @@
               "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
                 "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
               },
-              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
-                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
+              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -124,8 +124,8 @@
               "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Domain\\Domain.csproj": {
                 "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
-                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
+              "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -149,6 +149,10 @@
             "AutoMapper": {
               "target": "Package",
               "version": "[16.1.1, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
             },
             "Microsoft.Extensions.Configuration.Abstractions": {
               "target": "Package",
@@ -244,14 +248,14 @@
         }
       }
     },
-    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+    "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
-        "projectName": "infraestructure",
-        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectName": "Infraestructure",
+        "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\rezen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\obj\\",
+        "outputPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -294,6 +298,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.1.72, )"
