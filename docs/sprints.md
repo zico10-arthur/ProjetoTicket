@@ -2,26 +2,26 @@
 
 > **Fonte:** [`storytelling.md`](./storytelling.md) | **Roadmap:** [`agents/roadmap.md`](./agents/roadmap.md)
 > **Specs detalhadas:** [`agents/roadmap/`](./agents/roadmap/)
-> **Data:** 16/06/2026
+> **Data:** 17/06/2026
 
 ---
 
 ## Visão Geral
 
-> 9 specs já implementadas. **8 specs pendentes.** Apenas o que falta fazer.
+> 9 specs já implementadas. **9 specs pendentes.** Apenas o que falta fazer.
 
 | Sprint | Duração | Specs | Foco |
 |--------|---------|-------|------|
-| **Sprint 1** | 1 semana | 120, 160, 130, 150 | 🔴 Segurança e correções críticas |
+| **Sprint 1** | 1 semana | 120, 160, 130, 150, 180 | 🔴 Segurança e correções críticas |
 | **Sprint 2** | 2 semanas | ST-05, ST-06, ST-12 | 🟠 Cancelamento e reembolso |
 | **Sprint 3** | 1 semana | 140 | 🟢 Infraestrutura e deploy |
-| **Total** | **4 semanas** | **8 specs** | **v2.0 completo** |
+| **Total** | **4 semanas** | **9 specs** | **v2.0 completo** |
 
 ---
 
 ## Sprint 1 — Segurança e Correções Críticas (1 semana)
 
-> **4 specs:** bugs de segurança que precisam ser corrigidos antes de qualquer feature nova.
+> **5 specs:** bugs de segurança e infraestrutura que precisam ser corrigidos antes de qualquer feature nova.
 
 ---
 
@@ -94,6 +94,27 @@
 
 ---
 
+### 180 — Serviço de E-mail Transacional + Redefinição de Senha 🔴
+
+> **Spec:** [`spec-180/`](./agents/roadmap/spec-180/)
+> **Problema:** O sistema não envia nenhum e-mail transacional (boas-vindas, confirmação de reserva, pagamento, reembolso) e não tem fluxo de "esqueci minha senha" — usuário depende do Admin para recuperar acesso.
+
+| # | Tarefa | Arquivos | h |
+|---|--------|----------|----|
+| 180.1 | `EmailMessage` (value object) + `IEmailSender` (interface) no Domain | `Domain/ValueObjects/EmailMessage.cs`, `Domain/Interface/IEmailSender.cs` | 0.5 |
+| 180.2 | `SmtpSettings` + `EmailTemplates` + NuGet MailKit no Infra | `Infraestructure/Email/SmtpSettings.cs`, `EmailTemplates.cs`, `Infraestructure.csproj` | 1 |
+| 180.3 | `SmtpEmailSender` (MailKit) + `EmailBackgroundWorker` (Channel\<T\>, retentativa) | `Infraestructure/Email/SmtpEmailSender.cs`, `EmailBackgroundWorker.cs` | 1.5 |
+| 180.4 | `TokenService`: `GerarTokenRedefinicaoSenha()` + `ValidarTokenRedefinicaoSenha()` | `Application/Service/TokenService.cs`, `Application/Interfaces/ITokenService.cs` | 1 |
+| 180.5 | `UsuarioService`: injetar `IEmailSender`, e-mails de boas-vindas + `SolicitarRedefinicaoSenha()` + `RedefinirSenha()` | `Application/Service/UsuarioService.cs`, `Application/Interfaces/IUsuarioService.cs` | 2 |
+| 180.6 | `ReservaService` + `PagamentoService`: injetar `IEmailSender`, e-mails de confirmação | `Application/Service/ReservaService.cs`, `PagamentoService.cs` | 1 |
+| 180.7 | `UsuarioController`: `POST /api/usuario/esqueci-senha` + `POST /api/usuario/redefinir-senha` | `Api/Controllers/UsuarioController.cs` | 1 |
+| 180.8 | `appsettings.json`: seção `Smtp` + `App:BaseUrl`; `Program.cs`: DI (SmtpSettings, SmtpEmailSender, BackgroundWorker) | `Api/appsettings.json`, `Api/Program.cs` | 0.5 |
+| 180.9 | Testes: 15 cenários (boas-vindas, reserva, pagamento, reembolso, redefinição de senha) | `tests/EmailTests.cs` | 1.5 |
+
+**Subtotal:** ~10h
+
+---
+
 ### Resumo Sprint 1
 
 | Spec | Carga |
@@ -102,7 +123,8 @@
 | 160 — Cupons | ~7h |
 | 130 — Isolamento | ~9h |
 | 150 — Resiliência | ~4.5h |
-| **Total Sprint 1** | **~24.5h** |
+| 180 — E-mail Transacional | ~10h |
+| **Total Sprint 1** | **~34.5h** |
 
 ---
 
@@ -209,10 +231,10 @@
 
 | Sprint | Specs | Carga |
 |--------|-------|-------|
-| Sprint 1 — Segurança | 120, 160, 130, 150 | ~24.5h |
+| Sprint 1 — Segurança | 120, 160, 130, 150, 180 | ~34.5h |
 | Sprint 2 — Transações | ST-05, ST-06, ST-12 | ~38h |
 | Sprint 3 — Infra | 140 | ~7.5h |
-| **Total** | **8 specs** | **~70h** |
+| **Total** | **9 specs** | **~80h** |
 
 ---
 
@@ -220,9 +242,10 @@
 
 ```
 120 (JWT Key) ──┐
-160 (Cupons)   ──┤─ Sprint 1: sem dependências entre si
-130 (Isolamento)──┤
-150 (Resiliência)─┘
+160 (Cupons)   ──┤
+130 (Isolamento)──┤─ Sprint 1: sem dependências entre si
+150 (Resiliência)─┤
+180 (E-mail)     ─┘
                   │
                   ▼
               ST-05 (Cancelamento Reserva) ──┬── ST-06 (Cancelamento Evento)
@@ -245,6 +268,7 @@
 | 160 | Cupons — AdminId via JWT | ❌ `pendente` | 1 |
 | 130 | Isolamento Multi-Tenant | ❌ `pendente` | 1 |
 | 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | 1 |
+| 180 | Serviço de E-mail Transacional + Redef. de Senha | ❌ `pendente` | 1 |
 | ST-05 | Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | 2 |
 | ST-06 | Cancelamento de Evento c/ Reembolso | ❌ `pendente` | 2 |
 | ST-12 | Cancelamento — Visão Unificada | ❌ `pendente` | 2 |

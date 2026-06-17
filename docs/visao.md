@@ -149,12 +149,24 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 | Toda query filtra por `VendedorId`: `SELECT * FROM Eventos WHERE VendedorId = @vendedorId` | **Privacidade e segurança**: o Vendedor X nunca vê os eventos ou reservas do Vendedor Y. Cada organizador opera como se estivesse em sua própria plataforma. |
 | `VendedorId` extraído do JWT (`User.Claims`), nunca da rota | **Impossibilidade de falsificação**: um vendedor mal-intencionado não consegue acessar dados de outro manipulando a URL. A identidade vem do token criptografado. |
 
-### 6.8 Background Worker de Liberação de Assentos
+### 6.8 Hangfire Recurring Job de Liberação de Assentos
 
 | Especificação | Valor para o Usuário |
 |---|---|
-| Worker executa a cada 60s: libera ingressos com `Status=1` (Reservado) e `DataBloqueio` > 15 minutos | **Justiça para todos**: se um comprador iniciar uma reserva e abandonar o checkout, o assento não fica preso eternamente. Outros compradores têm chance real de adquiri-lo após 15 minutos. |
-| Worker filtra por `VendedorId` para respeitar isolamento | **Consistência multi-tenant**: o worker opera dentro do perímetro de cada vendedor, mantendo a integridade do isolamento de dados. |
+| Hangfire recurring job executa a cada 60s com persistência em banco: libera ingressos com `Status=1` (Reservado) e `DataBloqueio` > 15 minutos | **Justiça para todos**: se um comprador iniciar uma reserva e abandonar o checkout, o assento não fica preso eternamente. Outros compradores têm chance real de adquiri-lo após 15 minutos. |
+| Dashboard de monitoramento em `/hangfire` (restrito a Admin) com histórico de execuções, falhas e tempo de cada job | **Confiabilidade operacional**: o Admin monitora a saúde dos jobs em tempo real, sem precisar acessar logs do servidor. Jobs sobrevivem a restarts do servidor. |
+
+### 6.9 E-mails Transacionais e Redefinição de Senha
+
+| Especificação | Valor para o Usuário |
+|---|---|
+| E-mail de boas-vindas enviado ao se cadastrar como Comprador ou Vendedor | **Confirmação imediata**: o usuário recebe a certeza de que a conta foi criada com sucesso, sem precisar fazer login para verificar. |
+| E-mail de confirmação de reserva com nome do evento, data, quantidade de participantes e valor total | **Comprovante digital**: o comprador tem um registro da compra no e-mail, acessível mesmo sem estar logado na plataforma. |
+| E-mail de confirmação de pagamento com valor pago e método | **Segurança e transparência**: o comprador sabe exatamente quando e quanto pagou, com registro para eventuais contestações. |
+| E-mail de reembolso confirmado (quando reserva ou evento é cancelado) | **Tranquilidade financeira**: o comprador tem a garantia documentada de que o reembolso foi processado. |
+| `POST /api/usuario/esqueci-senha` + `POST /api/usuario/redefinir-senha` com token JWT de 15 minutos enviado por e-mail | **Autonomia total**: o usuário recupera o acesso à conta sozinho, sem abrir chamado nem depender do Admin. Nenhum outro perfil precisa intervir. |
+| Envio assíncrono via background worker com fila em memória — não bloqueia a resposta da API | **Experiência fluida**: o cadastro, reserva ou pagamento são confirmados instantaneamente. O e-mail chega em seguida, sem atrasar a navegação. |
+| Graceful degradation: se SMTP não estiver configurado, o sistema funciona normalmente sem e-mails | **Resiliência em desenvolvimento**: o time pode rodar o sistema localmente sem configurar servidor de e-mail. |
 
 ---
 
@@ -186,6 +198,7 @@ O SoldOut Tickets resolve esses problemas com uma plataforma web onde:
 | BCrypt | Hash de senhas |
 | AutoMapper | Mapeamento de objetos (DTO ↔ Entidade) |
 | DbUp | Versionamento e migração de banco de dados |
+| Hangfire | Agendamento e monitoramento de jobs em background |
 | xUnit | Testes automatizados |
 
 ### 8.2 Arquitetura de Camadas (Clean Architecture)
@@ -235,7 +248,8 @@ ProjetoTicket/
 - Aplicação de cupons de desconto
 - Cancelamento de reserva com reembolso
 - Cancelamento de evento com reembolso obrigatório
-- Background Worker para liberação de assentos expirados
+- Hangfire recurring job para liberação de assentos expirados
+- Envio de e-mails transacionais (boas-vindas, confirmação de reserva, pagamento e reembolso) e redefinição de senha
 - API REST documentada via Swagger
 - Frontend Blazor Server com MudBlazor
 - Migrations automáticas via DbUp
@@ -243,7 +257,6 @@ ProjetoTicket/
 ### O que está fora do escopo atual
 
 - Gateway de pagamento real (simulado no sistema)
-- Envio de e-mails/notificações push
 - Aplicativo mobile
 - Integração com redes sociais
 - Check-in / validação de ingresso no dia do evento

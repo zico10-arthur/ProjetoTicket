@@ -1,6 +1,6 @@
 # Roadmap — SoldOut Tickets
 
-> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (17 arquivos) | **Data:** 16/06/2026
+> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (30 arquivos) | **Data:** 17/06/2026
 
 ---
 
@@ -26,14 +26,15 @@
 | 160 | Cupons de Desconto | ❌ `pendente` | **Emitir ingressos** — AdminId via JWT, não rota | [`160-cupons.md`](./roadmap/160-cupons.md) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ❌ `pendente` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
 | 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
+| 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — comprador reembolsado | [`40-st05-cancelamento-reserva.md`](./roadmap/40-st05-cancelamento-reserva.md) |
-| 50 | ST-06 Cancelamento de Evento c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — evento cancelado | [`50-st06-cancelamento-evento.md`](./roadmap/50-st06-cancelamento-evento.md) |
-| 110 | ST-12 Cancelamento — Visão Unificada | ❌ `pendente` | **Processar cancelamentos** — qualquer perfil | [`110-st12-cancelamento-unificado.md`](./roadmap/110-st12-cancelamento-unificado.md) |
+| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — comprador reembolsado | [`spec-40/`](./roadmap/spec-40/) |
+| 50 | ST-06 Cancelamento de Evento c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — evento cancelado | [`spec-50/`](./roadmap/spec-50/) |
+| 110 | ST-12 Cancelamento — Visão Unificada | ❌ `pendente` | **Processar cancelamentos** — qualquer perfil | [`spec-110/`](./roadmap/spec-110/) |
 
 ### 🟡 Implementadas
 
@@ -54,6 +55,7 @@
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
 | 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
+| 190 | Substituir BackgroundService por Hangfire | ❌ `pendente` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
 
 ---
 
@@ -62,10 +64,10 @@
 | Problema ([visao.md §2](../visao.md#2-problema)) | Specs que resolvem | Total |
 |---------------------------------------------------|-------------------|-------|
 | **Criar e divulgar eventos** de forma simples | 20, 100, 140 | 3 |
-| **Gerenciar inscrições e vagas** sem planilhas | 30 | 1 |
+| **Gerenciar inscrições e vagas** sem planilhas | 30, 190 | 2 |
 | **Emitir e validar ingressos** profissionalmente | 80, 150, 160 | 3 |
 | **Processar cancelamentos e reembolsos** | 40, 50, 110 | 3 |
-| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130 | 6 |
+| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130, 180 | 7 |
 
 ---
 
@@ -74,14 +76,13 @@
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 8 | ST-05, ST-06, ST-12, 120, 130, 140, 150, 160 |
+| ❌ `pendente` | 10 | ST-05, ST-06, ST-12, 120, 130, 140, 150, 160, 180, 190 |
 
 ---
 
 ## Fase 3 (Futuro)
 
 - Gateway de pagamento real (Stripe/PagSeguro)
-- Notificações por e-mail
 - Check-in digital (QR Code)
 - Aplicativo mobile
 - Relatórios avançados e dashboards analíticos
@@ -95,20 +96,22 @@
 | ST-01 | `UsuarioController`: `[HttpPost("cadastrar-vendedor")]` público, sem `[Authorize]` | ✅ `implementada` |
 | ST-03 | `Evento.cs`: campo `TipoEvento Tipo`, método `GerarPalestra()` | ✅ `implementada` |
 | ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List&lt;ItemReserva&gt;) ativo | ✅ `implementada` |
-| ST-05 | Sem `DELETE /api/reserva/{id}` | ❌ `pendente` |
-| ST-06 | `DELETE /api/evento/{id}` existe mas sem NENHUMA lógica de reembolso | ❌ `pendente` |
+| ST-05 | `DELETE /api/reserva/{id}` não existe — spec completa em [`spec-40/`](./roadmap/spec-40/) | ❌ `pendente` |
+| ST-06 | `DELETE /api/evento/{id}` existe mas sem lógica de reembolso — spec completa em [`spec-50/`](./roadmap/spec-50/) | ❌ `pendente` |
 | ST-07 | `ReservaController`: `[Authorize]` sem restrição de role — todos podem | ✅ `implementada` |
 | ST-08 | `UsuarioService.Login()`: BCrypt.Verify + Ativo + LoginResponseDTO | ✅ `implementada` |
 | ST-09 | `Usuario.cs` com Cnpj, NomeFantasia, Telefone, Plano, Ativo, DataCriacao | ✅ `implementada` |
 | ST-10 | `Script0003`: 3 perfis com GUIDs fixos | ✅ `implementada` |
 | ST-11 | `Evento.cs`: `Gratuito` (PrecoPadrao == 0), `TipoEvento` (Teatro/Palestra) | ✅ `implementada` |
-| ST-12 | Sem endpoint de cancelamento pelo próprio usuário | ❌ `pendente` |
+| ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
 | 120 | BCrypt ✅, RateLimit ✅ — mas `Jwt:Key` ainda exposto em `appsettings.json` | ❌ `pendente` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: SEM filtro | ❌ `pendente` |
 | 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
 | 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |
 | 160 | `Cupom.cs` + CRUD no `CupomController` — `AdminId` ainda via rota (7 ocorrências) | ❌ `pendente` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
+| 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
+| 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |
 
 ---
 
