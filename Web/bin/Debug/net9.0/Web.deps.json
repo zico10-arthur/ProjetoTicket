@@ -54,11 +54,11 @@
           }
         }
       },
-      "BCrypt.Net-Next/4.0.3": {
+      "BCrypt.Net-Next/4.2.0": {
         "runtime": {
-          "lib/net6.0/BCrypt.Net-Next.dll": {
-            "assemblyVersion": "4.0.3.0",
-            "fileVersion": "4.0.3.0"
+          "lib/netstandard2.1/BCrypt-Net-Next.dll": {
+            "assemblyVersion": "4.2.0.0",
+            "fileVersion": "4.2.0.0"
           }
         }
       },
@@ -576,11 +576,11 @@
       "Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "16.1.1",
-          "BCrypt.Net-Next": "4.0.3",
+          "BCrypt.Net-Next": "4.2.0",
           "Domain": "1.0.0",
+          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1",
-          "infraestructure": "1.0.0"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1"
         },
         "runtime": {
           "Application.dll": {
@@ -597,15 +597,16 @@
           }
         }
       },
-      "infraestructure/1.0.0": {
+      "Infraestructure/1.0.0": {
         "dependencies": {
+          "BCrypt.Net-Next": "4.2.0",
           "Dapper": "2.1.72",
           "Domain": "1.0.0",
           "Microsoft.Data.SqlClient": "6.1.4",
           "dbup-sqlserver": "7.2.0"
         },
         "runtime": {
-          "infraestructure.dll": {
+          "Infraestructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -640,12 +641,12 @@
       "path": "azure.identity/1.17.1",
       "hashPath": "azure.identity.1.17.1.nupkg.sha512"
     },
-    "BCrypt.Net-Next/4.0.3": {
+    "BCrypt.Net-Next/4.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
-      "path": "bcrypt.net-next/4.0.3",
-      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
+      "sha512": "sha512-gwLD2KfCuwQesP17aVh4h6lpiMPEVt5Lbpndo0ej903hNUUTtyxt3ARdDjmuydBRTAUICc7OVKVbaOvc6SQYXA==",
+      "path": "bcrypt.net-next/4.2.0",
+      "hashPath": "bcrypt.net-next.4.2.0.nupkg.sha512"
     },
     "Dapper/2.1.72": {
       "type": "package",
@@ -951,7 +952,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "infraestructure/1.0.0": {
+    "Infraestructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

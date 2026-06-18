@@ -42,16 +42,7 @@ public static class DatabaseSeeder
         {
             string senhaHash = BCrypt.Net.BCrypt.HashPassword("Admin@123");
 
-            var admin = new Usuario
-            {
-                Cpf = "00000000000",
-                Nome = "Administrador",
-                Email = "admin@soldout.com",
-                PerfilId = AdminPerfilId,
-                Senha = senhaHash,
-                Ativo = true,
-                DataCriacao = DateTime.UtcNow
-            };
+            var admin = new Usuario("00000000000", "Administrador", "admin@soldout.com", AdminPerfilId, senhaHash);
 
             const string insertAdmin = @"
                 INSERT INTO Usuarios (Cpf, Nome, Email, PerfilId, Senha, Ativo, DataCriacao)
@@ -64,8 +55,8 @@ public static class DatabaseSeeder
                 admin.Email,
                 admin.PerfilId,
                 admin.Senha,
-                admin.Ativo,
-                admin.DataCriacao
+                Ativo = true,
+                DataCriacao = DateTime.UtcNow
             });
 
             Console.WriteLine("ST-08: Admin seed criado com BCrypt.");

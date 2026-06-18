@@ -3,8 +3,6 @@ using Domain.Exceptions;
 using Infrastructure.Database;
 using Domain.Interface;
 using Domain.Entities;
-using System.Threading.Tasks.Sources;
-using System.Linq.Expressions;
 
 
 namespace Infraestructure.Repository;

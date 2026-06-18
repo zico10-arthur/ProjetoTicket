@@ -22,7 +22,7 @@
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 120 | Segurança (BCrypt, JWT, rate limit) | ❌ `pendente` | **Autonomia** — segurança para todos os perfis | [`120-seguranca-autenticacao.md`](./roadmap/120-seguranca-autenticacao.md) |
+| 120 | Segurança (BCrypt, JWT, rate limit) | ✅ `audited` | **Autonomia** — segurança para todos os perfis | [`spec-120/`](./roadmap/spec-120/) |
 | 160 | Cupons de Desconto | ❌ `pendente` | **Emitir ingressos** — AdminId via JWT, não rota | [`160-cupons.md`](./roadmap/160-cupons.md) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ❌ `pendente` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
 | 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
@@ -75,8 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
+| ✅ `audited` | 1 | 120 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 10 | ST-05, ST-06, ST-12, 120, 130, 140, 150, 160, 180, 190 |
+| ❌ `pendente` | 9 | ST-05, ST-06, ST-12, 130, 140, 150, 160, 180, 190 |
 
 ---
 
@@ -104,7 +105,7 @@
 | ST-10 | `Script0003`: 3 perfis com GUIDs fixos | ✅ `implementada` |
 | ST-11 | `Evento.cs`: `Gratuito` (PrecoPadrao == 0), `TipoEvento` (Teatro/Palestra) | ✅ `implementada` |
 | ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
-| 120 | BCrypt ✅, RateLimit ✅ — mas `Jwt:Key` ainda exposto em `appsettings.json` | ❌ `pendente` |
+| 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: SEM filtro | ❌ `pendente` |
 | 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
 | 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |

@@ -81,20 +81,25 @@ public class UsuarioService : IUsuarioService
 
     /// <summary>
     /// ST-08: Login unificado — BCrypt.Verify + verificação de Ativo + LoginResponseDTO.
+    /// Spec 120: SaltParseException catch, mensagem uniforme, resposta 401 padronizada.
     /// </summary>
     public async Task<LoginResponseDTO> Login(LoginDTO dto, CancellationToken ct)
     {
-        // 8.2.1 Buscar usuário por email (inclui Ativo na query)
         Usuario? logado = await _repository.BuscarEmail(dto.Email, ct);
         if (logado == null) throw new LoginErro();
 
-        // 8.2.2 Verificar senha com BCrypt
-        if (!BCrypt.Net.BCrypt.Verify(dto.Senha, logado.Senha))
+        try
+        {
+            if (!BCrypt.Net.BCrypt.Verify(dto.Senha, logado.Senha))
+                throw new LoginErro();
+        }
+        catch (BCrypt.Net.SaltParseException)
+        {
             throw new LoginErro();
+        }
 
-        // 8.2.3 Verificar se usuário está ativo
         if (!logado.Ativo)
-            throw new UsuarioInativoException();
+            throw new LoginErro();
 
         // 8.2.4 Gerar JWT
         var token = _tokenservice.GerarToken(logado);

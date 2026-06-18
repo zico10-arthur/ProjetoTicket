@@ -16,6 +16,23 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Spec 120: Carregar Jwt:Key de user-secrets em desenvolvimento
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+// Spec 120: Validar Jwt:Key obrigatória antes de configurar autenticação
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key não configurada. Em desenvolvimento, execute:\n" +
+        "  dotnet user-secrets set \"Jwt:Key\" \"<sua-chave-secreta-de-32-caracteres>\"\n" +
+        "  dotnet user-secrets set \"Jwt:Issuer\" \"ProjetoTicket\"\n" +
+        "  dotnet user-secrets set \"Jwt:Audience\" \"ProjetoTicket\"");
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -64,7 +81,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+                Encoding.UTF8.GetBytes(jwtKey)),
             RoleClaimType = "role",
             NameClaimType = "email"
         };
@@ -87,8 +104,8 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<RateLimitingMiddleware>();
 
 app.UseHttpsRedirection();
 

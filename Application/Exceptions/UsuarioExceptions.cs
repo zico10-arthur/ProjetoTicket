@@ -17,7 +17,7 @@ public class UsuarioNaoAutorizado : DomainException
 public class LoginErro : DomainException
 {
     public LoginErro()
-    : base("Usuário não encontrado ou senha inválida") {}
+    : base("Email ou senha inválidos.") {}
 }
 
 public class UsuarioNotFound : DomainException

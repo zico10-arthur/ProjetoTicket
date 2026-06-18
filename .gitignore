@@ -11,4 +11,5 @@
 *.log
 
 # Secrets
-appsettings.Development.json
+appsettings.*.json
+secrets.json

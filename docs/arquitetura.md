@@ -57,13 +57,50 @@ Cada reserva pode conter até **4 `ItemReserva`**, cada um com `CpfParticipante`
 
 ### 4. Cancelamento com Reembolso Atômico
 
-| Ação | Gatilho | Comportamento |
-|------|---------|---------------|
-| **Comprador** cancela reserva | `DataEvento > agora` (antes do evento começar) | Ingressos voltam a `Status=0` (Livre); reembolso processado |
-| **Vendedor** cancela evento pago | Ação explícita no painel | Alerta de reembolso obrigatório → transação atômica: `Evento.Cancelado=true` + `Ingresso.Status=3` + `Reserva.Reembolsada=true` |
-| **Vendedor** cancela evento gratuito | Ação explícita no painel | Cancelamento sem reembolso (não houve cobrança) |
+O cancelamento é **lógico** (nunca exclusão física) e opera em **transação atômica** cobrindo até 5 tabelas. Três specs compõem o módulo de cancelamento:
 
-Todas as operações de cancelamento com impacto financeiro são executadas em **transação atômica** para garantir consistência.
+#### 4.1 Comprador Cancela Reserva (spec 40)
+
+`DELETE /api/reserva/{id}` — qualquer perfil autenticado pode cancelar suas próprias reservas.
+
+| Validação | Comportamento |
+|-----------|---------------|
+| `Reserva.UsuarioCpf == cpf do JWT` | Autorização — apenas o dono cancela |
+| `Reserva.Reembolsada == true` | Bloqueio — `409 Conflict`: "Reserva já foi cancelada." |
+| `DataEvento <= DateTime.UtcNow` | Bloqueio — `400 Bad Request`: "Não é possível cancelar. O evento já começou." |
+
+**Transação atômica:** `Reservas.Reembolsada = 1` + `ItensReserva.Reembolsado = 1` + `Ingressos.Status = 0` (Livre), `DataBloqueio = NULL` + `Pagamentos.Status = 3` (Reembolsado, se existir).
+
+#### 4.2 Vendedor Cancela Evento (spec 50)
+
+`DELETE /api/evento/{id}` — a semântica mudou de exclusão física para **cancelamento lógico**. Antes de cancelar, o vendedor consulta o impacto via `GET /api/evento/{id}/status-cancelamento`.
+
+| Cenário | Comportamento |
+|---------|---------------|
+| Evento pago com ingressos vendidos | `Evento.Cancelado = true` + todos `Ingressos.Status = 3` + todas `Reservas.Reembolsada = true` + todos `Pagamentos.Status = 3` |
+| Evento gratuito | `Evento.Cancelado = true` + `Reservas.Reembolsada = true` (sem reembolso financeiro) |
+| Evento sem ingressos vendidos | Apenas `Evento.Cancelado = true` |
+| Evento já cancelado | `409 Conflict`: "Evento já foi cancelado." |
+
+**Autorização:** Vendedor dono do evento (`VendedorCpf == cpf do JWT`) ou Admin. Eventos cancelados são filtrados da listagem pública (`WHERE Cancelado = 0`).
+
+#### 4.3 Visão Unificada de Cancelamento (spec 110)
+
+`GET /api/reserva/minhas` é unificado para todos os perfis (sem restrição de role). O response inclui flags individuais por item:
+
+```json
+{
+    "reembolsada": true,
+    "podeCancelar": false,
+    "itens": [
+        { "cpfParticipante": "529.885.310-09", "precoUnitario": 50.00, "reembolsado": true }
+    ]
+}
+```
+
+- `podeCancelar` = `!Reembolsada && DataEvento > DateTime.UtcNow` (calculado em memória)
+- Query usa `splitOn: "ItemId"` com dicionário em memória para agrupar itens por reserva
+- Admin também pode cancelar qualquer reserva via endpoints admin separados
 
 ### 5. Cupons Globais do Admin
 
@@ -82,12 +119,26 @@ Todas as operações de cancelamento com impacto financeiro são executadas em *
 - O `VendedorId` é **extraído do JWT** (`User.Claims`), nunca de parâmetros de rota — impossível um vendedor acessar dados de outro manipulando a URL.
 - **Exceção**: cupons são **globais** e gerenciados pelo Admin — não pertencem a um vendedor específico.
 
-### 7. Background Worker de Liberação de Assentos
+### 7. Hangfire — Jobs Recorrentes para Liberação de Assentos (spec 190)
 
-- Executa a cada **60 segundos**.
-- Libera ingressos com `Status=1` (Reservado) cujo `DataBloqueio` excedeu **15 minutos**.
-- **Propósito**: se um comprador iniciar o checkout e abandonar, o assento não fica preso eternamente — outros compradores podem adquiri-lo após o tempo de expiração.
-- O worker respeita o isolamento multi-tenant, filtrando por `VendedorId`.
+- **Hangfire** com storage SQL Server (mesmo banco do projeto) substituiu o `BackgroundService` anterior.
+- Job `LiberacaoAssentosJob.ExecutarAsync()` executado a cada **60 segundos** via `Cron.Minutely`.
+- `[DisableConcurrentExecution(timeoutInSeconds: 120)]` impede execuções paralelas.
+- **Propósito**: se um comprador iniciar o checkout e abandonar, o assento não fica preso eternamente — outros compradores podem adquiri-lo após **15 minutos**.
+- Dashboard em `/hangfire` protegido por autorização Admin (`HangfireAdminAuthorizationFilter`).
+- Tabelas do Hangfire (`HangFire.Job`, `HangFire.State`, etc.) criadas automaticamente via `PrepareSchemaIfNecessary = true`.
+- Mesmas queries SQL do worker anterior — `DeletarReservasNaoPagasExpiradas(15)` e `LiberarAssentosExpirados(15)` — preservadas.
+
+### 8. Serviço de E-mail Transacional (spec 180)
+
+- Interface `IEmailSender` no Domain, implementada por `EmailBackgroundWorker` (IHostedService singleton).
+- Fila em memória via `Channel<EmailMessage>` (`BoundedChannelOptions(100)`, `FullMode = Wait`).
+- Envio real via **MailKit** (SMTP) — `SmtpEmailSender`.
+- **Graceful degradation**: se SMTP não configurado (sem `Host`), worker loga warning e descarta mensagens.
+- **Retry**: 3 tentativas com backoff exponencial (2s, 4s, 8s).
+- Templates de e-mail em `EmailTemplates` (classe estática): boas-vindas (Comprador/Vendedor), reserva confirmada, pagamento confirmado, reembolso confirmado, redefinição de senha.
+- **Integrações**: `CadastrarComprador`, `CadastrarVendedor`, `FazerReserva`, `ConfirmarCheckout` e hooks para ST-05/ST-06.
+- **Redefinição de senha**: `POST /api/usuario/esqueci-senha` (sempre 200 OK — anti-enumeração) + `POST /api/usuario/redefinir-senha` (JWT com claim `purpose=password-reset`, 15 min).
 
 ---
 
@@ -97,9 +148,9 @@ Regra de dependência: **Domain → Application → Infraestructure → Api**. C
 
 ### Domain
 - **Entidades** com regras de negócio encapsuladas: `Usuario`, `Evento`, `Ingresso`, `Reserva`, `ItemReserva`, `Cupom`
-- **Value Objects** e validações de domínio (ex: `CnpjValidator`)
+- **Value Objects** e validações de domínio (ex: `CnpjValidator`, `EmailMessage`)
 - **Exceções tipadas** de domínio
-- **Interfaces de repositório** (contratos que a Infraestructure implementa)
+- **Interfaces de repositório** e de serviço (ex: `IEmailSender`) — contratos que a Infraestructure implementa
 - **Não depende de nenhuma camada externa**
 
 ### Application
@@ -113,7 +164,8 @@ Regra de dependência: **Domain → Application → Infraestructure → Api**. C
 - **Implementação dos repositórios** com Dapper (queries parametrizadas → proteção contra SQL Injection)
 - **ConnectionFactory** para SQL Server (`Max Pool Size=100`)
 - **Migrations** automáticas via DbUp
-- **Background Worker** para liberação de assentos expirados
+- **Hangfire** com recurring jobs para liberação de assentos expirados (substituiu BackgroundService)
+- **Serviço de e-mail** via MailKit com fila Channel\<T\> e worker dedicado (`EmailBackgroundWorker`)
 - **Implementa interfaces do Domain**
 
 ### Api
@@ -144,6 +196,8 @@ Regra de dependência: **Domain → Application → Infraestructure → Api**. C
 | BCrypt | Hash de senhas |
 | AutoMapper | Mapeamento DTO ↔ Entidade |
 | DbUp | Versionamento e migração de banco |
+| MailKit | Envio de e-mails transacionais via SMTP |
+| Hangfire | Jobs recorrentes com persistência e dashboard |
 | xUnit | Testes automatizados |
 
 ---
@@ -164,10 +218,12 @@ Regra de dependência: **Domain → Application → Infraestructure → Api**. C
 - **Capacidade e anti-sobrevenda**: ingressos são gerados na criação do evento. A validação de capacidade (`CapacidadeTotal - SUM(Quantidade)`) é feita atomicamente antes de confirmar qualquer reserva — impossível vender além da capacidade.
 - **Anti-cambista**: um mesmo CPF só pode ter **uma reserva ativa** por evento.
 - **Cupom seguro**: validação de valor mínimo, expiração e não-aplicabilidade a eventos gratuitos antes de aplicar desconto. Desconto nunca gera valor negativo.
-- **Bloqueio temporário**: ingresso fica com `Status=1` (Reservado) durante o checkout. Se o checkout não for concluído em 15 minutos, o Background Worker libera o ingresso automaticamente.
+- **Bloqueio temporário**: ingresso fica com `Status=1` (Reservado) durante o checkout. Se o checkout não for concluído em **15 minutos**, o job Hangfire (`LiberacaoAssentosJob`) libera o ingresso automaticamente.
 - **Isolamento multi-tenant**: todo acesso a eventos e reservas é filtrado por `VendedorId` extraído do JWT. Cupons são a exceção — são globais.
-- **Cancelamento atômico com reembolso**: operações de cancelamento que envolvem dinheiro são executadas em transação, garantindo que o reembolso e a liberação de ingressos aconteçam juntos ou não aconteçam.
+- **Cancelamento atômico com reembolso**: operações de cancelamento que envolvem dinheiro são executadas em transação, garantindo que o reembolso e a liberação de ingressos aconteçam juntos ou não aconteçam. Cancelamento é **lógico** (flags `Reembolsada`, `Cancelado`), nunca exclusão física.
+- **E-mails transacionais não bloqueantes**: envio de e-mail é fire-and-forget via `Channel<T>` — nunca bloqueia a resposta HTTP. Se SMTP não estiver configurado, o sistema opera normalmente (graceful degradation).
+- **Redefinição de senha segura**: token JWT com claim `purpose=password-reset` e 15 min de validade. Endpoint `esqueci-senha` sempre retorna 200 OK para prevenir enumeração de usuários. Token de reset não é aceito como token de autenticação.
 
 ---
 
-> **Documento de Arquitetura do SoldOut Tickets** — Este documento descreve a arquitetura conceitual do produto e a estrutura técnica do sistema. Para a visão de produto, consulte [`visao.md`](./visao.md). Para especificações técnicas detalhadas, consulte [`especificacoes.md`](./especificacoes.md).
+> **Documento de Arquitetura do SoldOut Tickets** — Este documento descreve a arquitetura conceitual do produto e a estrutura técnica do sistema. Para a visão de produto, consulte [`visao.md`](./visao.md). Para decisões arquiteturais, consulte [`ADR.md`](./ADR.md). Para o roadmap de specs, consulte [`agents/roadmap.md`](./agents/roadmap.md).

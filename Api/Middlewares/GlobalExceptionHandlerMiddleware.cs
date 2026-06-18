@@ -32,13 +32,9 @@ public class GlobalExceptionHandlerMiddleware
 
         var (statusCode, message) = ex switch
         {
-            // ST-08: LoginErro retorna 401 (credenciais inválidas)
+            // Spec 120: LoginErro retorna 401 com mensagem padronizada
             Application.Exceptions.LoginErro
-                => (StatusCodes.Status401Unauthorized, ex.Message),
-
-            // ST-08: UsuarioInativoException retorna 403 (usuário bloqueado)
-            Application.Exceptions.UsuarioInativoException
-                => (StatusCodes.Status403Forbidden, ex.Message),
+                => (StatusCodes.Status401Unauthorized, "Email ou senha inválidos."),
 
             Application.Exceptions.CnpjJaCadastrado or
             Application.Exceptions.EmailJaCadastrado or
@@ -53,8 +49,7 @@ public class GlobalExceptionHandlerMiddleware
 
         var response = new
         {
-            StatusCode = statusCode,
-            Message = message
+            message
         };
 
         await context.Response.WriteAsJsonAsync(response);
