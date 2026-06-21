@@ -2,20 +2,20 @@
 
 > **Fonte:** [`storytelling.md`](./storytelling.md) | **Roadmap:** [`agents/roadmap.md`](./agents/roadmap.md)
 > **Specs detalhadas:** [`agents/roadmap/`](./agents/roadmap/)
-> **Data:** 17/06/2026
+> **Data:** 21/06/2026
 
 ---
 
 ## Visão Geral
 
-> 9 specs já implementadas. **9 specs pendentes.** Apenas o que falta fazer.
+> 11 specs já implementadas. **7 specs pendentes.** Apenas o que falta fazer.
 
 | Sprint | Duração | Specs | Foco |
 |--------|---------|-------|------|
 | **Sprint 1** | 1 semana | 120, 160, 130, 150, 180 | 🔴 Segurança e correções críticas |
 | **Sprint 2** | 2 semanas | ST-05, ST-06, ST-12 | 🟠 Cancelamento e reembolso |
-| **Sprint 3** | 1 semana | 140 | 🟢 Infraestrutura e deploy |
-| **Total** | **4 semanas** | **9 specs** | **v2.0 completo** |
+| **Sprint 3** | 1 semana | 140, 190 | 🟢 Infraestrutura e deploy |
+| **Total** | **4 semanas** | **9 specs pendentes** | **v2.0 completo** |
 
 ---
 
@@ -29,6 +29,7 @@
 
 > **Spec:** [`120-seguranca-autenticacao.md`](./agents/roadmap/120-seguranca-autenticacao.md)
 > **Problema:** `Jwt:Key` exposta em `appsettings.json` — qualquer um com acesso ao repositório forja tokens de Admin.
+> **Status:** ✅ `audited`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -46,6 +47,7 @@
 
 > **Spec:** [`160-cupons.md`](./agents/roadmap/160-cupons.md)
 > **Problema:** `CupomController` recebe `AdminId` como parâmetro de rota. Qualquer usuário logado pode passar um GUID e se passar por Admin.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -63,6 +65,7 @@
 
 > **Spec:** [`130-isolamento-multi-tenant.md`](./agents/roadmap/130-isolamento-multi-tenant.md)
 > **Problema:** `ReservaRepository` não filtra por `VendedorCpf`. Um vendedor vê reservas de eventos de outros vendedores.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -70,40 +73,18 @@
 | 130.2 | `IngressoRepository`: adicionar filtro por `VendedorCpf` nas queries | `Infraestructure/Repository/IngressoRepository.cs` | 1.5 |
 | 130.3 | `IReservaRepository`: adicionar `vendedorCpf` nos métodos que listam dados | `Domain/Interface/IReservaRepository.cs` | 1 |
 | 130.4 | `ReservaService`: propagar `VendedorCpf` do JWT para queries | `Application/Service/ReservaService.cs` | 1.5 |
-| 130.5 | `LiberacaoAssentosWorker`: adicionar filtro por `VendedorId` | `Api/BackgroundTasks/LiberacaoAssentosWorker.cs` | 1 |
+| 130.5 | `LiberacaoAssentosJob`: adicionar filtro por `VendedorId` | `Api/BackgroundTasks/LiberacaoAssentosJob.cs` | 1 |
 | 130.6 | Testes: vendedor X não vê reservas do vendedor Y | `tests/` | 2 |
 
 **Subtotal:** ~9h
 
-<<<<<<< HEAD
-### ST-03 + ST-11 — Tipo de Evento + Palestras com Assentos + Gratuito `implementada`
-
-| # | Tarefa | Arquivos | Corrige | h |
-|---|--------|----------|---------|----|
-| 3.1 | `TipoEvento.cs` (enum: Teatro=0, Palestra=1) | `Domain/Entities/` | — | 0.5 |
-| 3.2 | `Evento.cs`: VendedorCpf, Tipo, Descricao, Local, Cancelado, `DataCriacao`, `Gratuito` (PrecoPadrao==0) | `Domain/Entities/` | — | 3 |
-| 3.3 | `GerarLoteIngressos()`: **ambos os tipos** — Palestra (Assento 1..N, Geral), Teatro (VIP/Geral, filas de 20) | `Domain/Entities/` | — | 3 |
-| 3.4 | SQL: `ALTER TABLE Eventos` (Tipo, Descricao, Local, Cancelado, DataCriacao) — Script0010 | `Infraestructure/Database/Scripts/` | — | 2 |
-| 3.5 | `EventoService.CriarEvento()`: suportar Tipo, lógica gratuito (pula pagamento) | `Application/Service/` | — | 3 |
-| 3.6 | `EventoRequestDTO` + `EventoResponseDTO`: Tipo, Descricao, Local, DataCriacao | `Application/DTOs/` | — | 1 |
-| 3.7 | `IEventoRepository` + `EventoRepository`: queries com VendedorCpf, INSERT com DataCriacao | `Infraestructure/` | — | 3 |
-| 3.8 | `Max Pool Size=100` na connection string | `appsettings.json` | #8 | 0.5 |
-| 3.9 | Testes: Palestra e Teatro com assentos, gratuito vs pago, VendedorCpf (14/14 ✅) | `tests/` | — | 4 |
-| 3.10 | Endpoint `POST /api/evento/criar` retorna `201 Created` | `Api/Controllers/` | — | 0.5 |
-| 3.11 | `ReservaRepository.CadastrarReservaComItens()`: transação atômica para evento gratuito (vende ingressos status=2) | `Infraestructure/Repository/` | — | 1.5 |
-| 3.12 | `ReservaService.FazerReserva()`: evento gratuito → cupom rejeitado, confirmação imediata | `Application/Service/` | — | 1 |
-| 3.13 | `EventoProfile.cs`: mapear `DataCriacao` como `DateTime.UtcNow` no AutoMapper | `Application/Mappings/` | — | 0.5 |
-
-**Subtotal:** ~23.5h
-
-### ST-04 — Reserva Multi-Participante (ItemReserva) `implementada`
-=======
 ---
 
 ### 150 — Resiliência e Tratamento de Erros 🟡
 
 > **Spec:** [`150-resiliencia-erros.md`](./agents/roadmap/150-resiliencia-erros.md)
 > **Problema:** `GlobalExceptionHandlerMiddleware` expõe `ex.Message` diretamente — stack traces e informações internas vazam em produção.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -112,7 +93,6 @@
 | 150.3 | `ConnectionFactory`: adicionar `Max Pool Size=100` na connection string | `Infraestructure/DataBase/ConnectionFactory.cs` | 0.5 |
 | 150.4 | Verificar que todos os controllers têm tratamento adequado de exceções | `Api/Controllers/` | 1 |
 | 150.5 | Testes: respostas de erro não expõem dados internos | `tests/` | 1 |
->>>>>>> main
 
 **Subtotal:** ~4.5h
 
@@ -122,6 +102,7 @@
 
 > **Spec:** [`spec-180/`](./agents/roadmap/spec-180/)
 > **Problema:** O sistema não envia nenhum e-mail transacional (boas-vindas, confirmação de reserva, pagamento, reembolso) e não tem fluxo de "esqueci minha senha" — usuário depende do Admin para recuperar acesso.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -141,26 +122,14 @@
 
 ### Resumo Sprint 1
 
-<<<<<<< HEAD
 | Spec | Status | Carga |
 |------|--------|-------|
-| ST-08 Login Unificado | `em revisão` | ~6h |
-| ST-09 Vendedor na tabela Usuarios | `em revisão` | ~6.5h |
-| ST-10 Perfis Simplificados | `implementada` | ~2.5h |
-| ST-01 Auto Cadastro de Vendedor | `pendente` | ~17h |
-| ST-03 + ST-11 Tipo Evento + Gratuito | `implementada` | ~23.5h |
-| ST-04 ItemReserva | `implementada` | ~24.5h |
-| **Total Sprint 1** | | **~80h** |
-=======
-| Spec | Carga |
-|------|-------|
-| 120 — Segurança | ~4h |
-| 160 — Cupons | ~7h |
-| 130 — Isolamento | ~9h |
-| 150 — Resiliência | ~4.5h |
-| 180 — E-mail Transacional | ~10h |
-| **Total Sprint 1** | **~34.5h** |
->>>>>>> main
+| 120 — Segurança | ✅ `audited` | ~4h |
+| 160 — Cupons | ❌ `pendente` | ~7h |
+| 130 — Isolamento | ❌ `pendente` | ~9h |
+| 150 — Resiliência | ❌ `pendente` | ~4.5h |
+| 180 — E-mail Transacional | ❌ `pendente` | ~10h |
+| **Total Sprint 1** | | **~34.5h** |
 
 ---
 
@@ -172,8 +141,9 @@
 
 ### ST-05 — Cancelamento de Reserva com Reembolso 🟠
 
-> **Spec:** [`40-st05-cancelamento-reserva.md`](./agents/roadmap/40-st05-cancelamento-reserva.md)
+> **Spec:** [`spec-40/`](./agents/roadmap/spec-40/)
 > **Problema:** Comprador não consegue cancelar reserva nem receber reembolso. Funcionalidade ausente.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -194,8 +164,9 @@
 
 ### ST-06 — Cancelamento de Evento com Reembolso Obrigatório 🟠
 
-> **Spec:** [`50-st06-cancelamento-evento.md`](./agents/roadmap/50-st06-cancelamento-evento.md)
+> **Spec:** [`spec-50/`](./agents/roadmap/spec-50/)
 > **Problema:** `DELETE /api/evento/{id}` existe mas **não processa reembolso**. Vendedor cancela evento e compradores perdem o dinheiro.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -213,8 +184,9 @@
 
 ### ST-12 — Cancelamento de Reserva — Visão Unificada 🟠
 
-> **Spec:** [`110-st12-cancelamento-unificado.md`](./agents/roadmap/110-st12-cancelamento-unificado.md)
+> **Spec:** [`spec-110/`](./agents/roadmap/spec-110/)
 > **Problema:** Apenas Comprador cancela reserva. Admin e Vendedor também precisam poder cancelar as próprias.
+> **Status:** ❌ `pendente`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -230,18 +202,18 @@
 
 ### Resumo Sprint 2
 
-| Spec | Carga |
-|------|-------|
-| ST-05 — Cancelamento Reserva | ~17h |
-| ST-06 — Cancelamento Evento | ~14.5h |
-| ST-12 — Cancelamento Unificado | ~6.5h |
-| **Total Sprint 2** | **~38h** |
+| Spec | Status | Carga |
+|------|--------|-------|
+| ST-05 — Cancelamento Reserva | ❌ `pendente` | ~17h |
+| ST-06 — Cancelamento Evento | ❌ `pendente` | ~14.5h |
+| ST-12 — Cancelamento Unificado | ❌ `pendente` | ~6.5h |
+| **Total Sprint 2** | | **~38h** |
 
 ---
 
 ## Sprint 3 — Infraestrutura e Deploy (1 semana)
 
-> **1 spec:** containerização para deploy em produção.
+> **2 specs:** containerização e confiabilidade de jobs para produção.
 
 ---
 
@@ -249,11 +221,12 @@
 
 > **Spec:** [`140-infraestrutura-deploy.md`](./agents/roadmap/140-infraestrutura-deploy.md)
 > **Problema:** Sistema só roda via `dotnet run`. Sem containerização para produção.
+> **Status:** ✅ `implementada`
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
-| 140.1 | Criar `Dockerfile` para a API (multi-stage build) | `Api/Dockerfile` | 1.5 |
-| 140.2 | Criar `Dockerfile` para o Frontend Blazor | `Web/Dockerfile` | 1 |
+| 140.1 | Criar `Dockerfile` para a API (multi-stage build) | `Dockerfile` | 1.5 |
+| 140.2 | Criar `Dockerfile` para o Frontend Blazor | `Web.Dockerfile` | 1 |
 | 140.3 | Criar `docker-compose.yml` (API + Web + SQL Server) | `docker-compose.yml` | 1.5 |
 | 140.4 | Configurar health checks nos containers | `docker-compose.yml` | 0.5 |
 | 140.5 | Atualizar `README.md` com instruções de deploy Docker | `README.md` | 1 |
@@ -263,20 +236,44 @@
 
 ---
 
+### 190 — Substituir BackgroundService por Hangfire 🟢
+
+> **Spec:** [`spec-190/`](./agents/roadmap/spec-190/)
+> **Problema:** `LiberacaoAssentosWorker` (BackgroundService com PeriodicTimer) não é persistente — se a API reiniciar, perde o estado de execução. Sem dashboard de monitoramento.
+> **Status:** ✅ `implementada`
+
+| # | Tarefa | Arquivos | h |
+|---|--------|----------|----|
+| 190.1 | Adicionar pacotes NuGet `Hangfire`, `Hangfire.SqlServer`, `Hangfire.AspNetCore` | `Api/Api.csproj` | 0.1 |
+| 190.2 | Criar `HangfireAdminAuthorizationFilter` (dashboard restrito a Admin) | `Api/Middlewares/HangfireAdminAuthorizationFilter.cs` | 0.3 |
+| 190.3 | Criar `LiberacaoAssentosJob` com lógica do worker + `[DisableConcurrentExecution]` | `Api/BackgroundTasks/LiberacaoAssentosJob.cs` | 0.3 |
+| 190.4 | Configurar Hangfire no `Program.cs` (storage SQL Server, recurring job, dashboard) | `Api/Program.cs` | 0.5 |
+| 190.5 | Remover `LiberacaoAssentosWorker.cs` e seu registro `AddHostedService` | `Api/BackgroundTasks/`, `Api/Program.cs` | 0.2 |
+| 190.6 | Testar job recorrente no dashboard `/hangfire` (Admin only) | — | 0.5 |
+| 190.7 | Atualizar documentação (`visao.md`, `roadmap.md`) | `docs/` | 0.5 |
+
+**Subtotal:** ~2.6h
+
+---
+
+### Resumo Sprint 3
+
+| Spec | Status | Carga |
+|------|--------|-------|
+| 140 — Infraestrutura e Deploy | ✅ `implementada` | ~7.5h |
+| 190 — Hangfire Background Jobs | ✅ `implementada` | ~2.6h |
+| **Total Sprint 3** | | **~10.1h** |
+
+---
+
 ## Resumo Geral
 
 | Sprint | Specs | Carga |
 |--------|-------|-------|
-<<<<<<< HEAD
-| Sprint 1 — Fundação | ST-01, ST-03, ST-04, ST-08, ST-09, ST-10, ST-11 | ~80h |
-| Sprint 2 — Transações | ST-05, ST-06, ST-07, ST-12 | ~52h |
-| Infraestrutura | — | ~7h |
-| **Total** | **11 specs** | **~139h** |
-=======
 | Sprint 1 — Segurança | 120, 160, 130, 150, 180 | ~34.5h |
 | Sprint 2 — Transações | ST-05, ST-06, ST-12 | ~38h |
-| Sprint 3 — Infra | 140 | ~7.5h |
-| **Total** | **9 specs** | **~80h** |
+| Sprint 3 — Infra | 140, 190 | ~10.1h |
+| **Total** | **10 specs (2 já implementadas)** | **~82.6h** |
 
 ---
 
@@ -288,18 +285,17 @@
 130 (Isolamento)──┤─ Sprint 1: sem dependências entre si
 150 (Resiliência)─┤
 180 (E-mail)     ─┘
-                  │
-                  ▼
-              ST-05 (Cancelamento Reserva) ──┬── ST-06 (Cancelamento Evento)
-                  │                          │
-                  └──────────────┬───────────┘
-                                 ▼
-                          ST-12 (Unificado)
-                                 │
-                                 ▼
-                          140 (Docker)
+                   │
+                   ▼
+               ST-05 (Cancelamento Reserva) ──┬── ST-06 (Cancelamento Evento)
+                   │                          │
+                   └──────────────┬───────────┘
+                                  ▼
+                           ST-12 (Unificado)
+                                  │
+                                  ▼
+                           140 (Docker) ← 190 (Hangfire)
 ```
->>>>>>> main
 
 ---
 
@@ -307,20 +303,7 @@
 
 | # | Spec | Status | Sprint |
 |---|------|--------|--------|
-<<<<<<< HEAD
-| ST-01 | Auto Cadastro de Vendedor | `implementada` | 1 |
-| ST-03 | Palestras com assentos numerados | `implementada` | 1 |
-| ST-04 | ItemReserva (até 4 CPFs) | `implementada` | 1 |
-| ST-05 | Cancelamento de Reserva com Reembolso | `pendente` | 2 |
-| ST-06 | Cancelamento de Evento com Reembolso | `pendente` | 2 |
-| ST-07 | Admin e Vendedor fazem reservas | `pendente` | 2 |
-| ST-08 | Login Unificado | `em revisão` | 1 |
-| ST-09 | Vendedor na tabela Usuarios | `em revisão` | 1 |
-| ST-10 | Perfis Simplificados (3 perfis) | `implementada` | 1 |
-| ST-11 | Tipo Evento + Gratuito | `implementada` | 1 |
-| ST-12 | Cancelamento Unificado | `pendente` | 2 |
-=======
-| 120 | Segurança (BCrypt, JWT, rate limit) | ❌ `pendente` | 1 |
+| 120 | Segurança (BCrypt, JWT, rate limit) | ✅ `audited` | 1 |
 | 160 | Cupons — AdminId via JWT | ❌ `pendente` | 1 |
 | 130 | Isolamento Multi-Tenant | ❌ `pendente` | 1 |
 | 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | 1 |
@@ -328,10 +311,10 @@
 | ST-05 | Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | 2 |
 | ST-06 | Cancelamento de Evento c/ Reembolso | ❌ `pendente` | 2 |
 | ST-12 | Cancelamento — Visão Unificada | ❌ `pendente` | 2 |
-| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | 3 |
->>>>>>> main
+| 140 | Infraestrutura e Deploy (Docker) | ✅ `implementada` | 3 |
+| 190 | Substituir BackgroundService por Hangfire | ✅ `implementada` | 3 |
 
 ---
 
-> **Nota:** 9 specs já estão ✅ implementadas (ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170).
+> **Nota:** 11 specs já estão ✅ implementadas (ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 140, 170, 190).
 > ST-02 (Painel do Vendedor) é frontend puro e está fora do escopo backend.
