@@ -12,6 +12,7 @@ public class Reserva
     public Guid EventoId { get; private set; }
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
+    public bool Pago { get; private set; }
     public List<ItemReserva> Itens { get; private set; } = new();
 
     public bool PodeAdicionarMaisItens => Itens.Count < LimiteMaximoItens;
@@ -24,6 +25,12 @@ public class Reserva
         EventoId = eventoId;
         CupomUtilizado = cupomUtilizado;
         ValorFinalPago = valorFinalPago;
+        Pago = false;
+    }
+
+    public void MarcarPago()
+    {
+        Pago = true;
     }
 
     /// <summary>

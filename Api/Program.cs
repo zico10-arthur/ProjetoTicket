@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Api.Middlewares;
 using Infrastructure.Database;
 using Application.Mappings;
+using Infraestructure.DataBase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -14,6 +15,23 @@ using System.IdentityModel.Tokens.Jwt;
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Spec 120: Carregar Jwt:Key de user-secrets em desenvolvimento
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+// Spec 120: Validar Jwt:Key obrigatória antes de configurar autenticação
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key não configurada. Em desenvolvimento, execute:\n" +
+        "  dotnet user-secrets set \"Jwt:Key\" \"<sua-chave-secreta-de-32-caracteres>\"\n" +
+        "  dotnet user-secrets set \"Jwt:Issuer\" \"ProjetoTicket\"\n" +
+        "  dotnet user-secrets set \"Jwt:Audience\" \"ProjetoTicket\"");
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,6 +49,8 @@ builder.Services.AddScoped<Application.Interfaces.IEventoService, Application.Se
 builder.Services.AddScoped<IIngressoRepository, IngressoRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IIngressoService, IngressoService>();
+builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
+builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 
 builder.Services.AddHostedService<LiberacaoAssentosWorker>();
 
@@ -61,7 +81,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+                Encoding.UTF8.GetBytes(jwtKey)),
             RoleClaimType = "role",
             NameClaimType = "email"
         };
@@ -74,11 +94,18 @@ var app = builder.Build();
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection")!;
 DatabaseMigration.Initialize(connectionString);
 
+// ST-08: Seed Admin com BCrypt + Perfis
+using (var scope = app.Services.CreateScope())
+{
+    var seederFactory = scope.ServiceProvider.GetRequiredService<ConnectionFactory>();
+    DatabaseSeeder.Seed(seederFactory);
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<RateLimitingMiddleware>();
 
 app.UseHttpsRedirection();
 

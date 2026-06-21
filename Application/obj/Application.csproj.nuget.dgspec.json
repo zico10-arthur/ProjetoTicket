@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj": {}
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -34,11 +34,11 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -66,7 +66,7 @@
             },
             "BCrypt.Net-Next": {
               "target": "Package",
-              "version": "[4.0.3, )"
+              "version": "[4.2.0, )"
             },
             "Microsoft.Extensions.Configuration.Abstractions": {
               "target": "Package",
@@ -97,14 +97,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -165,14 +165,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
         "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -195,8 +195,8 @@
             "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
               }
             }
           }
@@ -218,6 +218,10 @@
           "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.1.72, )"

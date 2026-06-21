@@ -17,7 +17,7 @@ public class UsuarioNaoAutorizado : DomainException
 public class LoginErro : DomainException
 {
     public LoginErro()
-    : base("Usuário não encontrado ou senha inválida") {}
+    : base("Email ou senha inválidos.") {}
 }
 
 public class UsuarioNotFound : DomainException
@@ -36,4 +36,13 @@ public class EmailJaCadastrado : DomainException
 {
     public EmailJaCadastrado()
     : base("E-mail já cadastrado") {}
+}
+
+/// <summary>
+/// ST-08: Usuário está inativo.
+/// </summary>
+public class UsuarioInativoException : DomainException
+{
+    public UsuarioInativoException()
+    : base("Usuário inativo. Contate o administrador.") {}
 }

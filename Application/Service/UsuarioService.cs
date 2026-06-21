@@ -25,8 +25,13 @@ public class UsuarioService : IUsuarioService
         Usuario? cpfbuscado = await  _repository.BuscarCpfOuEmail(dto.Cpf, dto.Email, ct);
         if (cpfbuscado != null) throw new UsuarioCadastrado();
 
-        Guid idComprador = Guid.Parse("C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3");
-        Usuario? novocomprador = Usuario.Criar(dto.Cpf, dto.Nome, dto.Email, idComprador, dto.Senha);
+        // ST-08: Validar senha bruta antes do hash
+        Usuario.ValidarSenhaBruta(dto.Senha);
+
+        // ST-08: Hash da senha com BCrypt
+        string senhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha);
+
+        Usuario? novocomprador = Usuario.CriarComprador(dto.Cpf, dto.Nome, dto.Email, senhaHash);
         _repository.CadastrarUsuario(novocomprador);
     }
 
@@ -74,14 +79,51 @@ public class UsuarioService : IUsuarioService
         };
     }
 
-    public async Task<string> Login(LoginDTO dto, CancellationToken ct)
+    /// <summary>
+    /// ST-08: Login unificado — BCrypt.Verify + verificação de Ativo + LoginResponseDTO.
+    /// Spec 120: SaltParseException catch, mensagem uniforme, resposta 401 padronizada.
+    /// </summary>
+    public async Task<LoginResponseDTO> Login(LoginDTO dto, CancellationToken ct)
     {
         Usuario? logado = await _repository.BuscarEmail(dto.Email, ct);
-        if(logado == null) throw new LoginErro();
+        if (logado == null) throw new LoginErro();
 
-        if (logado.Senha != dto.Senha) throw new LoginErro();
+        try
+        {
+            if (!BCrypt.Net.BCrypt.Verify(dto.Senha, logado.Senha))
+                throw new LoginErro();
+        }
+        catch (BCrypt.Net.SaltParseException)
+        {
+            throw new LoginErro();
+        }
+
+        if (!logado.Ativo)
+            throw new LoginErro();
+
+        // 8.2.4 Gerar JWT
         var token = _tokenservice.GerarToken(logado);
-        return token;
+
+        // 8.2.5 Obter nome do perfil
+        var perfilId = logado.PerfilId.ToString().ToUpper();
+        var perfil = perfilId switch
+        {
+            "A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1" => "Admin",
+            "B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2" => "Vendedor",
+            _ => "Comprador"
+        };
+
+        return new LoginResponseDTO
+        {
+            Token = token,
+            Usuario = new UsuarioLoginDTO
+            {
+                Cpf = logado.Cpf,
+                Nome = logado.Nome,
+                Email = logado.Email,
+                Perfil = perfil
+            }
+        };
     }
 
     
@@ -107,8 +149,12 @@ public class UsuarioService : IUsuarioService
          Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
-        usuario.AlterarSenha(dto.NovaSenha);
-        await _repository.AtualizarSenha(cpf, dto.NovaSenha, ct);
+        // ST-08: Validar e hashear a nova senha com BCrypt
+        Usuario.ValidarSenhaBruta(dto.NovaSenha);
+        string senhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+
+        usuario.AlterarSenha(senhaHash);
+        await _repository.AtualizarSenha(cpf, senhaHash, ct);
     }
 
     public async Task AlterarEmailAsync(string cpfBruto, AlterarEmailDTO dto, CancellationToken ct)

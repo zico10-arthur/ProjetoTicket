@@ -201,27 +201,29 @@ Registro de decisões arquiteturais do sistema. Cada ADR documenta o contexto, a
 
 ---
 
-## ADR-009: Background Worker para liberação de assentos
+## ADR-009: Background Worker para liberação de assentos (ATUALIZADO — spec 190)
 
-**Status:** ✅ Aceito
+**Status:** ✅ Aceito (atualizado em 17/06/2026)
 
-**Contexto:** Quando um comprador inicia o checkout, o assento fica com `Status=1` (Reservado). Se ele abandonar, o assento precisa voltar ao estado Livre.
+**Contexto:** Quando um comprador inicia o checkout, o assento fica com `Status=1` (Reservado). Se ele abandonar, o assento precisa voltar ao estado Livre. A v1 usava `BackgroundService` com `PeriodicTimer`, mas a ausência de persistência e monitoramento levou à substituição pelo Hangfire na v2.
 
 **Alternativas consideradas:**
 
 | Opção | Prós | Contras |
 |-------|------|---------|
-| **BackgroundService (timer)** | Nativo do .NET, simples, sem dependência externa | Executa em memória, para se a API parar |
-| Hangfire / Quartz | Persistente, dashboard, retry | Overkill para 1 job, dependência extra |
-| Transação com timeout no banco | Atomicidade garantida | Timeout de conexão ≠ timeout de negócio |
+| BackgroundService (timer) | Nativo do .NET, simples, sem dependência externa | Executa em memória, para se a API parar, sem dashboard, sem retry |
+| **Hangfire** | Jobs persistentes em banco, dashboard com histórico, retry automático, mesma connection string | Dependência externa (NuGet), tabelas extras no banco |
+| Quartz.NET | Scheduling cron-like, persistente | Mais complexo de configurar que Hangfire, sem dashboard built-in |
 
-**Decisão:** `BackgroundService` do .NET com `Timer` de 60 segundos. Libera ingressos com `Status=1` e `DataBloqueio > 15 minutos`.
+**Decisão:** **Hangfire** com storage SQL Server (mesmo banco do projeto). Job `LiberacaoAssentosJob.ExecutarAsync()` executado a cada 60 segundos via `Cron.Minutely`. O `BackgroundService` anterior (`LiberacaoAssentosWorker.cs`) foi removido.
 
 **Consequências:**
-- `LiberacaoAssentosWorker.cs` em `Api/BackgroundTasks/`
-- Registrado como `IHostedService` no `Program.cs`
-- Query: `UPDATE Ingressos SET Status=0 WHERE Status=1 AND DATEDIFF(MINUTE, DataBloqueio, GETDATE()) >= 15`
-- Se a API reiniciar, o worker reinicia junto — assentos presos são liberados no próximo ciclo
+- `LiberacaoAssentosJob.cs` em `Api/BackgroundTasks/` — mesmo diretório, implementação diferente
+- `[DisableConcurrentExecution(timeoutInSeconds: 120)]` impede execuções paralelas do mesmo job
+- Dashboard em `/hangfire` protegido por `HangfireAdminAuthorizationFilter` (apenas Admin)
+- Tabelas do Hangfire (`HangFire.Job`, `HangFire.State`, etc.) criadas automaticamente via `PrepareSchemaIfNecessary = true`
+- Mesmas queries SQL do worker anterior — `DeletarReservasNaoPagasExpiradas(15)` e `LiberarAssentosExpirados(15)` — preservadas
+- Se a API reiniciar, o Hangfire retoma os jobs do banco sem perda de estado
 
 ---
 
@@ -273,5 +275,60 @@ Registro de decisões arquiteturais do sistema. Cada ADR documenta o contexto, a
 
 ---
 
+## ADR-012: Cancelamento Lógico com Reembolso Atômico (specs 40, 50, 110)
+
+**Status:** ✅ Aceito
+
+**Contexto:** O sistema precisa permitir que compradores cancelem suas reservas e que vendedores cancelem eventos inteiros. Em ambos os casos, quando há dinheiro envolvido, o reembolso precisa ser processado de forma consistente. O modelo anterior previa exclusão física — o que inviabilizaria auditoria e histórico.
+
+**Alternativas consideradas:**
+
+| Opção | Prós | Contras |
+|-------|------|---------|
+| **Cancelamento lógico + transação atômica** | Preserva histórico, reembolso garantido, idempotente | Requer colunas extras (Reembolsada, Cancelado) e transações multi-tabela |
+| Exclusão física + INSERT de log | Schema mais limpo | Perde rastreabilidade, log pode divergir do estado real |
+| Soft delete genérico (IsDeleted) | Simples | Não diferencia "cancelado com reembolso" de "excluído", semântica pobre |
+
+**Decisão:** Cancelamento lógico com flags explícitas e transações atômicas cobrindo até 5 tabelas. Reserva cancelada → `Reserva.Reembolsada = true` + `ItemReserva.Reembolsado = true` + `Ingressos.Status = 0` (Livre) + `Pagamento.Status = 3` (Reembolsado). Evento cancelado → adiciona `Evento.Cancelado = true` e propaga para todas as reservas do evento.
+
+**Consequências:**
+- **Comprador cancela reserva** (spec 40): `DELETE /api/reserva/{id}` — autorização por `UsuarioCpf == cpf do JWT`, válido para qualquer perfil
+- **Vendedor/Admin cancela evento** (spec 50): `DELETE /api/evento/{id}` mantém o verbo HTTP mas muda a semântica para cancelamento lógico; `GET /api/evento/{id}/status-cancelamento` consulta impacto antes de cancelar
+- **Visão unificada** (spec 110): `GET /api/reserva/minhas` retorna `reembolsada`, `reembolsado` (por item) e `podeCancelar` para todos os perfis
+- Coluna `Reservas.Reembolsada` (BIT, NOT NULL DEFAULT 0) — migration `Script0012`
+- Eventos cancelados são filtrados da listagem pública (`WHERE Cancelado = 0`)
+- Reembolso é **simulado** (status no banco) — sem gateway de pagamento real
+- Transações usam `BEGIN/COMMIT/ROLLBACK` — ou tudo acontece, ou nada
+
+---
+
+## ADR-013: MailKit + Channel para E-mails Transacionais (spec 180)
+
+**Status:** ✅ Aceito
+
+**Contexto:** O sistema precisa enviar e-mails transacionais (boas-vindas, confirmação de reserva, confirmação de pagamento, reembolso, redefinição de senha) sem bloquear as respostas HTTP. A solução precisa funcionar em desenvolvimento mesmo sem SMTP configurado.
+
+**Alternativas consideradas:**
+
+| Opção | Prós | Contras |
+|-------|------|---------|
+| **MailKit + Channel<T> (fila em memória)** | Fire-and-forget, sem bloqueio HTTP, graceful degradation, zero dependência de infra | E-mails não sobrevivem a restart (aceitável para transacionais) |
+| Envio síncrono no request | Simples, sem worker | Bloqueia resposta HTTP, timeout do SMTP = timeout da API |
+| Fila persistente (RabbitMQ/SQS) | Resiste a restart, escalável | Infra complexa demais para o escopo atual |
+| SendGrid / Mailgun SDK | Serviço gerenciado, sem SMTP | Custo, dependência externa, lock-in de provedor |
+
+**Decisão:** Interface `IEmailSender` no Domain, implementada por `EmailBackgroundWorker` (IHostedService singleton) com `Channel<EmailMessage>` bounded para 100 mensagens. Envio real via `SmtpEmailSender` com MailKit. Templates como strings constantes em `EmailTemplates`. Se SMTP não configurado, worker opera em modo no-op (log warning, descarta mensagem).
+
+**Consequências:**
+- `IEmailSender.EnfileirarAsync()` é chamado após persistência bem-sucedida — nunca antes
+- Worker tenta 3 vezes com backoff exponencial (2s, 4s, 8s) antes de desistir
+- `Channel<T>` com `BoundedChannelOptions(100)` e `FullMode = Wait` — backpressure natural
+- Redefinição de senha: `POST /api/usuario/esqueci-senha` (sempre retorna 200 OK — anti-enumeração) + `POST /api/usuario/redefinir-senha` (JWT com claim `purpose=password-reset`, 15 min)
+- Token de redefinição NÃO é aceito como token de autenticação (validação dupla: assinatura + purpose)
+- Configuração SMTP externalizada em `appsettings.json` seção "Smtp"
+- Pacote NuGet `MailKit` adicionado ao projeto `Infraestructure`
+
+---
+
 > **Formato baseado em:** [ADR GitHub](https://adr.github.io/) — Michael Nygard  
-> **Próximo:** Implementação da spec 120 (Segurança — BCrypt + JWT user-secrets + rate limit)
+> **Próximo:** Implementação da Sprint 1 (specs 120, 130, 150, 160, 180)

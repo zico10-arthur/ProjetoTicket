@@ -32,6 +32,10 @@ public class GlobalExceptionHandlerMiddleware
 
         var (statusCode, message) = ex switch
         {
+            // Spec 120: LoginErro retorna 401 com mensagem padronizada
+            Application.Exceptions.LoginErro
+                => (StatusCodes.Status401Unauthorized, "Email ou senha inválidos."),
+
             Application.Exceptions.CnpjJaCadastrado or
             Application.Exceptions.EmailJaCadastrado or
             Application.Exceptions.UsuarioCadastrado
@@ -45,8 +49,7 @@ public class GlobalExceptionHandlerMiddleware
 
         var response = new
         {
-            StatusCode = statusCode,
-            Message = message
+            message
         };
 
         await context.Response.WriteAsJsonAsync(response);

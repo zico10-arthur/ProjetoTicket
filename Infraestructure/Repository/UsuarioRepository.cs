@@ -3,8 +3,6 @@ using Domain.Exceptions;
 using Infrastructure.Database;
 using Domain.Interface;
 using Domain.Entities;
-using System.Threading.Tasks.Sources;
-using System.Linq.Expressions;
 
 
 namespace Infraestructure.Repository;
@@ -150,7 +148,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
+        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha, Ativo
                          FROM Usuarios
                          WHERE Email = @Email";
 

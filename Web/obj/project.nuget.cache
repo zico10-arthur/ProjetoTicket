@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "NFq+rLpLGmI=",
+  "dgSpecHash": "SZljku0hidM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\web\\Web.csproj",
+  "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tempu\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",
-    "C:\\Users\\tempu\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-core\\6.1.1\\dbup-core.6.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-sqlserver\\7.2.0\\dbup-sqlserver.7.2.0.nupkg.sha512",
@@ -51,5 +51,15 @@
     "C:\\Users\\tempu\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.11\\system.security.cryptography.protecteddata.9.0.11.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
+      "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

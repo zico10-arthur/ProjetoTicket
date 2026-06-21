@@ -93,6 +93,31 @@ public class Usuario
         return usuario;
     }
 
+    /// <summary>
+    /// ST-08: Factory method para criar comprador com senha já hasheada.
+    /// A validação da senha bruta é feita pelo Service antes de chamar este método.
+    /// </summary>
+    public static Usuario CriarComprador(string cpf, string nome, string email, string senhaHash)
+    {
+        cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+
+        var usuario = new Usuario
+        {
+            Cpf = cpf,
+            Nome = nome.Trim(),
+            Email = email,
+            PerfilId = Guid.Parse("C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3"),
+            Senha = senhaHash
+        };
+
+        usuario.ValidarNome(nome);
+        usuario.ValidarCpf(cpf);
+        if (!DigitosSaoValidos(cpf)) throw new CpfInvalido();
+        usuario.ValidarEmail(email);
+
+        return usuario;
+    }
+
     private static bool TelefoneValido(string telefone)
     {
         var numeros = new string(telefone.Where(char.IsDigit).ToArray());

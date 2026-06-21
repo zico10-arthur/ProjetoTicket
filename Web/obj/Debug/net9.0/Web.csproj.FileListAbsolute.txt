@@ -321,6 +321,7 @@ C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-cf158k2j5i.gz
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-jsf39xodda.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\tzxjg6is5z-6x2ajsl5c8.gz
+<<<<<<< HEAD
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\0wz98yz2xy-jolev99wdd.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\o7k4cxtn0u-h82a7aihv0.gz
 C:\Users\tempu\OneDrive\ProjetoTicket\projetoticket\web\bin\Debug\net9.0\appsettings.Development.json
@@ -433,3 +434,8 @@ C:\Users\tempu\OneDrive\ProjetoTicket\projetoticket\web\obj\Debug\net9.0\refint\
 C:\Users\tempu\OneDrive\ProjetoTicket\projetoticket\web\obj\Debug\net9.0\Web.pdb
 C:\Users\tempu\OneDrive\ProjetoTicket\projetoticket\web\obj\Debug\net9.0\Web.genruntimeconfig.cache
 C:\Users\tempu\OneDrive\ProjetoTicket\projetoticket\web\obj\Debug\net9.0\ref\Web.dll
+=======
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-xvsyfqkrg0.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-k909wv51vp.gz
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\bin\Debug\net9.0\BCrypt-Net-Next.dll
+>>>>>>> main

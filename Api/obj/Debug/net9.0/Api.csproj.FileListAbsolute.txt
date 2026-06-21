@@ -281,6 +281,7 @@ C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dll
 C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+<<<<<<< HEAD
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\Api.dll
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\refint\Api.dll
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
@@ -376,3 +377,6 @@ C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\swae.bu
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\Api.csproj.Up2Date
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
+=======
+C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\BCrypt-Net-Next.dll
+>>>>>>> main

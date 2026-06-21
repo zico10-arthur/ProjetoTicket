@@ -1,17 +1,20 @@
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Api.Middlewares;
 
 /// <summary>
-/// ST-01: Rate limiting para o endpoint de login (5 requisições/min por IP).
+/// Spec 120: Rate-limiting middleware for the login endpoint.
+/// Limits POST /api/usuario/login to 5 requests per minute per IP address.
+/// Uses sliding window algorithm with in-memory storage.
+/// Respects X-Forwarded-For header for clients behind proxies.
 /// </summary>
 public class RateLimitingMiddleware
 {
     private readonly RequestDelegate _next;
-    private static readonly ConcurrentDictionary<string, RateLimitEntry> _clients = new();
-
-    private const int MaxRequests = 5;
-    private static readonly TimeSpan Window = TimeSpan.FromMinutes(1);
+    private static readonly ConcurrentDictionary<string, SlidingWindow> _clients = new();
+    private const int Limit = 5;
+    private static readonly TimeSpan Interval = TimeSpan.FromMinutes(1);
 
     public RateLimitingMiddleware(RequestDelegate next)
     {
@@ -20,46 +23,38 @@ public class RateLimitingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Aplica apenas ao endpoint de login
-        if (!context.Request.Path.Value?.EndsWith("/login", StringComparison.OrdinalIgnoreCase) ?? true)
+        if (ShouldRateLimit(context))
         {
-            await _next(context);
-            return;
-        }
+            var ip = GetClientIp(context);
+            var window = _clients.GetOrAdd(ip, _ => new SlidingWindow());
 
-        var clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        var now = DateTime.UtcNow;
-
-        var entry = _clients.GetOrAdd(clientIp, _ => new RateLimitEntry { Count = 0, WindowStart = now });
-
-        bool limitExceeded;
-        lock (entry)
-        {
-            if (now - entry.WindowStart > Window)
+            if (!window.TryIncrement(Limit, Interval))
             {
-                entry.Count = 0;
-                entry.WindowStart = now;
+                context.Response.StatusCode = 429;
+                context.Response.ContentType = "application/json; charset=utf-8";
+                await context.Response.WriteAsync(
+                    "{\"message\":\"Muitas tentativas. Aguarde 1 minuto.\"}");
+                return;
             }
-
-            entry.Count++;
-            limitExceeded = entry.Count > MaxRequests;
-        }
-
-        if (limitExceeded)
-        {
-            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(
-                "{\"statusCode\":429,\"message\":\"Muitas requisições. Tente novamente em 1 minuto.\"}");
-            return;
         }
 
         await _next(context);
     }
 
-    private class RateLimitEntry
+    private static bool ShouldRateLimit(HttpContext context)
     {
-        public int Count { get; set; }
-        public DateTime WindowStart { get; set; }
+        return context.Request.Path.StartsWithSegments("/api/usuario/login", StringComparison.OrdinalIgnoreCase)
+            && HttpMethods.IsPost(context.Request.Method);
+    }
+
+    private static string GetClientIp(HttpContext context)
+    {
+        var forwarded = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwarded))
+        {
+            return forwarded.Split(',')[0].Trim();
+        }
+
+        return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
 }
