@@ -1,9 +1,9 @@
 using Api.BackgroundTasks;
+using Api.Middlewares;
 using Infraestructure.Repository;
 using Domain.Interface;
 using Application.Service;
 using Application.Interfaces;
-using Api.Middlewares;
 using Infrastructure.Database;
 using Application.Mappings;
 using Infraestructure.DataBase;
@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Hangfire;
+using Hangfire.SqlServer;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -52,7 +54,21 @@ builder.Services.AddScoped<IIngressoService, IngressoService>();
 builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 
-builder.Services.AddHostedService<LiberacaoAssentosWorker>();
+// Hangfire — Storage SQL Server (mesmo banco do projeto)
+builder.Services.AddHangfire(config =>
+{
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection")!;
+    config.UseSqlServerStorage(cs, new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        PrepareSchemaIfNecessary = true
+    });
+});
+
+builder.Services.AddHangfireServer();
 
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -101,6 +117,18 @@ using (var scope = app.Services.CreateScope())
     DatabaseSeeder.Seed(seederFactory);
 }
 
+// Registrar recurring job do Hangfire (antes do Swagger)
+using (var hangfireScope = app.Services.CreateScope())
+{
+    var recurringJobManager = hangfireScope.ServiceProvider
+        .GetRequiredService<IRecurringJobManager>();
+
+    recurringJobManager.AddOrUpdate<LiberacaoAssentosJob>(
+        "liberacao-assentos-expirados",
+        job => job.ExecutarAsync(default),
+        Cron.Minutely);
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -111,6 +139,12 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Dashboard do Hangfire — acesso restrito a Admin
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAdminAuthorizationFilter() }
+});
 
 app.MapControllers();
 

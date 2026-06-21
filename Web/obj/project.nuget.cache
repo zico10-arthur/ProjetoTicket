@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "SZljku0hidM=",
+  "dgSpecHash": "CdhjibchJYw=",
   "success": true,
   "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
   "expectedPackageFiles": [
@@ -51,15 +51,5 @@
     "C:\\Users\\tempu\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.11\\system.security.cryptography.protecteddata.9.0.11.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

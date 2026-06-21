@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8iZRsA9Iz1E=",
+  "dgSpecHash": "tApUl5h1Lfg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
+  "projectFilePath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tempu\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
@@ -11,6 +11,11 @@
     "C:\\Users\\tempu\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-core\\6.1.1\\dbup-core.6.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-sqlserver\\7.2.0\\dbup-sqlserver.7.2.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire\\1.8.23\\hangfire.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.aspnetcore\\1.8.23\\hangfire.aspnetcore.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.core\\1.8.23\\hangfire.core.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.netcore\\1.8.23\\hangfire.netcore.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.sqlserver\\1.8.23\\hangfire.sqlserver.1.8.23.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\9.0.0\\microsoft.aspnetcore.authentication.jwtbearer.9.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.12\\microsoft.aspnetcore.openapi.9.0.12.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
@@ -21,6 +26,8 @@
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.11\\microsoft.extensions.caching.memory.9.0.11.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0\\microsoft.extensions.configuration.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\3.0.0\\microsoft.extensions.fileproviders.abstractions.3.0.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\3.0.0\\microsoft.extensions.hosting.abstractions.3.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.options\\10.0.0\\microsoft.extensions.options.10.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.primitives\\10.0.0\\microsoft.extensions.primitives.10.0.0.nupkg.sha512",
@@ -34,6 +41,7 @@
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.14.0\\microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\newtonsoft.json\\11.0.1\\newtonsoft.json.11.0.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\swashbuckle.aspnetcore\\6.9.0\\swashbuckle.aspnetcore.6.9.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.9.0\\swashbuckle.aspnetcore.swagger.6.9.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.9.0\\swashbuckle.aspnetcore.swaggergen.6.9.0.nupkg.sha512",
@@ -48,15 +56,5 @@
     "C:\\Users\\tempu\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.11\\system.security.cryptography.protecteddata.9.0.11.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

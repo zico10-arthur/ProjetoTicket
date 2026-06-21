@@ -1,6 +1,7 @@
 # Spec 190 — Design: Substituir BackgroundService por Hangfire
 
 > **Requirements:** [`requirements.md`](./requirements.md)
+> **Status:** `implementada`
 > **Contexto:** Clean Architecture (.NET 9 + Dapper + SQL Server + DbUp)
 
 ---

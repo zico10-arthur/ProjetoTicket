@@ -1681,8 +1681,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../Infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1732,8 +1732,8 @@
             "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
               "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
             },
-            "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+            "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+              "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
             }
           }
         }
@@ -1791,13 +1791,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0."
-    }
-  ]
+  }
 }

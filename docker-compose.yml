@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # ========== SQL Server ==========
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "ProjetoTicket@2026!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "ProjetoTicket@2026!" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ========== API ==========
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5007"
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ProjetoTicketDB;User=sa;Password=ProjetoTicket@2026!;TrustServerCertificate=True;Max Pool Size=100;"
+      Jwt__Key: "chave-desenvolvimento-local-nao-usar-em-producao"
+      Jwt__Issuer: "ProjetoTicket"
+      Jwt__Audience: "ProjetoTicket"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:5007/swagger/index.html || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 40s
+
+  # ========== Web (Frontend Blazor) ==========
+  web:
+    build:
+      context: .
+      dockerfile: Web.Dockerfile
+    ports:
+      - "5057:5057"
+    environment:
+      ASPNETCORE_URLS: "http://+:5057"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  sqlserver_data:

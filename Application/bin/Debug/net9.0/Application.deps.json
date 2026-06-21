@@ -9,11 +9,7 @@
       "Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "16.1.1",
-<<<<<<< HEAD
-          "BCrypt.Net-Next": "4.0.3",
-=======
           "BCrypt.Net-Next": "4.2.0",
->>>>>>> main
           "Domain": "1.0.0",
           "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
@@ -62,19 +58,11 @@
           }
         }
       },
-<<<<<<< HEAD
-      "BCrypt.Net-Next/4.0.3": {
-        "runtime": {
-          "lib/net6.0/BCrypt.Net-Next.dll": {
-            "assemblyVersion": "4.0.3.0",
-            "fileVersion": "4.0.3.0"
-=======
       "BCrypt.Net-Next/4.2.0": {
         "runtime": {
           "lib/netstandard2.1/BCrypt-Net-Next.dll": {
             "assemblyVersion": "4.2.0.0",
             "fileVersion": "4.2.0.0"
->>>>>>> main
           }
         }
       },
@@ -537,21 +525,12 @@
       "path": "azure.identity/1.17.1",
       "hashPath": "azure.identity.1.17.1.nupkg.sha512"
     },
-<<<<<<< HEAD
-    "BCrypt.Net-Next/4.0.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
-      "path": "bcrypt.net-next/4.0.3",
-      "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
-=======
     "BCrypt.Net-Next/4.2.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-gwLD2KfCuwQesP17aVh4h6lpiMPEVt5Lbpndo0ej903hNUUTtyxt3ARdDjmuydBRTAUICc7OVKVbaOvc6SQYXA==",
       "path": "bcrypt.net-next/4.2.0",
       "hashPath": "bcrypt.net-next.4.2.0.nupkg.sha512"
->>>>>>> main
     },
     "Dapper/2.1.72": {
       "type": "package",

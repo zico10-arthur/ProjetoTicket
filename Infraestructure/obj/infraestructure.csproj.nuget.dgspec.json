@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {}
+    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {}
   },
   "projects": {
     "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
@@ -72,14 +72,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\obj\\",
+        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

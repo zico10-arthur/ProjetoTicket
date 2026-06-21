@@ -2096,8 +2096,8 @@
     },
     "Infraestructure/1.0.0": {
       "type": "project",
-      "path": "../Infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/Infraestructure.csproj",
+      "msbuildProject": "../infraestructure/Infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2190,13 +2190,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0."
-    }
-  ]
+  }
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "TIReWJ0vJXM=",
+  "dgSpecHash": "YGkFSQ3+FUE=",
   "success": true,
   "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
   "expectedPackageFiles": [
@@ -13,6 +13,11 @@
     "C:\\Users\\tempu\\.nuget\\packages\\dapper\\2.1.72\\dapper.2.1.72.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-core\\6.1.1\\dbup-core.6.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\dbup-sqlserver\\7.2.0\\dbup-sqlserver.7.2.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire\\1.8.23\\hangfire.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.aspnetcore\\1.8.23\\hangfire.aspnetcore.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.core\\1.8.23\\hangfire.core.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.netcore\\1.8.23\\hangfire.netcore.1.8.23.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\hangfire.sqlserver\\1.8.23\\hangfire.sqlserver.1.8.23.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\9.0.0\\microsoft.aspnetcore.authentication.jwtbearer.9.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.12\\microsoft.aspnetcore.openapi.9.0.12.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
@@ -24,6 +29,8 @@
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.11\\microsoft.extensions.caching.memory.9.0.11.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0\\microsoft.extensions.configuration.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\3.0.0\\microsoft.extensions.fileproviders.abstractions.3.0.0.nupkg.sha512",
+    "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\3.0.0\\microsoft.extensions.hosting.abstractions.3.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.options\\10.0.0\\microsoft.extensions.options.10.0.0.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\microsoft.extensions.primitives\\10.0.0\\microsoft.extensions.primitives.10.0.0.nupkg.sha512",
@@ -65,15 +72,5 @@
     "C:\\Users\\tempu\\.nuget\\packages\\xunit.extensibility.execution\\2.9.2\\xunit.extensibility.execution.2.9.2.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\xunit.runner.visualstudio\\2.8.2\\xunit.runner.visualstudio.2.8.2.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

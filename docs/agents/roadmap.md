@@ -1,6 +1,6 @@
 # Roadmap — SoldOut Tickets
 
-> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (30 arquivos) | **Data:** 17/06/2026
+> **Fonte:** [`storytelling.md`](../storytelling.md) | **Specs:** [`roadmap/`](./roadmap/) (30 arquivos) | **Data:** 21/06/2026
 
 ---
 
@@ -54,8 +54,8 @@
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
-| 190 | Substituir BackgroundService por Hangfire | ❌ `pendente` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
+| 140 | Infraestrutura e Deploy (Docker) | ✅ `implementada` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
+| 190 | Substituir BackgroundService por Hangfire | ✅ `implementada` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
 
 ---
 
@@ -76,8 +76,8 @@
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
 | ✅ `audited` | 1 | 120 |
-| ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 9 | ST-05, ST-06, ST-12, 130, 140, 150, 160, 180, 190 |
+| ✅ `implementada` | 11 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170, 190, 140 |
+| ❌ `pendente` | 7 | ST-05, ST-06, ST-12, 130, 150, 160, 180 |
 
 ---
 
@@ -90,13 +90,13 @@
 
 ---
 
-## Evidências no Código (16/06/2026)
+## Evidências no Código (21/06/2026)
 
 | # | O que foi encontrado | Status |
 |---|---------------------|--------|
 | ST-01 | `UsuarioController`: `[HttpPost("cadastrar-vendedor")]` público, sem `[Authorize]` | ✅ `implementada` |
 | ST-03 | `Evento.cs`: campo `TipoEvento Tipo`, método `GerarPalestra()` | ✅ `implementada` |
-| ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List&lt;ItemReserva&gt;) ativo | ✅ `implementada` |
+| ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List<ItemReserva>) ativo | ✅ `implementada` |
 | ST-05 | `DELETE /api/reserva/{id}` não existe — spec completa em [`spec-40/`](./roadmap/spec-40/) | ❌ `pendente` |
 | ST-06 | `DELETE /api/evento/{id}` existe mas sem lógica de reembolso — spec completa em [`spec-50/`](./roadmap/spec-50/) | ❌ `pendente` |
 | ST-07 | `ReservaController`: `[Authorize]` sem restrição de role — todos podem | ✅ `implementada` |
@@ -107,12 +107,12 @@
 | ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
 | 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: SEM filtro | ❌ `pendente` |
-| 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
+| 140 | `Dockerfile` (multi-stage) + `Web.Dockerfile` + `docker-compose.yml` (API + Web + SQL Server) + `Max Pool Size=100` | ✅ `implementada` |
 | 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |
 | 160 | `Cupom.cs` + CRUD no `CupomController` — `AdminId` ainda via rota (7 ocorrências) | ❌ `pendente` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
-| 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |
+| 190 | `LiberacaoAssentosJob.cs` com Hangfire + `[DisableConcurrentExecution]` + recurring job `Cron.Minutely` + dashboard Admin `/hangfire` | ✅ `implementada` |
 
 ---
 
