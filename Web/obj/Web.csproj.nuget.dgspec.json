@@ -37,8 +37,8 @@
               "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
                 "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
+              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -165,14 +165,14 @@
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
-        "projectName": "infraestructure",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj",
+        "projectName": "Infraestructure",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\Infraestructure.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\infraestructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

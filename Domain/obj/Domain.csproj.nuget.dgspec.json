@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {}
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

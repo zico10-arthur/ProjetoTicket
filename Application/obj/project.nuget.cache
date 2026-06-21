@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Uvd7Z1lHiXY=",
+  "dgSpecHash": "EiIANucODso=",
   "success": true,
-  "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
+  "projectFilePath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\projetoticket\\Application\\Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tempu\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\tempu\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
