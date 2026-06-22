@@ -10,6 +10,7 @@ public class Reserva
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string UsuarioCpf { get; private set; }
     public Guid EventoId { get; private set; }
+    public string VendedorCpf { get; private set; } = string.Empty;
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
     public bool Pago { get; private set; }
@@ -36,7 +37,7 @@ public class Reserva
     /// <summary>
     /// Cria uma reserva com 1 a 4 itens. Valida CPFs, duplicatas, e aplica cupom sobre o valor total.
     /// </summary>
-    public static Reserva Criar(string usuarioCpf, Guid eventoId, List<ItemReserva> itens, Cupom? cupom = null)
+    public static Reserva Criar(string usuarioCpf, Guid eventoId, List<ItemReserva> itens, Cupom? cupom = null, string vendedorCpf = "")
     {
         ValidarItens(itens);
 
@@ -57,7 +58,8 @@ public class Reserva
 
         return new Reserva(usuarioCpf, eventoId, codigoCupom, valorFinal)
         {
-            Itens = itens
+            Itens = itens,
+            VendedorCpf = vendedorCpf
         };
     }
 

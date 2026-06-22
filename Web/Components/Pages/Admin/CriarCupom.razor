@@ -49,11 +49,8 @@
             novoCupom.DataExpiracao = dataTemp ?? DateTime.Now;
             novoCupom.Ativo = true;
 
-            // O Guid abaixo é o Id do Admin que seu Controller espera na Rota
-            var adminId = "A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1"; 
-
-            // Envio para api/Cupom/CadastrarCupom/A1A1...
-            var response = await Http.PostAsJsonAsync($"api/Cupom/CadastrarCupom/{adminId}", novoCupom);
+            // Envio para api/Cupom/CadastrarCupom (AdminId extraído do JWT no servidor)
+            var response = await Http.PostAsJsonAsync("api/Cupom/CadastrarCupom", novoCupom);
 
             if (response.IsSuccessStatusCode)
             {

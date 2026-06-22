@@ -83,7 +83,7 @@ public class ReservaService : IReservaService
         }
 
         // ST-04.7: Criar reserva com cupom sobre valor total
-        Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom);
+        Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom, evento.VendedorCpf);
 
         await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
 
@@ -98,6 +98,12 @@ public class ReservaService : IReservaService
     public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct)
     {
         return await _repositoryReserva.ListarReservasDetalhadasPorCpf(cpf, ct);
+    }
+
+    public async Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(
+        string vendedorCpf, CancellationToken ct)
+    {
+        return await _repositoryReserva.ListarReservasDetalhadasPorVendedor(vendedorCpf, ct);
     }
 
 }

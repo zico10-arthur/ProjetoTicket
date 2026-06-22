@@ -42,6 +42,8 @@ public class GlobalExceptionHandlerMiddleware
                 => (StatusCodes.Status409Conflict, ex.Message),
             DomainException => (StatusCodes.Status400BadRequest, ex.Message),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso não encontrado."),
+            UnauthorizedAccessException
+                => (StatusCodes.Status401Unauthorized, ex.Message),
             _ => (StatusCodes.Status500InternalServerError, "Ocorreu um erro interno no servidor.")
         };
 

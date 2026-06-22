@@ -789,9 +789,9 @@
           "AutoMapper": "16.1.1",
           "BCrypt.Net-Next": "4.2.0",
           "Domain": "1.0.0",
-          "Infraestructure": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
-          "System.IdentityModel.Tokens.Jwt": "8.0.1"
+          "System.IdentityModel.Tokens.Jwt": "8.0.1",
+          "infraestructure": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Application.dll": {}
@@ -810,7 +810,7 @@
           "bin/placeholder/Domain.dll": {}
         }
       },
-      "Infraestructure/1.0.0": {
+      "infraestructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
@@ -821,10 +821,10 @@
           "dbup-sqlserver": "7.2.0"
         },
         "compile": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infraestructure.dll": {}
+          "bin/placeholder/infraestructure.dll": {}
         }
       }
     }
@@ -2211,19 +2211,19 @@
       "path": "../Domain/Domain.csproj",
       "msbuildProject": "../Domain/Domain.csproj"
     },
-    "Infraestructure/1.0.0": {
+    "infraestructure/1.0.0": {
       "type": "project",
-      "path": "../Infraestructure/Infraestructure.csproj",
-      "msbuildProject": "../Infraestructure/Infraestructure.csproj"
+      "path": "../infraestructure/infraestructure.csproj",
+      "msbuildProject": "../infraestructure/infraestructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
       "Application >= 1.0.0",
-      "Infraestructure >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 9.0.0",
       "Microsoft.AspNetCore.OpenApi >= 9.0.12",
-      "Swashbuckle.AspNetCore >= 6.9.0"
+      "Swashbuckle.AspNetCore >= 6.9.0",
+      "infraestructure >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2261,8 +2261,8 @@
             "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj": {
               "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Application\\Application.csproj"
             },
-            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+            "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj": {
+              "projectPath": "C:\\Users\\rezen\\OneDrive\\Desktop\\ProjetoTicket\\infraestructure\\infraestructure.csproj"
             }
           }
         }

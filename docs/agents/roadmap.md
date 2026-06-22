@@ -23,8 +23,8 @@
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
 | 120 | Segurança (BCrypt, JWT, rate limit) | ✅ `audited` | **Autonomia** — segurança para todos os perfis | [`spec-120/`](./roadmap/spec-120/) |
-| 160 | Cupons de Desconto | ❌ `pendente` | **Emitir ingressos** — AdminId via JWT, não rota | [`160-cupons.md`](./roadmap/160-cupons.md) |
-| 130 | Isolamento Multi-Tenant (VendedorId) | ❌ `pendente` | **Autonomia** — privacidade entre vendedores | [`130-isolamento-multi-tenant.md`](./roadmap/130-isolamento-multi-tenant.md) |
+| 160 | Cupons de Desconto | ✅ `audited` | **Emitir ingressos** — AdminId via JWT, não rota | [`spec-160/`](./roadmap/spec-160/) |
+| 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
 | 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
 | 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
 
@@ -75,9 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 1 | 120 |
+| ✅ `audited` | 3 | 120, 130, 160 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 9 | ST-05, ST-06, ST-12, 130, 140, 150, 160, 180, 190 |
+| ❌ `pendente` | 7 | ST-05, ST-06, ST-12, 140, 150, 180, 190 |
 
 ---
 
@@ -106,10 +106,10 @@
 | ST-11 | `Evento.cs`: `Gratuito` (PrecoPadrao == 0), `TipoEvento` (Teatro/Palestra) | ✅ `implementada` |
 | ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
 | 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
-| 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: SEM filtro | ❌ `pendente` |
+| 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: `VendedorCpf` adicionado, endpoint `minhas-vendas` implementado | ✅ `audited` |
 | 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
 | 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |
-| 160 | `Cupom.cs` + CRUD no `CupomController` — `AdminId` ainda via rota (7 ocorrências) | ❌ `pendente` |
+| 160 | CupomController: AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs | ✅ `audited` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
 | 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |

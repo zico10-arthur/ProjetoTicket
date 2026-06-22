@@ -9,4 +9,5 @@ public interface IReservaService
     Task<Guid> FazerReserva(string UsuarioCpf, ReservarDTO dto, CancellationToken ct);
     Task<IEnumerable<Reserva>> ListarReservasPorCpf(string cpf, CancellationToken ct);
     Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct);
+    Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(string vendedorCpf, CancellationToken ct);
 }

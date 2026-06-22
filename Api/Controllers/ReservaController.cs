@@ -64,4 +64,16 @@ public class ReservaController : ControllerBase
         var reservas = await _repository.ListarTodasDetalhadasAdmin(ct);
         return Ok(reservas);
     }
+
+    [HttpGet("minhas-vendas")]
+    [Authorize(Roles = "Vendedor")]
+    public async Task<IActionResult> ListarMinhasVendas(CancellationToken ct)
+    {
+        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        if (string.IsNullOrEmpty(cpf))
+            return Unauthorized(new { message = "Não foi possível identificar o vendedor." });
+
+        var vendas = await _service.ListarVendasDoVendedor(cpf, ct);
+        return Ok(vendas);
+    }
 }

@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -17,13 +18,21 @@ public class CupomController : ControllerBase
         _service = service;
     }
 
+    private Guid GetAdminIdFromJwt()
+    {
+        var perfilIdStr = User.Claims.FirstOrDefault(c => c.Type == "perfilId")?.Value;
+        if (string.IsNullOrEmpty(perfilIdStr) || !Guid.TryParse(perfilIdStr, out var perfilId))
+            throw new UnauthorizedAccessException("Token inválido: perfil não identificado.");
+        return perfilId;
+    }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("CadastrarCupom/{Id}")]
+    [HttpPost("CadastrarCupom")]
 
-    public async Task<IActionResult> CadastrarCupom([FromBody] CadastrarCupomDTO dto, [FromRoute] Guid Id, CancellationToken ct)
+    public async Task<IActionResult> CadastrarCupom([FromBody] CadastrarCupomDTO dto, CancellationToken ct)
     {
-       await _service.CadastrarCupom(dto,ct,Id);
+       var adminId = GetAdminIdFromJwt();
+       await _service.CadastrarCupom(dto, ct, adminId);
 
        return Ok(new {message ="Cupom Cadastrado com sucesso"});
     }
@@ -33,10 +42,10 @@ public class CupomController : ControllerBase
     [HttpDelete("DeletarCupom/{codigo}")]
 
     public async Task<IActionResult> DeletarCupom(
-        [FromRoute] string codigo, 
-        [FromBody] Guid adminId, 
+        [FromRoute] string codigo,
         CancellationToken ct)
     {
+        var adminId = GetAdminIdFromJwt();
         await _service.DeletarCupom(adminId, codigo, ct);
 
         return Ok(new { message = $"Cupom '{codigo.ToUpper().Trim()}' excluído com sucesso." });
@@ -47,12 +56,12 @@ public class CupomController : ControllerBase
     [HttpPatch("{codigo}/ValorMinimo")]
 
     public async Task<IActionResult> AlterarValorMinimo(
-        [FromRoute] string codigo, 
-        [FromBody] AlterarValorMinimoDTO dto, 
+        [FromRoute] string codigo,
+        [FromBody] AlterarValorMinimoDTO dto,
         CancellationToken ct)
     {
-        
-        await _service.AlterarValorMinimo(dto.AdminId, codigo, dto.NovoValor, ct);
+        var adminId = GetAdminIdFromJwt();
+        await _service.AlterarValorMinimo(adminId, codigo, dto.NovoValor, ct);
 
         return Ok(new { message = "Valor mínimo do cupom alterado com sucesso!" });
     }
@@ -62,12 +71,12 @@ public class CupomController : ControllerBase
     [HttpPatch("{codigo}/DataExpiracao")]
 
     public async Task<IActionResult> AlterarDataExpiracao(
-        [FromRoute] string codigo, 
-        [FromBody] AlterarDataExpiracaoDTO dto, 
+        [FromRoute] string codigo,
+        [FromBody] AlterarDataExpiracaoDTO dto,
         CancellationToken ct)
     {
-        
-        await _service.AlterarDataVencimento(dto.AdminId, codigo, dto.novaData, ct);
+        var adminId = GetAdminIdFromJwt();
+        await _service.AlterarDataVencimento(adminId, codigo, dto.novaData, ct);
 
         return Ok(new { message = "Data de expiração do cupom alterado com sucesso!" });
     }
@@ -76,10 +85,10 @@ public class CupomController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPatch("{codigo}/AlternarStatus")]
     public async Task<IActionResult> AlternarStatus(
-        [FromRoute] string codigo, 
-        [FromBody] Guid adminId,
+        [FromRoute] string codigo,
         CancellationToken ct)
     {
+        var adminId = GetAdminIdFromJwt();
         await _service.AlternarStatusCupom(adminId, codigo, ct);
 
         return Ok(new { message = "Status do cupom alterado com sucesso!" });
@@ -89,11 +98,12 @@ public class CupomController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpPatch("{codigo}/AlterarDesconto")]
     public async Task<IActionResult> AlterarDesconto(
-        [FromRoute] string codigo, 
+        [FromRoute] string codigo,
         [FromBody] AlterarDescontoDTO dto,
         CancellationToken ct)
     {
-        await _service.AlterarDesconto(dto.AdminId, codigo, dto.novoDesconto, ct);
+        var adminId = GetAdminIdFromJwt();
+        await _service.AlterarDesconto(adminId, codigo, dto.novoDesconto, ct);
 
         return Ok(new { message = "Porcentagem de desconto do cupom alterado com sucesso!" });
     }
@@ -103,7 +113,8 @@ public class CupomController : ControllerBase
     [HttpGet("ListarTodosCupons")]
     public async Task<IActionResult> ListarTodosCupons(CancellationToken ct)
     {
-        var cupons = await _service.ListarTodosCupons(Guid.Empty, ct);
+        var adminId = GetAdminIdFromJwt();
+        var cupons = await _service.ListarTodosCupons(adminId, ct);
         return Ok(cupons);
     }
 

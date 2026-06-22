@@ -26,8 +26,8 @@ public class ReservaRepository : IReservaRepository
         {
             // 1. Inserir Reserva
             const string sqlReserva = @"
-                INSERT INTO Reservas (Id, UsuarioCpf, EventoId, CupomUtilizado, ValorFinalPago)
-                VALUES (@Id, @UsuarioCpf, @EventoId, @CupomUtilizado, @ValorFinalPago)";
+                INSERT INTO Reservas (Id, UsuarioCpf, EventoId, CupomUtilizado, ValorFinalPago, VendedorCpf)
+                VALUES (@Id, @UsuarioCpf, @EventoId, @CupomUtilizado, @ValorFinalPago, @VendedorCpf)";
 
             await conn.ExecuteAsync(new CommandDefinition(sqlReserva, new
             {
@@ -35,7 +35,8 @@ public class ReservaRepository : IReservaRepository
                 reserva.UsuarioCpf,
                 reserva.EventoId,
                 reserva.CupomUtilizado,
-                reserva.ValorFinalPago
+                reserva.ValorFinalPago,
+                reserva.VendedorCpf
             }, transacao, cancellationToken: ct));
 
             // 2. Inserir ItensReserva
@@ -186,5 +187,29 @@ public class ReservaRepository : IReservaRepository
             ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaAdminDTO>(new CommandDefinition(sql, cancellationToken: ct));
+    }
+
+    public async Task<IEnumerable<ReservaVendedorDTO>> ListarReservasDetalhadasPorVendedor(
+        string vendedorCpf, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            SELECT 
+                r.Id,
+                e.Nome AS NomeEvento,
+                e.DataEvento,
+                r.ValorFinalPago,
+                r.Pago,
+                u.Nome AS NomeComprador,
+                u.Cpf AS CpfComprador
+            FROM Reservas r
+            INNER JOIN Eventos e ON r.EventoId = e.Id
+            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
+            WHERE r.VendedorCpf = @VendedorCpf
+            ORDER BY e.Nome, r.Id";
+
+        return await connection.QueryAsync<ReservaVendedorDTO>(
+            new CommandDefinition(sql, new { VendedorCpf = vendedorCpf }, cancellationToken: ct));
     }
 }

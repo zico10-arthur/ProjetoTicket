@@ -12,4 +12,5 @@ public interface IReservaRepository
     Task DeletarReservasNaoPagasExpiradas(int minutosExpiracao, CancellationToken ct);
     Task<IEnumerable<ReservaDetalhadaDTO>> ListarReservasDetalhadasPorCpf(string cpf, CancellationToken ct);
     Task<IEnumerable<ReservaAdminDTO>> ListarTodasDetalhadasAdmin(CancellationToken ct);
+    Task<IEnumerable<ReservaVendedorDTO>> ListarReservasDetalhadasPorVendedor(string vendedorCpf, CancellationToken ct);
 }

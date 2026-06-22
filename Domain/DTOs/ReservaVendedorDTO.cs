@@ -1,0 +1,12 @@
+namespace Domain.DTOs;
+
+public class ReservaVendedorDTO
+{
+    public Guid Id { get; set; }
+    public string NomeEvento { get; set; } = string.Empty;
+    public DateTime DataEvento { get; set; }
+    public decimal ValorFinalPago { get; set; }
+    public bool Pago { get; set; }
+    public string NomeComprador { get; set; } = string.Empty;
+    public string CpfComprador { get; set; } = string.Empty;
+}
