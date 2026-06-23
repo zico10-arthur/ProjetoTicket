@@ -25,7 +25,7 @@
 | 120 | Segurança (BCrypt, JWT, rate limit) | ✅ `audited` | **Autonomia** — segurança para todos os perfis | [`spec-120/`](./roadmap/spec-120/) |
 | 160 | Cupons de Desconto | ✅ `audited` | **Emitir ingressos** — AdminId via JWT, não rota | [`spec-160/`](./roadmap/spec-160/) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
-| 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | **Emitir ingressos** — sistema profissional | [`150-resiliencia-erros.md`](./roadmap/150-resiliencia-erros.md) |
+| 150 | Resiliência e Tratamento de Erros | ✅ `audited` | **Emitir ingressos** — sistema profissional | [`spec-150/`](./roadmap/spec-150/) |
 | 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
@@ -75,9 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 3 | 120, 130, 160 |
+| ✅ `audited` | 4 | 120, 130, 150, 160 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 7 | ST-05, ST-06, ST-12, 140, 150, 180, 190 |
+| ❌ `pendente` | 6 | ST-05, ST-06, ST-12, 140, 180, 190 |
 
 ---
 
@@ -108,7 +108,7 @@
 | 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: `VendedorCpf` adicionado, endpoint `minhas-vendas` implementado | ✅ `audited` |
 | 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
-| 150 | `GlobalExceptionHandlerMiddleware.cs` existe — exceções expõem `ex.Message` sem sanitização | ❌ `pendente` |
+| 150 | `GlobalExceptionHandlerMiddleware` sanitizado, `[Authorize]` no IngressoController, DTOs com data annotations + Trim, 8 testes passando | ✅ `audited` |
 | 160 | CupomController: AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs | ✅ `audited` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |

@@ -8,6 +8,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class IngressoController : ControllerBase
 {
     private readonly IIngressoService _service;

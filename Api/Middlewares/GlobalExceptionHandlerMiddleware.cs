@@ -28,7 +28,7 @@ public class GlobalExceptionHandlerMiddleware
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        context.Response.ContentType = "application/json";
+        context.Response.ContentType = "application/json; charset=utf-8";
 
         var (statusCode, message) = ex switch
         {
@@ -36,15 +36,27 @@ public class GlobalExceptionHandlerMiddleware
             Application.Exceptions.LoginErro
                 => (StatusCodes.Status401Unauthorized, "Email ou senha inválidos."),
 
-            Application.Exceptions.CnpjJaCadastrado or
-            Application.Exceptions.EmailJaCadastrado or
+            // Spec 150: Conflitos (409) — mensagens específicas do negócio
+            Application.Exceptions.CnpjJaCadastrado
+                => (StatusCodes.Status409Conflict, "CNPJ já cadastrado."),
+            Application.Exceptions.EmailJaCadastrado
+                => (StatusCodes.Status409Conflict, "E-mail já cadastrado."),
             Application.Exceptions.UsuarioCadastrado
-                => (StatusCodes.Status409Conflict, ex.Message),
-            DomainException => (StatusCodes.Status400BadRequest, ex.Message),
+                => (StatusCodes.Status409Conflict, "Usuário já cadastrado."),
+
+            // Spec 150: DomainException (400) — mensagem genérica, não expõe detalhes
+            DomainException => (StatusCodes.Status400BadRequest, 
+                "Dados inválidos. Verifique as informações enviadas."),
+
+            // Spec 150: Não encontrado (404)
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso não encontrado."),
+
+            // Spec 150: Não autorizado (401) — mensagem fixa
             UnauthorizedAccessException
-                => (StatusCodes.Status401Unauthorized, ex.Message),
-            _ => (StatusCodes.Status500InternalServerError, "Ocorreu um erro interno no servidor.")
+                => (StatusCodes.Status401Unauthorized, "Acesso não autorizado."),
+
+            // Spec 150: Fallback genérico (500) — nunca expõe detalhes
+            _ => (StatusCodes.Status500InternalServerError, "Erro interno do servidor.")
         };
 
         context.Response.StatusCode = statusCode;

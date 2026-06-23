@@ -4,9 +4,15 @@ namespace Application.DTOs;
 
 public class EventoRequestDTO
 {
+    private string _nome = string.Empty;
+
     [Required]
     [MaxLength(100)]
-    public string Nome { get; set; }
+    public string Nome
+    {
+        get => _nome;
+        set => _nome = value?.Trim() ?? string.Empty;
+    }
 
     public int CapacidadeTotal { get; set; }
 
