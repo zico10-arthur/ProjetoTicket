@@ -34,3 +34,15 @@ C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
 C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
 C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
 C:\Users\Erick\Documents\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll
+C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
+c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
+C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll

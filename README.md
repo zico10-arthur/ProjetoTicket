@@ -24,7 +24,30 @@ Abra o arquivo `Api/appsettings.json` e configure a connection string:
 
 > O banco e todas as tabelas são criados automaticamente ao rodar a API pela primeira vez.
 
-## Rodando a API
+## Rodando com Docker (recomendado)
+
+```bash
+# Subir ambiente completo (API + Web + SQL Server)
+docker-compose up -d
+
+# Ver logs da API
+docker-compose logs -f api
+
+# Parar
+docker-compose down
+
+# Recriar do zero (limpa banco)
+docker-compose down -v && docker-compose up -d
+```
+
+- **API:** `http://localhost:5007`
+- **Swagger:** `http://localhost:5007/swagger`
+- **Frontend:** `http://localhost:5057`
+- **Dashboard Hangfire (Admin):** `http://localhost:5007/hangfire`
+
+## Rodando localmente (sem Docker)
+
+### Rodando a API
 
 ```bash
 cd Api
@@ -34,7 +57,7 @@ dotnet run
 A API estará disponível em: `http://localhost:5007`  
 Swagger disponível em: `http://localhost:5007/swagger`
 
-## Rodando o Frontend
+### Rodando o Frontend
 
 ```bash
 cd Web
@@ -60,6 +83,42 @@ dotnet restore
 
 ```bash
 dotnet build
+```
+
+## Deploy com Docker
+
+O projeto inclui configuração completa para containerização:
+
+| Arquivo | Função |
+|---------|--------|
+| `Api/Dockerfile` | Imagem da API (.NET 9, multi-stage build) |
+| `Web/Dockerfile` | Imagem do Frontend Blazor Server (.NET 9, multi-stage build) |
+| `docker-compose.yml` | Orquestração: SQL Server + API + Web |
+
+### Pré-requisitos Docker
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) ou Docker Engine (Linux)
+
+### Comandos úteis
+
+```bash
+# Subir tudo
+docker-compose up -d
+
+# Subir reconstruindo imagens (após mudanças no código)
+docker-compose up -d --build
+
+# Ver status
+docker-compose ps
+
+# Logs de um serviço específico
+docker-compose logs -f api
+
+# Parar tudo
+docker-compose down
+
+# Parar e limpar volumes (banco zerado)
+docker-compose down -v
 ```
 
 ## Estrutura do Projeto

@@ -54,8 +54,8 @@
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
-| 190 | Substituir BackgroundService por Hangfire | ❌ `pendente` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
+| 140 | Infraestrutura e Deploy (Docker) | ✅ `audited` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
+| 190 | Substituir BackgroundService por Hangfire | ✅ `audited` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
 
 ---
 
@@ -75,9 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 4 | 120, 130, 150, 160 |
+| ✅ `audited` | 6 | 120, 130, 150, 160, 140, 190 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 6 | ST-05, ST-06, ST-12, 140, 180, 190 |
+| ❌ `pendente` | 4 | ST-05, ST-06, ST-12, 180 |
 
 ---
 
@@ -107,12 +107,12 @@
 | ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
 | 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: `VendedorCpf` adicionado, endpoint `minhas-vendas` implementado | ✅ `audited` |
-| 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
+| 140 | `Api/Dockerfile` + `Web/Dockerfile` + `docker-compose.yml` com SQL Server, health checks e instruções no README — build + testes passando | ✅ `audited` |
 | 150 | `GlobalExceptionHandlerMiddleware` sanitizado, `[Authorize]` no IngressoController, DTOs com data annotations + Trim, 8 testes passando | ✅ `audited` |
 | 160 | CupomController: AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs | ✅ `audited` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
-| 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |
+| 190 | `LiberacaoAssentosJob.cs` com Hangfire recurring job, `LiberacaoAssentosWorker.cs` removido, dashboard `/hangfire` restrito a Admin — build + 112/114 testes passando | ✅ `audited` |
 
 ---
 
