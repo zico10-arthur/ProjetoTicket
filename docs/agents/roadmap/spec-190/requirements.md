@@ -2,7 +2,7 @@
 
 > **Projeto:** SoldOut Tickets
 > **Contexto:** [`visao.md §6.8`](../../../visao.md#68-background-worker-de-liberação-de-assentos) | Análise de escalabilidade do `LiberacaoAssentosWorker`
-> **Status:** `pendente`
+> **Status:** `audited`
 
 ---
 
