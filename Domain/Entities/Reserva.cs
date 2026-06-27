@@ -14,6 +14,7 @@ public class Reserva
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
     public bool Pago { get; private set; }
+    public bool Reembolsada { get; private set; }
     public List<ItemReserva> Itens { get; private set; } = new();
 
     public bool PodeAdicionarMaisItens => Itens.Count < LimiteMaximoItens;
@@ -27,11 +28,17 @@ public class Reserva
         CupomUtilizado = cupomUtilizado;
         ValorFinalPago = valorFinalPago;
         Pago = false;
+        Reembolsada = false;
     }
 
     public void MarcarPago()
     {
         Pago = true;
+    }
+
+    public void MarcarReembolsada()
+    {
+        Reembolsada = true;
     }
 
     /// <summary>

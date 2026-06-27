@@ -76,4 +76,36 @@ public class ReservaController : ControllerBase
         var vendas = await _service.ListarVendasDoVendedor(cpf, ct);
         return Ok(vendas);
     }
+
+    /// <summary>
+    /// Spec 40: Cancelar reserva própria. Qualquer perfil autenticado pode cancelar
+    /// suas próprias reservas antes do início do evento.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize]
+    public async Task<IActionResult> CancelarReserva(Guid id, CancellationToken ct)
+    {
+        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        if (string.IsNullOrEmpty(cpf))
+            return Unauthorized(new { message = "CPF não encontrado no token." });
+
+        try
+        {
+            await _service.CancelarReserva(id, cpf, ct);
+            return Ok(new { message = "Reserva cancelada com sucesso. Reembolso registrado." });
+        }
+        catch (Domain.Exceptions.DomainException ex)
+        {
+            return ex.Message switch
+            {
+                "Reserva não encontrada." => NotFound(new { message = ex.Message }),
+                "Reserva já foi cancelada." => Conflict(new { message = ex.Message }),
+                _ => BadRequest(new { message = ex.Message })
+            };
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+    }
 }

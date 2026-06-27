@@ -1,5 +1,11 @@
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Interface;
+using Domain.ValueObjects;
+using Application.Service;
+using Application.Interfaces;
+using Domain.DTOs;
+using Moq;
 using Xunit;
 
 namespace SoldOutTickets.Tests;
@@ -255,5 +261,203 @@ public class ReservaTests
 
         Assert.Equal(4, reserva.Itens.Count);
         Assert.Equal(100m, reserva.ValorFinalPago);
+    }
+
+    // ==================== Spec 40: Reembolso ====================
+
+    [Fact]
+    public void Reserva_Reembolsada_InicializaFalse()
+    {
+        var itens = new List<ItemReserva>
+        {
+            CriarItem(CpfValido, Guid.NewGuid(), 100m)
+        };
+        var reserva = Reserva.Criar(CpfValido, EventoId, itens);
+
+        Assert.False(reserva.Reembolsada);
+    }
+
+    [Fact]
+    public void Reserva_MarcarReembolsada_DeveAlterarFlag()
+    {
+        var itens = new List<ItemReserva>
+        {
+            CriarItem(CpfValido, Guid.NewGuid(), 100m)
+        };
+        var reserva = Reserva.Criar(CpfValido, EventoId, itens);
+        Assert.False(reserva.Reembolsada);
+
+        reserva.MarcarReembolsada();
+
+        Assert.True(reserva.Reembolsada);
+    }
+
+    // ==================== Spec 40: CancelarReserva (Service) ====================
+
+    private Mock<IReservaRepository> _reservaRepoMock = null!;
+    private Mock<IUsuarioRepository> _usuarioRepoMock = null!;
+    private Mock<IEventoRepository> _eventoRepoMock = null!;
+    private Mock<Domain.Interface.IEmailSender> _emailSenderMock = null!;
+    private ReservaService _service = null!;
+
+    private void SetupService()
+    {
+        _reservaRepoMock = new Mock<IReservaRepository>();
+        _usuarioRepoMock = new Mock<IUsuarioRepository>();
+        _eventoRepoMock = new Mock<IEventoRepository>();
+        _emailSenderMock = new Mock<Domain.Interface.IEmailSender>();
+
+        _service = new ReservaService(
+            _reservaRepoMock.Object,
+            _usuarioRepoMock.Object,
+            _eventoRepoMock.Object,
+            Mock.Of<ICupomRepository>(),
+            Mock.Of<IIngressoRepository>(),
+            _emailSenderMock.Object);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_Sucesso_ReservaPaga()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var eventoId = Guid.NewGuid();
+        var cpf = "52998224725";
+
+        var itens = new List<ItemReserva> { CriarItem(cpf, Guid.NewGuid(), 100m) };
+        var reserva = Reserva.Criar(cpf, eventoId, itens);
+        typeof(Reserva).GetProperty("Id")!.SetValue(reserva, reservaId);
+
+        var evento = new Evento("Workshop .NET", 50,
+            DateTime.UtcNow.AddDays(7), 100m, "12345678000199");
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reserva);
+        _eventoRepoMock.Setup(r => r.GetByIdAsync(eventoId))
+            .ReturnsAsync(evento);
+        _usuarioRepoMock.Setup(r => r.BuscarCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Usuario?)null);
+
+        await _service.CancelarReserva(reservaId, cpf, CancellationToken.None);
+
+        _reservaRepoMock.Verify(r => r.CancelarComTransacao(
+            reservaId, It.IsAny<CancellationToken>()), Times.Once);
+        _emailSenderMock.Verify(e => e.EnfileirarAsync(
+            It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_NaoEncontrada_LancaDomainException()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var cpf = "52998224725";
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Reserva?)null);
+
+        var ex = await Assert.ThrowsAsync<Domain.Exceptions.DomainException>(() =>
+            _service.CancelarReserva(reservaId, cpf, CancellationToken.None));
+
+        Assert.Equal("Reserva não encontrada.", ex.Message);
+        _reservaRepoMock.Verify(r => r.CancelarComTransacao(
+            It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_OutroUsuario_LancaUnauthorizedAccessException()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var cpfDono = "52998224725";
+        var cpfOutro = "98765432100";
+
+        var itens = new List<ItemReserva> { CriarItem(cpfDono, Guid.NewGuid(), 100m) };
+        var reserva = Reserva.Criar(cpfDono, Guid.NewGuid(), itens);
+        typeof(Reserva).GetProperty("Id")!.SetValue(reserva, reservaId);
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reserva);
+
+        var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            _service.CancelarReserva(reservaId, cpfOutro, CancellationToken.None));
+
+        Assert.Equal("Esta reserva não pertence a você.", ex.Message);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_JaReembolsada_LancaDomainException()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var cpf = "52998224725";
+
+        var itens = new List<ItemReserva> { CriarItem(cpf, Guid.NewGuid(), 100m) };
+        var reserva = Reserva.Criar(cpf, Guid.NewGuid(), itens);
+        typeof(Reserva).GetProperty("Id")!.SetValue(reserva, reservaId);
+        reserva.MarcarReembolsada();
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reserva);
+
+        var ex = await Assert.ThrowsAsync<Domain.Exceptions.DomainException>(() =>
+            _service.CancelarReserva(reservaId, cpf, CancellationToken.None));
+
+        Assert.Equal("Reserva já foi cancelada.", ex.Message);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_EventoJaComecou_LancaDomainException()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var eventoId = Guid.NewGuid();
+        var cpf = "52998224725";
+
+        var itens = new List<ItemReserva> { CriarItem(cpf, Guid.NewGuid(), 100m) };
+        var reserva = Reserva.Criar(cpf, eventoId, itens);
+        typeof(Reserva).GetProperty("Id")!.SetValue(reserva, reservaId);
+
+        var evento = new Evento("Workshop .NET", 50,
+            DateTime.UtcNow.AddDays(-1), 100m, "12345678000199");
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reserva);
+        _eventoRepoMock.Setup(r => r.GetByIdAsync(eventoId))
+            .ReturnsAsync(evento);
+
+        var ex = await Assert.ThrowsAsync<Domain.Exceptions.DomainException>(() =>
+            _service.CancelarReserva(reservaId, cpf, CancellationToken.None));
+
+        Assert.Equal("Não é possível cancelar. O evento já começou.", ex.Message);
+    }
+
+    [Fact]
+    public async Task CancelarReserva_TransacaoFalha_NaoEnfileiraEmail()
+    {
+        SetupService();
+        var reservaId = Guid.NewGuid();
+        var eventoId = Guid.NewGuid();
+        var cpf = "52998224725";
+
+        var itens = new List<ItemReserva> { CriarItem(cpf, Guid.NewGuid(), 100m) };
+        var reserva = Reserva.Criar(cpf, eventoId, itens);
+        typeof(Reserva).GetProperty("Id")!.SetValue(reserva, reservaId);
+
+        var evento = new Evento("Workshop .NET", 50,
+            DateTime.UtcNow.AddDays(7), 100m, "12345678000199");
+
+        _reservaRepoMock.Setup(r => r.BuscarPorId(reservaId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(reserva);
+        _eventoRepoMock.Setup(r => r.GetByIdAsync(eventoId))
+            .ReturnsAsync(evento);
+        _reservaRepoMock.Setup(r => r.CancelarComTransacao(reservaId, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("SQL deadlock"));
+
+        await Assert.ThrowsAsync<Exception>(() =>
+            _service.CancelarReserva(reservaId, cpf, CancellationToken.None));
+
+        _emailSenderMock.Verify(e => e.EnfileirarAsync(
+            It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

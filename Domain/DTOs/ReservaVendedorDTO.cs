@@ -7,6 +7,7 @@ public class ReservaVendedorDTO
     public DateTime DataEvento { get; set; }
     public decimal ValorFinalPago { get; set; }
     public bool Pago { get; set; }
+    public bool Reembolsada { get; set; }
     public string NomeComprador { get; set; } = string.Empty;
     public string CpfComprador { get; set; } = string.Empty;
 }

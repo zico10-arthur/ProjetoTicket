@@ -149,13 +149,14 @@ public class ReservaRepository : IReservaRepository
                 STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
                 r.ValorFinalPago,
-                r.Pago
+                r.Pago,
+                r.Reembolsada
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
             WHERE r.UsuarioCpf = @Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago";
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, r.Reembolsada";
 
         return await connection.QueryAsync<ReservaDetalhadaDTO>(
             new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
@@ -176,6 +177,7 @@ public class ReservaRepository : IReservaRepository
                 r.CupomUtilizado,
                 r.ValorFinalPago,
                 r.Pago,
+                r.Reembolsada,
                 u.Nome AS NomeUsuario,
                 u.Cpf AS CpfUsuario
             FROM Reservas r
@@ -183,7 +185,7 @@ public class ReservaRepository : IReservaRepository
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
             INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, u.Nome, u.Cpf
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, r.Reembolsada, u.Nome, u.Cpf
             ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaAdminDTO>(new CommandDefinition(sql, cancellationToken: ct));
@@ -201,6 +203,7 @@ public class ReservaRepository : IReservaRepository
                 e.DataEvento,
                 r.ValorFinalPago,
                 r.Pago,
+                r.Reembolsada,
                 u.Nome AS NomeComprador,
                 u.Cpf AS CpfComprador
             FROM Reservas r
@@ -211,5 +214,47 @@ public class ReservaRepository : IReservaRepository
 
         return await connection.QueryAsync<ReservaVendedorDTO>(
             new CommandDefinition(sql, new { VendedorCpf = vendedorCpf }, cancellationToken: ct));
+    }
+
+    public async Task CancelarComTransacao(Guid reservaId, CancellationToken ct)
+    {
+        using var connection = (SqlConnection)_factory.CreateConnection();
+        await connection.OpenAsync(ct);
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            // 1. Marcar reserva como reembolsada
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE Reservas SET Reembolsada = 1 WHERE Id = @reservaId",
+                new { reservaId }, transaction, cancellationToken: ct));
+
+            // 2. Marcar todos os itens da reserva como reembolsados
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE ItensReserva SET Reembolsado = 1 WHERE ReservaId = @reservaId",
+                new { reservaId }, transaction, cancellationToken: ct));
+
+            // 3. Liberar ingressos (Status = 0) e limpar DataBloqueio
+            await connection.ExecuteAsync(new CommandDefinition(@"
+                UPDATE Ingressos
+                SET Status = 0, DataBloqueio = NULL
+                WHERE Id IN (
+                    SELECT IngressoId FROM ItensReserva WHERE ReservaId = @reservaId
+                )",
+                new { reservaId }, transaction, cancellationToken: ct));
+
+            // 4. Marcar pagamento como reembolsado (StatusPagamento.Reembolsado = 2)
+            //    Apenas se Status = 1 (Confirmado)
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE Pagamentos SET Status = 2 WHERE ReservaId = @reservaId AND Status = 1",
+                new { reservaId }, transaction, cancellationToken: ct));
+
+            await transaction.CommitAsync(ct);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
     }
 }

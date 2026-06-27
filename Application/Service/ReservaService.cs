@@ -118,4 +118,41 @@ public class ReservaService : IReservaService
         return await _repositoryReserva.ListarReservasDetalhadasPorVendedor(vendedorCpf, ct);
     }
 
+    public async Task CancelarReserva(Guid reservaId, string usuarioCpf, CancellationToken ct)
+    {
+        // 1. Buscar reserva
+        var reserva = await _repositoryReserva.BuscarPorId(reservaId, ct);
+        if (reserva == null)
+            throw new Domain.Exceptions.DomainException("Reserva não encontrada.");
+
+        // 2. Verificar propriedade (apenas o dono cancela)
+        if (reserva.UsuarioCpf != usuarioCpf)
+            throw new UnauthorizedAccessException("Esta reserva não pertence a você.");
+
+        // 3. Verificar se já foi reembolsada
+        if (reserva.Reembolsada)
+            throw new Domain.Exceptions.DomainException("Reserva já foi cancelada.");
+
+        // 4. Buscar evento para validação de data e para o e-mail
+        var evento = await _repositoryEvento.GetByIdAsync(reserva.EventoId);
+        if (evento == null)
+            throw new Domain.Exceptions.DomainException("Evento não encontrado.");
+
+        // 5. Verificar se o evento já começou
+        if (evento.DataEvento <= DateTime.UtcNow)
+            throw new Domain.Exceptions.DomainException("Não é possível cancelar. O evento já começou.");
+
+        // 6. Executar transação atômica (4 UPDATEs)
+        await _repositoryReserva.CancelarComTransacao(reservaId, ct);
+
+        // 7. Enfileirar e-mail de reembolso (fire-and-forget)
+        var usuario = await _repositoryUsuario.BuscarCpf(usuarioCpf, ct);
+        var destinatario = usuario?.Email ?? usuarioCpf;
+        var email = EmailTemplates.ReembolsoConfirmado(
+            destinatario,
+            evento.Nome,
+            reserva.ValorFinalPago);
+        await _emailSender.EnfileirarAsync(email, ct);
+    }
+
 }

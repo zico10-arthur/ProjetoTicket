@@ -32,7 +32,7 @@
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — comprador reembolsado | [`spec-40/`](./roadmap/spec-40/) |
+| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ✅ `audited` | **Processar cancelamentos** — comprador reembolsado | [`spec-40/`](./roadmap/spec-40/) |
 | 50 | ST-06 Cancelamento de Evento c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — evento cancelado | [`spec-50/`](./roadmap/spec-50/) |
 | 110 | ST-12 Cancelamento — Visão Unificada | ❌ `pendente` | **Processar cancelamentos** — qualquer perfil | [`spec-110/`](./roadmap/spec-110/) |
 
@@ -75,9 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 7 | 120, 130, 150, 160, 140, 190, 180 |
+| ✅ `audited` | 8 | 120, 130, 150, 160, 140, 190, 180, ST-05 |
 | ✅ `implemented` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 3 | ST-05, ST-06, ST-12 |
+| ❌ `pendente` | 2 | ST-06, ST-12 |
 
 ---
 
@@ -97,7 +97,7 @@
 | ST-01 | `UsuarioController`: `[HttpPost("cadastrar-vendedor")]` público, sem `[Authorize]` | ✅ `implementada` |
 | ST-03 | `Evento.cs`: campo `TipoEvento Tipo`, método `GerarPalestra()` | ✅ `implementada` |
 | ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List&lt;ItemReserva&gt;) ativo | ✅ `implementada` |
-| ST-05 | `DELETE /api/reserva/{id}` não existe — spec completa em [`spec-40/`](./roadmap/spec-40/) | ❌ `pendente` |
+| ST-05 | `DELETE /api/reserva/{id}` + `CancelarReserva` + transação atômica + e-mail reembolso | ✅ `audited` |
 | ST-06 | `DELETE /api/evento/{id}` existe mas sem lógica de reembolso — spec completa em [`spec-50/`](./roadmap/spec-50/) | ❌ `pendente` |
 | ST-07 | `ReservaController`: `[Authorize]` sem restrição de role — todos podem | ✅ `implementada` |
 | ST-08 | `UsuarioService.Login()`: BCrypt.Verify + Ativo + LoginResponseDTO | ✅ `implementada` |
