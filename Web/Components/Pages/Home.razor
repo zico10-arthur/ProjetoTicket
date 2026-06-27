@@ -11,11 +11,19 @@
 
         <MudGrid Class="plateia-hero__content">
             <MudItem xs="12" md="7">
-                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3" Class="mb-4">
-                    <img src="brand/logo-icon.png" alt="" class="plateia-hero__icon" aria-hidden="true" />
-                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.75); letter-spacing: 0.15em;">
-                        INGRESSOS & EVENTOS
-                    </MudText>
+                <MudStack Row="true" Spacing="2" Class="mb-5 flex-wrap">
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">@(_totalEventosAtivos?.ToString() ?? "—")</div>
+                        <div class="plateia-hero__stat-label">Eventos ativos</div>
+                    </div>
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">4</div>
+                        <div class="plateia-hero__stat-label">Assentos por reserva</div>
+                    </div>
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">100%</div>
+                        <div class="plateia-hero__stat-label">Online</div>
+                    </div>
                 </MudStack>
 
                 <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 800; line-height: 1.15;">
@@ -41,20 +49,9 @@
             </MudItem>
 
             <MudItem xs="12" md="5" Class="d-flex align-center justify-center">
-                <MudStack Row="true" Spacing="3" Justify="Justify.Center" Class="flex-wrap">
-                    <div class="plateia-hero__stat">
-                        <div class="plateia-hero__stat-value">@(_totalEventosAtivos?.ToString() ?? "—")</div>
-                        <div class="plateia-hero__stat-label">Eventos ativos</div>
-                    </div>
-                    <div class="plateia-hero__stat">
-                        <div class="plateia-hero__stat-value">4</div>
-                        <div class="plateia-hero__stat-label">Assentos por reserva</div>
-                    </div>
-                    <div class="plateia-hero__stat">
-                        <div class="plateia-hero__stat-value">100%</div>
-                        <div class="plateia-hero__stat-label">Online</div>
-                    </div>
-                </MudStack>
+                <div class="plateia-hero__logo-wrap">
+                    <img src="brand/logo.png" alt="Plateia — ingressos & eventos" class="plateia-hero__logo-showcase" />
+                </div>
             </MudItem>
         </MudGrid>
     </MudPaper>

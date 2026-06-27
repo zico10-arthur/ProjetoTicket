@@ -166,6 +166,24 @@ html, body {
     animation: plateiaIconPulse 4s ease-in-out infinite;
 }
 
+.plateia-hero__logo-wrap {
+    text-align: center;
+    padding: 24px 28px;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--plateia-radius-lg);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+}
+
+.plateia-hero__logo-showcase {
+    width: min(300px, 82vw);
+    height: auto;
+    object-fit: contain;
+    display: block;
+    animation: plateiaIconPulse 4s ease-in-out infinite;
+}
+
 @keyframes plateiaIconPulse {
     0%, 100% { transform: scale(1); }
     50%      { transform: scale(1.06); }
