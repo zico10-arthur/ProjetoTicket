@@ -2,78 +2,150 @@
 @inject HttpClient Http
 @using Web.Mock
 
-<MudStack Spacing="5">
-    <MudPaper Elevation="0" Class="plateia-hero pa-8">
-        <MudGrid>
-            <MudItem xs="12" md="8">
-                <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 700;">
-                    Os melhores eventos da sua região, num clique.
+<MudStack Spacing="6">
+    <!-- Hero -->
+    <MudPaper Elevation="0" Class="plateia-hero pa-8 pa-sm-10">
+        <div class="plateia-hero__mesh"></div>
+        <div class="plateia-hero__orb plateia-hero__orb--1"></div>
+        <div class="plateia-hero__orb plateia-hero__orb--2"></div>
+
+        <MudGrid Class="plateia-hero__content">
+            <MudItem xs="12" md="7">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3" Class="mb-4">
+                    <img src="brand/logo-icon.png" alt="" class="plateia-hero__icon" aria-hidden="true" />
+                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.75); letter-spacing: 0.15em;">
+                        INGRESSOS & EVENTOS
+                    </MudText>
+                </MudStack>
+
+                <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 800; line-height: 1.15;">
+                    Sua plateia. Seu lugar. Sua experiência.
                 </MudText>
-                <MudText Typo="Typo.body1" Class="mb-6" Style="color: rgba(255,255,255,0.9); max-width: 520px;">
-                    Teatros, palestras e workshops com seleção de assentos, cupons e checkout simples.
+                <MudText Typo="Typo.body1" Class="mb-6" Style="color: rgba(255,255,255,0.88); max-width: 480px; font-size: 1.05rem;">
+                    Teatros, palestras e workshops com mapa de assentos interativo, cupons e checkout em poucos cliques.
                 </MudText>
                 <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
                     <MudButton Variant="Variant.Filled"
-                               Style="background: #fff; color: var(--plateia-primary);"
+                               Style="background: #fff; color: var(--plateia-primary); font-weight: 700;"
                                Href="#eventos"
                                StartIcon="@Icons.Material.Filled.Event">
-                        Ver eventos
+                        Explorar eventos
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
                                Class="plateia-cta-accent"
                                Href="/cadastro-vendedor"
                                StartIcon="@Icons.Material.Filled.Storefront">
-                        Quero vender ingressos
+                        Quero vender
                     </MudButton>
+                </MudStack>
+            </MudItem>
+
+            <MudItem xs="12" md="5" Class="d-flex align-center justify-center">
+                <MudStack Row="true" Spacing="3" Justify="Justify.Center" Class="flex-wrap">
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">@(_totalEventosAtivos?.ToString() ?? "—")</div>
+                        <div class="plateia-hero__stat-label">Eventos ativos</div>
+                    </div>
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">4</div>
+                        <div class="plateia-hero__stat-label">Assentos por reserva</div>
+                    </div>
+                    <div class="plateia-hero__stat">
+                        <div class="plateia-hero__stat-value">100%</div>
+                        <div class="plateia-hero__stat-label">Online</div>
+                    </div>
                 </MudStack>
             </MudItem>
         </MudGrid>
     </MudPaper>
 
+    <!-- Features -->
+    <div class="plateia-features">
+        <div class="plateia-feature-card">
+            <div class="plateia-feature-icon plateia-feature-icon--purple">
+                <MudIcon Icon="@Icons.Material.Filled.EventSeat" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Assentos em tempo real</b></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Escolha VIP ou Geral no mapa interativo — veja disponibilidade ao vivo.
+            </MudText>
+        </div>
+        <div class="plateia-feature-card">
+            <div class="plateia-feature-icon plateia-feature-icon--teal">
+                <MudIcon Icon="@Icons.Material.Filled.Groups" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Compre para o grupo</b></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Até 4 participantes por reserva — informe o CPF de cada um no checkout.
+            </MudText>
+        </div>
+        <div class="plateia-feature-card">
+            <div class="plateia-feature-icon plateia-feature-icon--gold">
+                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Cupons e eventos grátis</b></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Descontos exclusivos e reservas gratuitas sem passar pelo pagamento.
+            </MudText>
+        </div>
+    </div>
+
 #if DEBUG
-    <MudPaper Elevation="1" Class="pa-4" Outlined="true">
-        <MudText Typo="Typo.subtitle2" Class="mb-2">Demonstração do mapa de assentos</MudText>
-        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
-            Auditório UNIFESO com dados mockados — layout estilo Ticket360.
-        </MudText>
-        <MudButton Variant="Variant.Outlined"
-                   Color="Color.Primary"
-                   Href="/demo/assentos"
-                   StartIcon="@Icons.Material.Filled.EventSeat">
-            Abrir demonstração
-        </MudButton>
+    <MudPaper Elevation="0" Class="pa-4" Outlined="true" Style="border-radius: 12px;">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
+            <div>
+                <MudText Typo="Typo.subtitle2"><b>Demo do mapa de assentos</b></MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Auditório UNIFESO — layout estilo Ticket360 com assentos realistas.
+                </MudText>
+            </div>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       Href="/demo/assentos"
+                       StartIcon="@Icons.Material.Filled.EventSeat">
+                Abrir demonstração
+            </MudButton>
+        </MudStack>
     </MudPaper>
 #endif
 
     @if (_modoDemo)
     {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Dense="true">
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Dense="true" Style="border-radius: 12px;">
             API indisponível — exibindo <b>eventos de exemplo</b>.
         </MudAlert>
     }
 
-    <MudText Typo="Typo.h5" Id="eventos">Eventos disponíveis</MudText>
+    <!-- Eventos -->
+    <div id="eventos">
+        <div class="plateia-section-header">
+            <MudText Class="plateia-section-title">Eventos disponíveis</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @(eventos?.Count(e => !e.Cancelado) ?? 0) evento(s) para você
+            </MudText>
+        </div>
+    </div>
 
     <MudGrid Spacing="4" Class="plateia-stagger">
         @if (eventos is null)
         {
             @for (var i = 0; i < 3; i++)
             {
-                <MudItem xs="12" sm="6" md="4">
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="220px" />
+                <MudItem xs="12" sm="6" lg="4">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="320px" Style="border-radius: 12px;" />
                 </MudItem>
             }
         }
-        else if (!eventos.Any())
+        else if (!eventos.Any(e => !e.Cancelado))
         {
             <MudItem xs="12">
-                <MudPaper Class="pa-8 text-center" Outlined="true">
-                    <MudIcon Icon="@Icons.Material.Filled.EventBusy" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
-                    <MudText Typo="Typo.h6">Nenhum evento disponível no momento</MudText>
+                <MudPaper Class="pa-10 text-center" Outlined="true" Style="border-radius: 16px;">
+                    <img src="brand/logo-icon.png" alt="" style="width: 64px; opacity: 0.6; margin-bottom: 16px;" />
+                    <MudText Typo="Typo.h6" Class="mb-2">Nenhum evento disponível no momento</MudText>
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
                         Volte em breve ou cadastre-se como vendedor para publicar seu evento.
                     </MudText>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/cadastro-vendedor">
+                    <MudButton Variant="Variant.Filled" Class="plateia-cta-accent" Href="/cadastro-vendedor">
                         Quero Vender
                     </MudButton>
                 </MudPaper>
@@ -83,7 +155,7 @@
         {
             @foreach (var evento in eventos.Where(e => !e.Cancelado))
             {
-                <MudItem xs="12" sm="6" md="4">
+                <MudItem xs="12" sm="6" lg="4">
                     <CartaoEvento Evento="@evento" ModoDemo="@_modoDemo" />
                 </MudItem>
             }
@@ -94,6 +166,7 @@
 @code {
     private List<EventoViewModel>? eventos;
     private bool _modoDemo;
+    private int? _totalEventosAtivos => eventos?.Count(e => !e.Cancelado);
 
     protected override async Task OnInitializedAsync()
     {

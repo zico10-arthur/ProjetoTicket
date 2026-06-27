@@ -1,0 +1,26 @@
+@namespace Web.Components.Shared
+
+<svg width="@Size" height="@(Size * 1.15)" viewBox="0 0 32 37" class="plateia-mini-seat" aria-hidden="true">
+    <defs>
+        <linearGradient id="@($"miniSeatGrad{Uid}")" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="@GradientTop" />
+            <stop offset="100%" stop-color="@GradientBottom" />
+        </linearGradient>
+    </defs>
+    <path fill="@BackColor"
+          d="M 6,3 Q 16,1 26,3 L 25,14 Q 16,12 7,14 Z" />
+    <path fill="@($"url(#miniSeatGrad{Uid})")"
+          d="M 6,13 L 26,13 Q 28,18 26,26 L 6,26 Q 4,18 6,13 Z" />
+    <text x="16" y="22" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">@Label</text>
+</svg>
+
+@code {
+    [Parameter] public string Label { get; set; } = "A1";
+    [Parameter] public int Size { get; set; } = 48;
+    [Parameter] public bool IsVip { get; set; }
+
+    private string Uid { get; } = Guid.NewGuid().ToString("N")[..8];
+    private string GradientTop => IsVip ? "#A78BFA" : "#2DD4BF";
+    private string GradientBottom => IsVip ? "#6B21A8" : "#0D9488";
+    private string BackColor => IsVip ? "#581C87" : "#0F766E";
+}

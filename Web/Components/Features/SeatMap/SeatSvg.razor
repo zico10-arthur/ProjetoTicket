@@ -1,36 +1,52 @@
 @namespace Web.Components.Features.SeatMap
 
-<g class="seat-svg-group" transform="translate(@X, @Y)">
+<g class="seat-svg-group @(IsOccupied ? "seat-svg-group--occupied" : "")" transform="translate(@X, @Y)">
     <title>@TooltipText</title>
-    @if (IsOccupied)
-    {
-        <rect class="seat-svg seat-svg--occupied"
-              width="@Size" height="@Size" rx="4"
-              @onclick="HandleClick" @onclick:stopPropagation="true" />
-    }
-    else
-    {
-        <rect class="seat-svg @CssClass"
-              width="@Size" height="@Size" rx="4"
-              @onclick="HandleClick"
-              @onclick:stopPropagation="true" />
-    }
-    @((MarkupString)$"<text x=\"{Size / 2}\" y=\"{Size / 2 + 4}\" text-anchor=\"middle\" class=\"seat-svg-label\">{Seat.SeatNumber}</text>")
+    <g class="seat-svg @CssClass" @onclick="HandleClick" @onclick:stopPropagation="true">
+        <!-- Encosto -->
+        <path class="seat-back"
+              d="M @(_pad + 2),@(_h * 0.08)
+                 Q @(_w / 2),@(_h * 0.02) @(_w - _pad - 2),@(_h * 0.08)
+                 L @(_w - _pad),@(_h * 0.38)
+                 Q @(_w / 2),@(_h * 0.32) @(_pad),@(_h * 0.38) Z" />
+        <!-- Assento (cushion) -->
+        <path class="seat-cushion"
+              d="M @(_pad),@(_h * 0.36)
+                 L @(_w - _pad),@(_h * 0.36)
+                 Q @(_w - 2),@(_h * 0.5) @(_w - _pad),@(_h * 0.72)
+                 L @(_pad),@(_h * 0.72)
+                 Q 2,@(_h * 0.5) @(_pad),@(_h * 0.36) Z" />
+        <!-- Braços -->
+        <rect class="seat-arm seat-arm--left"
+              x="0" y="@(_h * 0.3)" width="@(_pad + 1)" height="@(_h * 0.42)" rx="2"
+              opacity="0.7" />
+        <rect class="seat-arm seat-arm--right"
+              x="@(_w - _pad - 1)" y="@(_h * 0.3)" width="@(_pad + 1)" height="@(_h * 0.42)" rx="2"
+              opacity="0.7" />
+        <!-- Número -->
+        <text x="@(_w / 2)" y="@(_h * 0.58)" text-anchor="middle" class="seat-svg-label">@Seat.SeatNumber</text>
+    </g>
 </g>
 
 @code {
     [Parameter, EditorRequired] public SeatModel Seat { get; set; } = null!;
     [Parameter] public double X { get; set; }
     [Parameter] public double Y { get; set; }
-    [Parameter] public double Size { get; set; } = 28;
+    [Parameter] public double Size { get; set; } = 32;
     [Parameter] public EventCallback<int> OnToggle { get; set; }
+
+    private double _w => Size;
+    private double _h => Size * 1.15;
+    private double _pad => Size * 0.12;
 
     private bool IsOccupied => Seat.Status == SeatStatus.Occupied;
     private bool IsSelected => Seat.Status == SeatStatus.Selected;
 
-    private string CssClass => IsSelected
-        ? "seat-svg--selected"
-        : Seat.IsVip ? "seat-svg--vip" : "seat-svg--geral";
+    private string CssClass => IsOccupied
+        ? "seat-svg--occupied"
+        : IsSelected
+            ? "seat-svg--selected"
+            : Seat.IsVip ? "seat-svg--vip" : "seat-svg--geral";
 
     private string TooltipText => IsOccupied
         ? $"{Seat.DisplayLabel} · {Seat.Setor} — Ocupado"

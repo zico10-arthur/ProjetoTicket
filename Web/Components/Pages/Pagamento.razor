@@ -57,23 +57,19 @@
     }
     else
     {
-        <MudCard Elevation="2" Class="pa-8 text-center">
-            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size: 72px;" />
-            <MudText Typo="Typo.h5" Class="mt-4 mb-2">Pagamento confirmado!</MudText>
+        <MudCard Elevation="2" Class="pa-8 text-center" Style="border-radius: 16px;">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="plateia-success-icon" Style="font-size: 80px;" />
+            <MudText Typo="Typo.h5" Class="mt-4 mb-2" Style="font-weight: 700;">Pagamento confirmado!</MudText>
             <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mb-6">
                 Seus ingressos estão disponíveis em Minhas Reservas.
             </MudText>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/reservas">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/reservas"
+                       Style="background: linear-gradient(135deg, var(--plateia-primary), var(--plateia-teal));">
                 Ver minhas reservas
             </MudButton>
         </MudCard>
     }
 </MudContainer>
-
-<style>
-    .payment-option { transition: border-color 0.2s; cursor: pointer; }
-    .payment-option--active { border-color: var(--plateia-primary) !important; border-width: 2px !important; }
-</style>
 
 @code {
     [Parameter] public Guid ReservaId { get; set; }

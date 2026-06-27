@@ -1,4 +1,5 @@
 @page "/login"
+@layout EmptyLayout
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
@@ -6,31 +7,55 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @using System.Text.Json
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <div class="text-center mb-6">
-        <img src="brand/logo.png" alt="Plateia" class="plateia-logo plateia-logo--login" />
+<div class="plateia-auth-split">
+    <div class="plateia-auth-brand">
+        <div class="plateia-auth-brand__mesh"></div>
+        <div style="position: relative; z-index: 1;">
+            <img src="brand/logo.png" alt="Plateia" class="plateia-logo plateia-logo--login mb-6" style="filter: brightness(1.1);" />
+            <MudText Typo="Typo.h4" Class="mb-3" Style="font-weight: 800;">
+                Bem-vindo de volta
+            </MudText>
+            <MudText Typo="Typo.body1" Style="opacity: 0.88; max-width: 360px;">
+                Acesse sua conta para comprar ingressos, gerenciar reservas ou publicar eventos na Plateia.
+            </MudText>
+            <MudStack Row="true" Spacing="2" Class="mt-6 flex-wrap">
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Mapa de assentos</MudChip>
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Até 4 participantes</MudChip>
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Cupons</MudChip>
+            </MudStack>
+        </div>
     </div>
 
-    <MudCard Elevation="2" Class="pa-8">
-        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Entrar na Plateia</MudText>
+    <div class="plateia-auth-form">
+        <MudText Typo="Typo.h5" Class="mb-6" Style="font-weight: 700;">Entrar na Plateia</MudText>
 
-        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
-        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-2" />
+        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-2"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" />
 
         <MudLink Href="/esqueci-senha" Class="mb-6 d-block">Esqueci minha senha</MudLink>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin"
+                   Style="background: linear-gradient(135deg, var(--plateia-primary), var(--plateia-primary-light));">
             Fazer login
         </MudButton>
 
         <MudDivider Class="my-6" />
 
-        <MudStack Spacing="1" AlignItems="AlignItems.Center">
-            <MudLink Href="/cadastro">Criar conta de comprador</MudLink>
-            <MudLink Href="/cadastro-vendedor">Quero vender ingressos</MudLink>
+        <MudStack Spacing="2" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Ainda não tem conta?</MudText>
+            <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/cadastro" Size="Size.Small">
+                    Comprador
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Class="plateia-cta-accent" Href="/cadastro-vendedor" Size="Size.Small">
+                    Vendedor
+                </MudButton>
+            </MudStack>
         </MudStack>
-    </MudCard>
-</MudContainer>
+    </div>
+</div>
 
 @code {
     public class LoginDTO { public string Email { get; set; } = ""; public string Senha { get; set; } = ""; }

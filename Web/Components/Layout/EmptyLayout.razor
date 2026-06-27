@@ -1,0 +1,13 @@
+@inherits LayoutComponentBase
+@using Web.Theme
+
+<MudThemeProvider Theme="@PlateiaTheme.Theme" IsDarkMode="false" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudMainContent Class="pa-0">
+        @Body
+    </MudMainContent>
+</MudLayout>

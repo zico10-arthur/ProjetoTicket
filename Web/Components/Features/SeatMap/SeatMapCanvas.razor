@@ -8,12 +8,29 @@
         <svg class="seat-map-svg" viewBox="@ViewBox" preserveAspectRatio="xMidYMid meet">
             <defs>
                 <linearGradient id="stageGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#E2E8F0" />
-                    <stop offset="100%" stop-color="#F1F5F9" />
+                    <stop offset="0%" stop-color="#334155" />
+                    <stop offset="100%" stop-color="#1E293B" />
+                </linearGradient>
+                <linearGradient id="stageSpotlight" x1="0.5" y1="0" x2="0.5" y2="1">
+                    <stop offset="0%" stop-color="rgba(201,169,98,0.35)" />
+                    <stop offset="100%" stop-color="rgba(201,169,98,0)" />
+                </linearGradient>
+                <linearGradient id="seatGradientGeral" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2DD4BF" />
+                    <stop offset="100%" stop-color="#0D9488" />
+                </linearGradient>
+                <linearGradient id="seatGradientVip" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#A78BFA" />
+                    <stop offset="100%" stop-color="#6B21A8" />
+                </linearGradient>
+                <linearGradient id="seatGradientSelected" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#E8C97A" />
+                    <stop offset="100%" stop-color="#C9A962" />
                 </linearGradient>
             </defs>
 
-            <rect x="@(_layout.StageX)" y="8" width="@(_layout.StageWidth)" height="28" rx="8" fill="url(#stageGradient)" class="seat-map-stage-rect" />
+            <rect x="@(_layout.StageX)" y="8" width="@(_layout.StageWidth)" height="32" rx="8" fill="url(#stageGradient)" />
+            <rect x="@(_layout.StageX + _layout.StageWidth * 0.2)" y="8" width="@(_layout.StageWidth * 0.6)" height="32" rx="4" fill="url(#stageSpotlight)" opacity="0.6" />
 
             @foreach (var item in _renderItems)
             {
@@ -111,8 +128,8 @@
         public double StageWidth { get; init; }
         public double RowStartY { get; init; }
         public double RowGap { get; init; }
-        public double SeatSize { get; init; } = 28;
-        public double SeatGap { get; init; } = 6;
+        public double SeatSize { get; init; } = 32;
+        public double SeatGap { get; init; } = 8;
         public double LeftBlockX { get; init; }
         public double RightBlockX { get; init; }
 
@@ -122,15 +139,15 @@
             if (rowCount == 0) rowCount = 8;
 
             var width = 520;
-            var height = 56 + rowCount * 40 + 32;
+            var height = 64 + rowCount * 44 + 32;
             return new SeatLayoutMetrics
             {
                 Width = width,
                 Height = height,
                 StageX = 80,
                 StageWidth = width - 160,
-                RowStartY = 56,
-                RowGap = 40,
+                RowStartY = 64,
+                RowGap = 44,
                 LeftBlockX = 48,
                 RightBlockX = width / 2 + 24,
             };

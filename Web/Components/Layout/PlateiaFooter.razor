@@ -1,0 +1,27 @@
+<footer class="plateia-footer">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div class="plateia-footer__grid">
+            <div>
+                <img src="brand/logo.png" alt="Plateia" class="plateia-footer__logo" />
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Style="max-width: 280px;">
+                    Plataforma de ingressos para teatros, palestras e workshops de pequeno porte.
+                </MudText>
+            </div>
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="mb-3"><b>Compradores</b></MudText>
+                <a href="/" class="plateia-footer__link">Eventos</a>
+                <a href="/cadastro" class="plateia-footer__link">Criar conta</a>
+                <a href="/login" class="plateia-footer__link">Entrar</a>
+            </div>
+            <div>
+                <MudText Typo="Typo.subtitle2" Class="mb-3"><b>Vendedores</b></MudText>
+                <a href="/cadastro-vendedor" class="plateia-footer__link">Quero Vender</a>
+                <a href="/eventos/criar" class="plateia-footer__link">Criar evento</a>
+            </div>
+        </div>
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.caption" Color="Color.Secondary" Align="Align.Center">
+            © @DateTime.Now.Year Plateia — ingressos & eventos
+        </MudText>
+    </MudContainer>
+</footer>

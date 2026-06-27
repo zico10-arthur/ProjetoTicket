@@ -1,8 +1,0 @@
-.seat-svg-group {
-    transition: transform 0.15s ease;
-}
-
-.seat-svg-group:hover .seat-svg:not(.seat-svg--occupied) {
-    stroke: #0F172A;
-    stroke-width: 1;
-}
