@@ -30,6 +30,18 @@
             <MudTextField Value="usuario.Perfil" Label="Perfil" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
         </MudCard>
 
+        <AuthorizeView Roles="Vendedor">
+            <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
+                <MudText Typo="Typo.h6" Class="mb-4">Minha loja (vendedor)</MudText>
+                <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+                    Logo, descrição pública e site da vitrine serão editáveis quando o backend ST-09 expuser esses campos na API.
+                </MudAlert>
+                <MudTextField T="string" Label="Logo (URL)" Variant="Variant.Outlined" Class="mb-4" Disabled="true" Placeholder="Em breve" />
+                <MudTextField T="string" Label="Descrição da loja" Variant="Variant.Outlined" Class="mb-4" Lines="3" Disabled="true" Placeholder="Em breve" />
+                <MudTextField T="string" Label="Site" Variant="Variant.Outlined" Disabled="true" Placeholder="Em breve" />
+            </MudCard>
+        </AuthorizeView>
+
         <MudCard Elevation="3" Class="pa-8 rounded-lg mb-6">
             <MudText Typo="Typo.h6" Class="mb-4">Alterar Senha</MudText>
 

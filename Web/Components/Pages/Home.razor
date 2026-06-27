@@ -7,23 +7,23 @@
         <MudGrid>
             <MudItem xs="12" md="8">
                 <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 700;">
-                    Encontre palestras, workshops e teatro perto de você
+                    Os melhores eventos da sua região, num clique.
                 </MudText>
                 <MudText Typo="Typo.body1" Class="mb-6" Style="color: rgba(255,255,255,0.9); max-width: 520px;">
-                    Escolha seu lugar no mapa interativo — experiência inspirada nas melhores plataformas de ingresso do Brasil.
+                    Teatros, palestras e workshops com seleção de assentos, cupons e checkout simples.
                 </MudText>
                 <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+                    <MudButton Variant="Variant.Filled"
+                               Style="background: #fff; color: var(--plateia-primary);"
+                               Href="#eventos"
+                               StartIcon="@Icons.Material.Filled.Event">
+                        Ver eventos
+                    </MudButton>
                     <MudButton Variant="Variant.Filled"
                                Class="plateia-cta-accent"
                                Href="/cadastro-vendedor"
                                StartIcon="@Icons.Material.Filled.Storefront">
-                        Quero Vender
-                    </MudButton>
-                    <MudButton Variant="Variant.Outlined"
-                               Style="border-color: rgba(255,255,255,0.6); color: #fff;"
-                               Href="/cadastro"
-                               StartIcon="@Icons.Material.Filled.PersonAdd">
-                        Criar conta
+                        Quero vender ingressos
                     </MudButton>
                 </MudStack>
             </MudItem>
@@ -52,7 +52,7 @@
         </MudAlert>
     }
 
-    <MudText Typo="Typo.h5">Eventos disponíveis</MudText>
+    <MudText Typo="Typo.h5" Id="eventos">Eventos disponíveis</MudText>
 
     <MudGrid Spacing="4" Class="plateia-stagger">
         @if (eventos is null)

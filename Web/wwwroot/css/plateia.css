@@ -1,13 +1,18 @@
 :root {
-    --plateia-primary: #4F46E5;
-    --plateia-accent: #F97316;
-    --plateia-bg: #F8FAFC;
+    --plateia-primary: #6B21A8;
+    --plateia-primary-light: #7C3AED;
+    --plateia-teal: #0D9488;
+    --plateia-teal-light: #14B8A6;
+    --plateia-gold: #C9A962;
+    --plateia-gold-dark: #A8863F;
+    --plateia-accent: var(--plateia-teal);
+    --plateia-bg: #FAF8F5;
     --plateia-text: #0F172A;
     --plateia-muted: #64748B;
     --plateia-seat-vip: #7C3AED;
-    --plateia-seat-geral: #6366F1;
+    --plateia-seat-geral: #14B8A6;
     --plateia-seat-occupied: #CBD5E1;
-    --plateia-seat-selected: #F97316;
+    --plateia-seat-selected: #C9A962;
     --plateia-radius: 10px;
 }
 
@@ -43,7 +48,7 @@ html, body {
 .plateia-stagger > *:nth-child(6) { animation-delay: 250ms; }
 
 .plateia-hero {
-    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 45%, #7C3AED 100%);
+    background: linear-gradient(135deg, #6B21A8 0%, #7C3AED 40%, #0D9488 100%);
     border-radius: 16px;
     color: #fff;
     overflow: hidden;
@@ -54,7 +59,9 @@ html, body {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.35), transparent 50%);
+    background:
+        radial-gradient(circle at 85% 15%, rgba(201, 169, 98, 0.45), transparent 45%),
+        radial-gradient(circle at 15% 85%, rgba(20, 184, 166, 0.2), transparent 40%);
     pointer-events: none;
 }
 
@@ -64,18 +71,38 @@ html, body {
 }
 
 .plateia-logo {
-    height: 32px;
+    height: 48px;
+    max-width: min(220px, 42vw);
     width: auto;
+    object-fit: contain;
     cursor: pointer;
 }
 
+.plateia-logo--login {
+    height: 72px;
+    max-width: min(320px, 85vw);
+    width: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 600px) {
+    .plateia-logo {
+        height: 40px;
+        max-width: min(180px, 50vw);
+    }
+
+    .plateia-logo--login {
+        height: 56px;
+    }
+}
+
 .plateia-cta-accent {
-    background-color: var(--plateia-accent) !important;
+    background-color: var(--plateia-teal) !important;
     color: #fff !important;
 }
 
 .plateia-cta-accent:hover {
-    background-color: #EA580C !important;
+    background-color: var(--plateia-teal-light) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

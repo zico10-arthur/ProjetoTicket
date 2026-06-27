@@ -74,7 +74,11 @@
                             <MudCard Elevation="2">
                                 <MudCardContent>
                                     <MudStack Row="true" Spacing="1" Class="mb-2">
-                                        <MudChip T="string" Size="Size.Small">@evento.TipoLabel</MudChip>
+                                    @if (evento.Cancelado)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Error">Cancelado</MudChip>
+                                    }
+                                    <MudChip T="string" Size="Size.Small">@evento.TipoLabel</MudChip>
                                         @if (evento.IsGratuito)
                                         {
                                             <MudChip T="string" Size="Size.Small" Color="Color.Secondary">Gratuito</MudChip>
@@ -87,13 +91,28 @@
                                 <MudCardActions>
                                     <MudButton Size="Size.Small" Href="@($"/eventos/editar/{evento.Id}")">Editar</MudButton>
                                     <MudButton Size="Size.Small" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
-                                    <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => Deletar(evento.Id)">Excluir</MudButton>
+                                    @if (!evento.Cancelado)
+                                    {
+                                        <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => AbrirCancelamento(evento.Id, evento.Nome)">
+                                            Cancelar evento
+                                        </MudButton>
+                                    }
                                 </MudCardActions>
                             </MudCard>
                         </MudItem>
                     }
                 </MudGrid>
             }
+
+            <MudPaper Class="pa-4 mb-8" Outlined="true">
+                <MudText Typo="Typo.h6" Class="mb-2">Configurações da loja</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+                    Edite nome, e-mail e senha no perfil. Logo, descrição e site da vitrine dependem do backend ST-09 (em breve).
+                </MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/perfil" StartIcon="@Icons.Material.Filled.Storefront">
+                    Ir para meu perfil
+                </MudButton>
+            </MudPaper>
 
             <MudText Typo="Typo.h6" Class="mb-3">Vendas recentes</MudText>
             @if (!_vendas.Any())
@@ -140,10 +159,29 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<MudDialog @bind-Visible="_dialogCancelar" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Cancelar evento</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>
+            Deseja cancelar <b>@_eventoNomeCancelar</b>? Compradores com reservas pagas receberão reembolso quando o backend ST-06 estiver ativo.
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => _dialogCancelar = false">Voltar</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="ExecutarCancelamento">Confirmar cancelamento</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     private List<EventoViewModel>? _eventos;
     private List<ReservaVendedorDTO> _vendas = [];
     private bool _carregando = true;
+    private bool _dialogCancelar;
+    private Guid _eventoParaCancelar;
+    private string _eventoNomeCancelar = "";
+    private readonly DialogOptions _dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -173,24 +211,33 @@
         }
     }
 
-    private async Task Deletar(Guid id)
+    private void AbrirCancelamento(Guid id, string nome)
     {
+        _eventoParaCancelar = id;
+        _eventoNomeCancelar = nome;
+        _dialogCancelar = true;
+    }
+
+    private async Task ExecutarCancelamento()
+    {
+        _dialogCancelar = false;
+
         var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-        var response = await Http.DeleteAsync($"api/Evento/{id}");
+        var response = await Http.DeleteAsync($"api/Evento/{_eventoParaCancelar}");
 
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add("Evento excluído.", Severity.Success);
+            Snackbar.Add("Evento cancelado.", Severity.Success);
             await CarregarDados();
         }
         else
         {
             var json = await response.Content.ReadAsStringAsync();
             var doc = System.Text.Json.JsonDocument.Parse(json);
-            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao excluir evento.";
+            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao cancelar evento.";
             Snackbar.Add(mensagem, Severity.Error);
         }
     }

@@ -1,4 +1,4 @@
-# Prompt — Frontend SoldOut Tickets (Blazor Server + MudBlazor)
+# Prompt — Frontend Plateia (Blazor Server + MudBlazor)
 
 > **Uso:** Copie este documento inteiro como prompt para uma IA (ou dev) implementar/atualizar o frontend.
 > **Branch de trabalho:** `frontend` (integrada com `main` em 27/06/2026)
@@ -8,13 +8,25 @@
 
 ## 1. Contexto do Projeto
 
-Você está desenvolvendo o **frontend** do **SoldOut Tickets** — plataforma SaaS de venda de ingressos para eventos de pequeno porte (palestras, workshops, teatros).
+Você está desenvolvendo o **frontend** do **Plateia** — plataforma SaaS de venda de ingressos para eventos de pequeno porte (palestras, workshops, teatros).
 
 | Camada | Stack | Porta local |
 |--------|-------|-------------|
 | **API** | ASP.NET Core 9, Clean Architecture, JWT, SQL Server | `http://localhost:5007` |
 | **Frontend** | Blazor Server, MudBlazor, HttpClient | `http://localhost:5057` |
 | **Swagger** | Documentação interativa da API | `http://localhost:5007/swagger` |
+
+### Identidade visual (implementada)
+
+| Elemento | Valor |
+|----------|-------|
+| **Marca** | Plateia |
+| **Paleta** | Roxo `#6B21A8` · Ciano `#0D9488` · Dourado `#C9A962` (identidade da logo) |
+| **Fonte** | Plus Jakarta Sans |
+| **Tema MudBlazor** | `Web/Theme/PlateiaTheme.cs` |
+| **CSS custom** | `Web/wwwroot/css/plateia.css` |
+| **Logos** | `Web/wwwroot/brand/logo.png`, `logo-icon.png` |
+| **Mapa de assentos** | SVG custom (estilo Ticket360), zoom/pan — **sem Seats.io** |
 
 ### Estado atual do backend (v2.0) — ~90% concluído
 
@@ -33,9 +45,10 @@ Você está desenvolvendo o **frontend** do **SoldOut Tickets** — plataforma S
 | Cancelamento de reserva c/ reembolso | ✅ | ST-05 |
 | Docker + Hangfire | ✅ | 140, 190 |
 | Cancelamento de evento c/ reembolso | ❌ pendente | ST-06 |
+| Vitrine vendedor (logo, descrição, site) na API | ❌ pendente | ST-09 |
 | Cancelamento unificado (endpoints extras) | ❌ pendente | ST-12 |
 
-> **ST-02 (Painel do Vendedor)** é **100% frontend** — não existe spec de backend. É a principal entrega pendente de UI.
+> **ST-02 (Painel do Vendedor)** é **100% frontend** — dashboard, vendas e gestão de eventos implementados; vitrine completa aguarda ST-09 no backend.
 
 ---
 
@@ -44,45 +57,59 @@ Você está desenvolvendo o **frontend** do **SoldOut Tickets** — plataforma S
 ### 2.1 Infraestrutura
 
 - **Auth:** JWT em `localStorage` (`authToken`), `CustomAuthStateProvider`, roles `Admin`, `Vendedor`, `Comprador`
-- **HttpClient:** BaseAddress `http://localhost:5007/` em `Program.cs`
-- **Layout:** `MainLayout.razor` com navbar por perfil + tema customizado `TicketPrimeTheme`
+- **HttpClient:** BaseAddress `http://localhost:5007/` + `AuthHttpMessageHandler` (401 → logout + `/login?returnUrl=...`)
+- **Estado de compra:** `PurchaseStateService` (assentos selecionados → checkout)
+- **Layout:** `MainLayout.razor` — navbar Plateia, CTA "Quero Vender", menu por perfil
 - **Docker:** `Web/Dockerfile` pronto
 
-### 2.2 Páginas existentes (parcialmente atualizadas)
+### 2.2 Páginas — status atualizado
 
 | Rota | Arquivo | Status |
 |------|---------|--------|
-| `/` | `Home.razor` | ⚠️ Lista eventos da API + fallback mock + link demo assentos |
-| `/login` | `Login.razor` | ⚠️ Funciona, falta redirect por perfil e link "Esqueci senha" |
-| `/cadastro` | `Cadastro.razor` | ⚠️ Só Comprador — falta cadastro Vendedor |
-| `/comprar/{id}/ingressos` | `ComprarIngressos.razor` | ⚠️ Mapa de bolinhas (Teatro) — não suporta Palestra/ItemReserva |
-| `/checkout/{eventoId}/{ingressoId}` | `CheckoutReserva.razor` | ⚠️ Cupom OK, mas não cria reserva no formato v2 |
-| `/pagamento/{eventoId}/{ingressoId}` | `Pagamento.razor` | ❌ Endpoints **obsoletos** — precisa reescrever |
-| `/reservas` | `MinhasReservas.razor` | ❌ Endpoint **obsoleto** — falta cancelamento |
-| `/perfil` | `Perfil.razor` | ⚠️ CRUD básico funciona |
-| `/cupons` | `Cupons.razor` | ✅ Lista cupons válidos |
-| `/eventos/criar` | `Vendedor/CriarEvento.razor` | ❌ Falta Tipo, Gratuito, Local, Descrição |
-| `/eventos/meus` | `Vendedor/MeusEventos.razor` | ⚠️ Lista e delete — falta cancelamento c/ alerta |
-| `/eventos/{id}/ingressos` | `Vendedor/IngressosEvento.razor` | ⚠️ Visualização de ingressos |
-| `/admin/*` | Várias | ⚠️ Cupons OK (JWT), CadastrarVendedor **obsoleto** |
-| `/demo/assentos` | `DemoAssentos.razor` | ✅ Demo visual do SeatMap (mock) |
-| `/selecionar-assentos/{id}` | `SelecionarAssentos.razor` | ❌ Esqueleto — não conectado à API |
+| `/` | `Home.razor` | ✅ API + filtro `Cancelado`, badges, CTA vendedor, demo `#if DEBUG` |
+| `/login` | `Login.razor` | ✅ Redirect por perfil + link esqueci senha |
+| `/cadastro` | `Cadastro.razor` | ✅ Comprador |
+| `/cadastro-vendedor` | `CadastroVendedor.razor` | ✅ Auto cadastro ST-01 |
+| `/esqueci-senha` | `EsqueciSenha.razor` | ✅ |
+| `/redefinir-senha` | `RedefinirSenha.razor` | ✅ |
+| `/comprar/{id}/ingressos` | `ComprarIngressos.razor` | ✅ SeatMap + API, até 4 assentos |
+| `/checkout/{eventoId}` | `CheckoutReserva.razor` | ✅ 1–4 CPFs com máscara, cupom, `POST api/reserva/criar` |
+| `/pagamento/{reservaId}` | `Pagamento.razor` | ✅ `POST api/pagamento/checkout/{reservaId}` → redirect `/reservas` |
+| `/reservas` | `MinhasReservas.razor` | ✅ `GET api/reserva/minhas`, cancelamento, badges Pago/Reembolsada |
+| `/perfil` | `Perfil.razor` | ✅ CRUD básico + seção vendedor (vitrine placeholder ST-09) |
+| `/cupons` | `Cupons.razor` | ✅ |
+| `/eventos/criar` | `Vendedor/CriarEvento.razor` | ✅ Tipo, Gratuito, Local, Descrição |
+| `/eventos/editar/{id}` | `Vendedor/EditarEvento.razor` | ✅ |
+| `/eventos/meus` | `Vendedor/MeusEventos.razor` | ✅ Dashboard ST-02, vendas, cancelar evento (UI) |
+| `/eventos/{id}/ingressos` | `Vendedor/IngressosEvento.razor` | ✅ |
+| `/admin/*` | Várias | ✅ Cupons/reservas/usuários; `/admin/cadastrar-vendedor` redireciona para `/cadastro-vendedor` |
+| `/demo/assentos` | `DemoAssentos.razor` | ✅ Demo visual (mock) |
+| `/evento/{id}/assentos` | `SelecionarAssentos.razor` | ✅ Redirect → `/comprar/{id}/ingressos` |
 
-### 2.3 Componentes novos (branch frontend)
+**Removidos:** `Counter.razor`, `Weather.razor` (templates Blazor).
+
+### 2.3 Componentes SeatMap (integrados ao fluxo real)
 
 ```
 Web/Components/Features/SeatMap/
-├── SeatMap.razor          → Mapa visual de auditório (palco, filas, corredor)
-├── SeatItem.razor         → Assento individual clicável
-├── SeatMapMapper.cs       → Converte ingressos API → SeatModel
+├── SeatMap.razor           → Orquestrador (legenda, controles, resumo)
+├── SeatMapCanvas.razor     → Viewport SVG com zoom/pan
+├── SeatSvg.razor           → Renderização de assentos
+├── SeatItem.razor          → Assento clicável (legado)
+├── SeatMapLegend.razor
+├── SeatMapSummary.razor
+├── SeatMapControls.razor
+├── SeatMapMapper.cs        → Ingressos API → SeatModel
 ├── SeatModel.cs / SeatStatus.cs / SeatBlock.cs
-└── QuintaAuditorioSeatData.cs → Layout mock UNIFESO
+└── QuintaAuditorioSeatData.cs → Layout demo UNIFESO
 
-Web/Theme/TicketPrimeTheme.cs  → Paleta MudBlazor customizada
-Web/Mock/TicketPrimeMockData.cs → Eventos mock para demo offline
+Web/wwwroot/js/seat-map.js  → wheel/drag/pinch zoom
+Web/Theme/PlateiaTheme.cs
+Web/Mock/PlateiaMockData.cs
+Web/Helpers/CpfFormatter.cs → máscara 000.000.000-00
+Web/Services/AuthHttpMessageHandler.cs
+Web/Shared/PurchaseStepper.razor
 ```
-
-> O **SeatMap** está pronto visualmente, mas **não está integrado** ao fluxo real de compra. Substituir ou complementar o mapa de "bolinhas" em `ComprarIngressos.razor`.
 
 ---
 
@@ -96,10 +123,10 @@ Leia [`storytelling.md`](./storytelling.md) e [`visao.md`](./visao.md). Resumo o
 - **Login único:** `POST /api/usuario/login` → `{ token, usuario: { cpf, nome, email, perfil } }`
 - **Após login:** redirecionar por perfil:
   - Comprador → `/`
-  - Vendedor → `/eventos/meus` (Painel do Vendedor — ST-02)
+  - Vendedor → `/eventos/meus`
   - Admin → `/admin/eventos`
 - **Header Authorization:** `Bearer {token}` em todas as chamadas autenticadas
-- Token expira — tratar 401 redirecionando para `/login?returnUrl=...`
+- Token expira — `AuthHttpMessageHandler` trata 401 → `/login?returnUrl=...`
 
 ### 3.2 Tipos de evento
 
@@ -111,8 +138,8 @@ public enum TipoEvento { Teatro = 0, Palestra = 1 }
 |------|------------------------|
 | **Teatro** | Assentos numerados VIP/Geral. Comprador escolhe assento(s) no mapa. Cada item da reserva tem `IngressoId`. |
 | **Palestra** | Assentos numerados setor "Geral". Mesmo fluxo de seleção, até 4 participantes por reserva. |
-| **Gratuito** (`PrecoPadrao == 0` ou `Gratuito: true`) | Pular pagamento. Após `POST /api/reserva/criar`, confirmar direto e redirecionar para `/reservas`. |
-| **Pago** | Após criar reserva → `POST /api/pagamento/checkout/{reservaId}` |
+| **Gratuito** (`PrecoPadrao == 0` ou `Gratuito: true`) | Pular pagamento. Após `POST /api/reserva/criar`, redirect `/reservas`. |
+| **Pago** | Após criar reserva → `/pagamento/{reservaId}` → `POST /api/pagamento/checkout/{reservaId}` |
 
 ### 3.3 Reserva multi-participante (ST-04)
 
@@ -124,61 +151,61 @@ POST /api/reserva/criar
     { "cpfParticipante": "12345678901", "ingressoId": "guid" },
     { "cpfParticipante": "98765432100", "ingressoId": "guid" }
   ],
-  "cupomCodigo": "PROMO10"  // opcional, rejeitado em evento gratuito
+  "cupomCodigo": "PROMO10"
 }
 ```
 
 - Mínimo 1, máximo **4 itens** por reserva
 - CPFs dos participantes **não precisam** ter conta no sistema
-- Validar CPF no frontend (11 dígitos, máscara `000.000.000-00`)
+- Validar CPF no frontend (11 dígitos, máscara `000.000.000-00` via `CpfFormatter`)
 
-### 3.4 Cancelamento (ST-05 — backend pronto)
+### 3.4 Cancelamento de reserva (ST-05 — backend pronto)
 
 ```
 DELETE /api/reserva/{id}
 Authorization: Bearer {token}
 ```
 
-- Só o **dono** da reserva pode cancelar (CPF do JWT = UsuarioCpf)
-- Bloqueado se `DataEvento <= agora`
-- Resposta inclui reembolso para eventos pagos
-- UI: botão "Cancelar Reserva" em `/reservas` com `MudDialog` de confirmação
-- Exibir badges: `Pago`, `Reembolsada` (campos no DTO)
+- UI em `/reservas` com `MudDialog` + badges `Pago`, `Reembolsada`
 
-### 3.5 Cadastro
+### 3.5 Cancelamento de evento (ST-06 — backend pendente)
+
+- UI preparada em `/eventos/meus` — botão "Cancelar evento" + dialog
+- Chama `DELETE /api/evento/{id}` (comportamento de reembolso em massa depende do backend)
+
+### 3.6 Cadastro
 
 | Fluxo | Endpoint | Campos |
 |-------|----------|--------|
 | Comprador | `POST /api/usuario/CadastrarComprador` | Nome, Email, Cpf, Senha |
 | Vendedor (público) | `POST /api/usuario/cadastrar-vendedor` | Cnpj, RazaoSocial, NomeFantasia, Email, Senha, Telefone |
-| Admin | ❌ Não existe UI — seed SQL only |
+| Admin cadastrar vendedor | ❌ Obsoleto — usar `/cadastro-vendedor` | — |
 
-### 3.6 Esqueci minha senha (spec 180)
+### 3.7 Esqueci minha senha (spec 180)
 
 ```
 POST /api/usuario/esqueci-senha   { "email": "..." }
 POST /api/usuario/redefinir-senha { "token": "...", "novaSenha": "..." }
 ```
 
-Criar páginas `/esqueci-senha` e `/redefinir-senha?token=...`
+Páginas: `/esqueci-senha`, `/redefinir-senha?token=...`
 
-### 3.7 Cupons (Admin)
+### 3.8 Cupons (Admin)
 
-- AdminId **não vai mais na rota/body** — extraído do JWT no servidor
-- `POST /api/cupom/CadastrarCupom` — body: `{ codigo, porcentagemDesconto, valorMinimo, dataExpiracao }`
-- Páginas Admin em `Web/Components/Pages/Admin/Cupons.razor` já estão corretas
+- AdminId **não vai na rota/body** — extraído do JWT
+- Páginas Admin em `Web/Components/Pages/Admin/Cupons.razor`
 
 ---
 
 ## 4. Mapa completo de endpoints da API
 
-Use o Swagger como fonte de verdade. Referência:
+Use o Swagger como fonte de verdade.
 
 ### Usuario
 | Método | Rota | Auth | Uso no frontend |
 |--------|------|------|-----------------|
 | POST | `/api/usuario/CadastrarComprador` | — | `/cadastro` |
-| POST | `/api/usuario/cadastrar-vendedor` | — | `/cadastro-vendedor` (criar) |
+| POST | `/api/usuario/cadastrar-vendedor` | — | `/cadastro-vendedor` |
 | POST | `/api/usuario/login` | — | `/login` |
 | POST | `/api/usuario/esqueci-senha` | — | `/esqueci-senha` |
 | POST | `/api/usuario/redefinir-senha` | — | `/redefinir-senha` |
@@ -189,53 +216,22 @@ Use o Swagger como fonte de verdade. Referência:
 | PUT | `/api/usuario/alteraremail/{cpf}` | Auth | `/perfil` |
 | DELETE | `/api/usuario/DeletarUsuario/{cpf}` | Auth | `/perfil` |
 
-### Evento
-| Método | Rota | Auth | Uso |
-|--------|------|------|-----|
-| GET | `/api/evento` | — | Home (eventos ativos) |
-| GET | `/api/evento/{id}` | — | Detalhe do evento |
-| GET | `/api/evento/meus` | Vendedor | Meus Eventos |
-| POST | `/api/evento` | Vendedor | Criar Evento |
-| PUT | `/api/evento/{id}` | Vendedor | Editar Evento |
-| DELETE | `/api/evento/{id}` | Vendedor/Admin | Cancelar/Excluir |
+### Evento, Ingresso, Reserva, Pagamento, Cupom
 
-### Ingresso
-| Método | Rota | Auth | Uso |
-|--------|------|------|-----|
-| GET | `/api/ingresso/eventos/{eventoId}/ingressos` | — | Mapa de assentos |
-| GET | `/api/ingresso/{id}` | — | Detalhe assento |
+(Mesmas rotas da versão anterior — ver Swagger.)
 
-### Reserva
-| Método | Rota | Auth | Uso |
-|--------|------|------|-----|
-| POST | `/api/reserva/criar` | Auth | Checkout |
-| GET | `/api/reserva/minhas` | Auth | Minhas Reservas |
-| GET | `/api/reserva/minhas-vendas` | Vendedor | Painel vendas |
-| GET | `/api/reserva/Admin/Todas` | Admin | Admin Reservas |
-| DELETE | `/api/reserva/{id}` | Auth | Cancelar reserva |
-
-### Pagamento
-| Método | Rota | Auth | Uso |
-|--------|------|------|-----|
-| POST | `/api/pagamento/checkout/{reservaId}` | Auth | `{ "metodo": "pix" }` |
-| GET | `/api/pagamento/admin/todos` | Admin | Relatório |
-
-### Cupom
-| Método | Rota | Auth | Uso |
-|--------|------|------|-----|
-| GET | `/api/cupom/ListarCuponsValidos` | — | Checkout + `/cupons` |
-| GET | `/api/cupom/ListarTodosCupons` | Admin | Admin cupons |
-| POST | `/api/cupom/CadastrarCupom` | Admin | Criar cupom |
-| DELETE | `/api/cupom/DeletarCupom/{codigo}` | Admin | — |
-| PATCH | `/api/cupom/{codigo}/...` | Admin | Editar |
+**Endpoints obsoletos — NÃO usar:**
+- `api/Reserva/ListarPorCpf`
+- `FazerReserva`, `ConfirmarPagamento`
+- `api/Usuario/CadastrarVendedor/{adminId}`
 
 ---
 
 ## 5. DTOs que o frontend deve usar
 
-Reutilize os DTOs de `Application/DTOs/` via referência de projeto (já configurado no `Web.csproj`).
+Reutilize `Application/DTOs/` via referência no `Web.csproj`.
 
-### EventoResponseDTO (atualizar EventoViewModel)
+### EventoViewModel (`Web/Models/EventoViewModel.cs`)
 ```csharp
 public class EventoViewModel
 {
@@ -252,131 +248,66 @@ public class EventoViewModel
 }
 ```
 
-### ReservaDetalhadaDTO (usar de Domain/DTOs/)
-```csharp
-public class ReservaDetalhadaDTO
-{
-    public Guid Id { get; set; }
-    public string NomeEvento { get; set; }
-    public DateTime DataEvento { get; set; }
-    public string PosicaoIngresso { get; set; }
-    public string SetorIngresso { get; set; }
-    public string? CupomUtilizado { get; set; }
-    public decimal ValorFinalPago { get; set; }
-    public bool Pago { get; set; }
-    public bool Reembolsada { get; set; }
-}
-```
-
 ---
 
-## 6. Fluxos de UI a implementar (prioridade)
+## 6. Fluxos de UI — checklist de prioridade
 
-### 🔴 P0 — Corrigir integrações quebradas
+### 🔴 P0 — Integrações críticas ✅ concluído
 
-1. **MinhasReservas.razor**
-   - Trocar `api/Reserva/ListarPorCpf` → `api/reserva/minhas`
-   - Adicionar botão cancelar → `DELETE api/reserva/{id}`
-   - Mostrar status `Pago`, `Reembolsada`
-   - Suportar reservas com múltiplos itens (lista de participantes)
+- [x] MinhasReservas → `api/reserva/minhas`, cancelamento, badges
+- [x] Pagamento → `api/pagamento/checkout/{reservaId}`, redirect `/reservas`
+- [x] CheckoutReserva → 1–4 CPFs, rota `/checkout/{eventoId}`, `PurchaseStateService`
+- [x] Admin/CadastrarVendedor → redirect `/cadastro-vendedor`
 
-2. **Pagamento.razor** — reescrever fluxo:
-   ```
-   1. POST api/reserva/criar  →  reservaId
-   2. Se evento.Gratuito → redirect /reservas
-   3. Senão POST api/pagamento/checkout/{reservaId}  →  confirmação
-   4. Redirect /reservas
-   ```
-   - Remover endpoints mortos: `FazerReserva`, `ConfirmarPagamento`
+### 🟠 P1 — Funcionalidades v2.0 ✅ concluído
 
-3. **CheckoutReserva.razor**
-   - Adicionar formulário de 1–4 CPFs participantes
-   - Passar `reservaId` para pagamento (não mais eventoId/ingressoId na URL de pagamento)
-   - Nova rota sugerida: `/checkout/{eventoId}` com estado dos assentos selecionados
+- [x] Cadastro Vendedor `/cadastro-vendedor`
+- [x] CriarEvento / EditarEvento — Tipo, Gratuito, Local, Descrição, preço min 0
+- [x] ComprarIngressos — SeatMap integrado, até 4 assentos
+- [x] Login — redirect por perfil, esqueci senha
+- [x] EsqueciSenha + RedefinirSenha
+- [x] CPF com máscara no checkout
 
-4. **Admin/CadastrarVendedor.razor**
-   - Remover `adminId` da URL
-   - Usar `POST api/usuario/cadastrar-vendedor` (público) OU remover página (vendedor se auto-cadastra)
+### 🟡 P2 — ST-02 Painel do Vendedor ✅ parcial
 
-### 🟠 P1 — Funcionalidades v2.0 ausentes
+- [x] Dashboard em `/eventos/meus` (eventos, vendas, receita)
+- [x] Vendas via `GET api/reserva/minhas-vendas`
+- [x] Cancelar evento — UI + dialog (backend ST-06 pendente)
+- [x] Seção perfil vendedor — placeholder vitrine (ST-09 pendente)
+- [x] Home — badges, filtro cancelado, CTA vendedor
 
-5. **Cadastro Vendedor** — nova página `/cadastro-vendedor`
-   - Link "Quero Vender" na Home e navbar (usuário não logado)
-   - Campos: CNPJ, Razão Social, Nome Fantasia, Email, Senha, Telefone
-   - Após sucesso → `/login`
+### 🟢 P3 — Polish ✅ concluído
 
-6. **CriarEvento.razor / EditarEvento.razor**
-   - Select Tipo: Teatro / Palestra
-   - Toggle ou campo PrecoPadrao = 0 para Gratuito
-   - Campos Local, Descrição
-   - Min preço 0 (não 0.01) para eventos gratuitos
-
-7. **ComprarIngressos.razor** — integrar SeatMap
-   - Carregar ingressos de `GET api/ingresso/eventos/{id}/ingressos`
-   - Mapear com `SeatMapMapper` para `SeatMap.razor`
-   - Permitir seleção de **até 4 assentos**
-   - Cada assento selecionado pede CPF do participante
-   - Botão "Continuar" → `/checkout/{eventoId}`
-
-8. **Login.razor**
-   - Redirect por perfil após login
-   - Link "Esqueci minha senha" → `/esqueci-senha`
-
-9. **EsqueciSenha.razor + RedefinirSenha.razor** (novas)
-
-### 🟡 P2 — ST-02 Painel do Vendedor (frontend puro)
-
-10. **Dashboard Vendedor** em `/eventos/meus` ou `/vendedor/painel`:
-    - Cards: total eventos, ingressos vendidos, receita estimada
-    - Seção "Meus Eventos" (já existe parcialmente)
-    - Seção "Vendas Recentes" via `GET api/reserva/minhas-vendas`
-    - Seção "Configurações de Perfil": logo, descrição, site (campos em Usuario — editar via perfil)
-    - Botão "Cancelar Evento" com dialog de confirmação (backend ST-06 pendente — preparar UI)
-
-11. **Home.razor**
-    - Remover ou isolar modo demo atrás de flag `#if DEBUG`
-    - Filtrar eventos `Cancelado == false`
-    - Badge "Gratuito" / tipo Teatro|Palestra no `CartaoEvento`
-    - CTA "Quero Vender" para não logados
-
-### 🟢 P3 — Polish
-
-12. Tratamento de erros padronizado (`{ message: "..." }` do middleware)
-13. Loading states consistentes (MudProgressLinear/Circular)
-14. Responsividade mobile do SeatMap
-15. Remover páginas template: `Counter.razor`, `Weather.razor`
+- [x] Tratamento 401 global (`AuthHttpMessageHandler`)
+- [x] Remover Counter/Weather
+- [x] SelecionarAssentos → redirect fluxo real
+- [x] Pagamento redirect automático pós-sucesso
+- [ ] Tratamento de erro padronizado em **todas** as páginas (parcial — priorizar novas telas)
+- [ ] Responsividade mobile do SeatMap (melhorias incrementais)
 
 ---
 
 ## 7. Padrões de código exigidos
 
-### 7.1 Estrutura de pastas (seguir existente)
+### 7.1 Estrutura de pastas
 
 ```
 Web/
-├── Auth/                    → CustomAuthStateProvider
-├── Components/
-│   ├── Features/SeatMap/    → Componentes de domínio reutilizáveis
-│   ├── Layout/              → MainLayout, NavMenu
-│   ├── Pages/               → Rotas (@page)
-│   │   ├── Admin/
-│   │   └── Vendedor/
-│   └── Shared/              → CartaoEvento, etc.
-├── Models/                  → ViewModels (ou usar Application.DTOs diretamente)
-├── Theme/                   → MudBlazor theme
+├── Auth/
+├── Components/Features/SeatMap/
+├── Components/Layout/
+├── Components/Pages/Admin/ | Vendedor/
+├── Components/Shared/
+├── Helpers/
+├── Models/
+├── Services/          → PurchaseStateService, AuthHttpMessageHandler
+├── Theme/PlateiaTheme.cs
 └── Program.cs
 ```
 
-### 7.2 Autenticação em páginas
+### 7.2 Autenticação
 
-```csharp
-// Padrão para obter token e setar header
-var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-if (string.IsNullOrEmpty(token)) { NavManager.NavigateTo("/login"); return; }
-Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-```
-
-Ou use `[Authorize(Roles = "Vendedor")]` com `<AuthorizeView>` como em `CriarEvento.razor`.
+Preferir `[Authorize(Roles = "...")]` + `<AuthorizeView>`. O `AuthHttpMessageHandler` centraliza 401.
 
 ### 7.3 Tratamento de erro da API
 
@@ -390,16 +321,16 @@ if (!response.IsSuccessStatusCode)
 }
 ```
 
-### 7.4 UI — MudBlazor
+### 7.4 UI — MudBlazor + Plateia
 
-- Usar `TicketPrimeTheme.Theme` no `MainLayout` (já configurado)
-- Componentes: `MudCard`, `MudButton`, `MudTextField`, `MudSelect`, `MudDialog`, `MudSnackbar`
-- Nome da marca na navbar: **SoldOut Tickets** (não TicketPrime)
+- Usar `PlateiaTheme.Theme` no `MainLayout`
+- Marca na navbar: **Plateia** (`brand/logo.png`)
+- CTA accent ciano (teal) para "Quero Vender"; dourado para destaques premium (gratuito, assento selecionado)
 - Ícones: `Icons.Material.Filled.*`
 
 ---
 
-## 8. Fluxo de compra completo (target)
+## 8. Fluxo de compra completo (implementado)
 
 ```mermaid
 flowchart TD
@@ -407,15 +338,14 @@ flowchart TD
     B -->|Não| C[/login?returnUrl=...]
     B -->|Sim| D[/comprar/eventoId/ingressos]
     D --> E[SeatMap - selecionar até 4 assentos]
-    E --> F[Informar CPF de cada participante]
-    F --> G[/checkout/eventoId]
-    G --> H{Aplicar cupom?}
-    H --> I[POST /api/reserva/criar]
-    I --> J{Evento gratuito?}
-    J -->|Sim| K[/reservas - confirmado]
-    J -->|Não| L[/pagamento/reservaId]
-    L --> M[POST /api/pagamento/checkout/reservaId]
-    M --> K
+    E --> F[/checkout/eventoId - CPF por participante]
+    F --> G{Aplicar cupom?}
+    G --> H[POST /api/reserva/criar]
+    H --> I{Evento gratuito?}
+    I -->|Sim| J[/reservas]
+    I -->|Não| K[/pagamento/reservaId]
+    K --> L[POST /api/pagamento/checkout/reservaId]
+    L --> J
 ```
 
 ---
@@ -425,55 +355,53 @@ flowchart TD
 ```bash
 # Terminal 1 — API
 cd Api && dotnet run
-# → http://localhost:5007/swagger
 
 # Terminal 2 — Frontend
 cd Web && dotnet run
-# → http://localhost:5057
-
-# Ou Docker
-docker-compose up -d
-# API:5007, Web:5057
 ```
-
-### Credenciais de teste (seed do banco)
-
-Consulte `Infraestructure/DataBase/DatabaseSeeder.cs` — Admin, Vendedor e Comprador são criados no primeiro run.
 
 ### Checklist de teste manual
 
 - [ ] Comprador: cadastro → login → comprar Teatro → pagar → ver reserva → cancelar
-- [ ] Comprador: comprar Palestra com 3 CPFs diferentes
+- [ ] Comprador: Palestra com 3 CPFs diferentes
 - [ ] Comprador: evento gratuito — pula pagamento
-- [ ] Comprador: aplicar cupom no checkout
-- [ ] Vendedor: auto cadastro → criar evento Teatro e Palestra → ver vendas
-- [ ] Admin: CRUD cupons, ver todas reservas
-- [ ] Esqueci senha → e-mail (SMTP configurado em appsettings)
-- [ ] SeatMap reflete status real dos ingressos (livre/reservado/vendido)
+- [ ] Comprador: cupom no checkout
+- [ ] Vendedor: auto cadastro → criar Teatro/Palestra → ver vendas → cancelar evento
+- [ ] Admin: CRUD cupons, ver reservas
+- [ ] Esqueci senha → e-mail
+- [ ] SeatMap reflete status real dos ingressos
+- [ ] Token expirado → redirect login com returnUrl
 
 ---
 
 ## 10. O que NÃO fazer
 
-- ❌ Não criar endpoints novos no backend — o frontend consome a API existente
-- ❌ Não passar `AdminId` em rotas de cupom (spec 160)
-- ❌ Não usar endpoints removidos: `ListarPorCpf`, `FazerReserva`, `ConfirmarPagamento`, `CadastrarVendedor/{adminId}`
+- ❌ Não criar endpoints novos no backend
+- ❌ Não passar `AdminId` em rotas de cupom
+- ❌ Não usar endpoints obsoletos (ver lista acima)
+- ❌ Não usar Seats.io — mapa é SVG custom
 - ❌ Não permitir cupom em evento gratuito
 - ❌ Não permitir mais de 4 participantes por reserva
 - ❌ Não hardcodar JWT ou secrets
-- ❌ Não quebrar o Docker build (`Web/Dockerfile`)
+- ❌ Não quebrar o Docker build
 
 ---
 
 ## 11. Entregáveis esperados
 
-1. Todas as páginas P0 e P1 funcionando contra a API v2.0
-2. SeatMap integrado ao fluxo real de compra
-3. Painel do Vendedor (ST-02) com vendas e gestão de eventos
-4. Fluxo de auth completo (login, cadastros, esqueci senha)
-5. UI consistente com MudBlazor + TicketPrimeTheme + marca SoldOut Tickets
-6. Zero chamadas a endpoints obsoletos
+1. ✅ P0 e P1 funcionando contra API v2.0
+2. ✅ SeatMap integrado ao fluxo real de compra
+3. ✅ Painel do Vendedor ST-02 (vitrine completa aguarda ST-09 backend)
+4. ✅ Fluxo de auth completo
+5. ✅ UI Plateia + MudBlazor + identidade visual
+6. ✅ Zero chamadas a endpoints obsoletos
+
+### Pendências futuras (fora do escopo frontend imediato)
+
+- Backend ST-06: cancelamento de evento com reembolso em massa
+- Backend ST-09: API para logo, descrição e site do vendedor
+- E-mails ainda citam "SoldOut Tickets" — alinhar no backend/spec 180
 
 ---
 
-> **Última atualização:** 27/06/2026 · Branch `frontend` = `main` + componentes SeatMap/Tema/Mock
+> **Última atualização:** 27/06/2026 · Marca **Plateia** · Branch `frontend`

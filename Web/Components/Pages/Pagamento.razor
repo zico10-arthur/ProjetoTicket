@@ -141,6 +141,8 @@
 
             _pago = true;
             Snackbar.Add("Pagamento realizado com sucesso!", Severity.Success);
+            await Task.Delay(1500);
+            NavManager.NavigateTo("/reservas");
         }
         catch (Exception ex)
         {

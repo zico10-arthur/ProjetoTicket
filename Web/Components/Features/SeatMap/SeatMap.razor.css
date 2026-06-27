@@ -59,7 +59,7 @@
 }
 
 .seat-svg--geral {
-    fill: var(--plateia-seat-geral, #6366F1);
+    fill: var(--plateia-seat-geral, #14B8A6);
 }
 
 .seat-svg--vip {
@@ -67,7 +67,7 @@
 }
 
 .seat-svg--selected {
-    fill: var(--plateia-seat-selected, #F97316);
+    fill: var(--plateia-seat-selected, #C9A962);
     animation: seatPulse 1.2s ease-in-out infinite;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .seat-map-legend-dot--geral {
-    background: var(--plateia-seat-geral, #6366F1);
+    background: var(--plateia-seat-geral, #14B8A6);
 }
 
 .seat-map-legend-dot--vip {
@@ -108,7 +108,7 @@
 }
 
 .seat-map-legend-dot--selected {
-    background: var(--plateia-seat-selected, #F97316);
+    background: var(--plateia-seat-selected, #C9A962);
 }
 
 .seat-map-legend-dot--occupied {

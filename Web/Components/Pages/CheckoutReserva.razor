@@ -6,6 +6,7 @@
 @inject IJSRuntime JS
 @inject PurchaseStateService PurchaseState
 @using System.Net.Http.Headers
+@using Web.Helpers
 @using System.Text.Json
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2">
@@ -44,11 +45,13 @@
                     @for (var i = 0; i < _itens.Count; i++)
                     {
                         var index = i;
-                        <MudTextField @bind-Value="_cpfs[index]"
+                        <MudTextField Value="@_cpfs[index]"
+                                      ValueChanged="@((string v) => OnCpfChanged(index, v))"
                                       Label="@($"CPF — {_itens[index].DisplayLabel} ({_itens[index].Setor})")"
                                       Variant="Variant.Outlined"
                                       Class="mb-3"
                                       InputMode="InputMode.numeric"
+                                      Placeholder="000.000.000-00"
                                       MaxLength="14" />
                     }
                 </MudCard>
@@ -208,13 +211,19 @@
         RecalcularTotal();
     }
 
+    private void OnCpfChanged(int index, string value)
+    {
+        if (index >= 0 && index < _cpfs.Count)
+            _cpfs[index] = CpfFormatter.Format(value);
+    }
+
     private async Task ConfirmarReserva()
     {
         if (_evento == null || !_itens.Any()) return;
 
         for (var i = 0; i < _cpfs.Count; i++)
         {
-            var cpf = NormalizarCpf(_cpfs[i]);
+            var cpf = CpfFormatter.Strip(_cpfs[i]);
             if (cpf.Length != 11)
             {
                 Snackbar.Add($"CPF inválido para o assento {_itens[i].DisplayLabel}.", Severity.Warning);
@@ -272,9 +281,6 @@
             _processando = false;
         }
     }
-
-    private static string NormalizarCpf(string cpf) =>
-        new string(cpf.Where(char.IsDigit).ToArray());
 
     private static string ExtrairMensagem(string json)
     {

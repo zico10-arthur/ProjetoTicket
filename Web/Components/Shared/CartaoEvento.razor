@@ -8,7 +8,7 @@
             <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Filled">@Evento.TipoLabel</MudChip>
             @if (Evento.IsGratuito)
             {
-                <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Filled">Gratuito</MudChip>
+                <MudChip T="string" Size="Size.Small" Color="Color.Tertiary" Variant="Variant.Filled">Gratuito</MudChip>
             }
         </MudStack>
         <MudText Typo="Typo.h6" Class="event-card-title"><b>@Evento.Nome</b></MudText>
@@ -59,7 +59,7 @@
     [Parameter]
     public bool ModoDemo { get; set; }
 
-    private string CapaCor => Evento.Tipo == 1 ? "#4F46E5" : "#7C3AED";
+    private string CapaCor => Evento.Tipo == 1 ? "#0D9488" : "#7C3AED";
 
     private async Task IrParaCompra()
     {
