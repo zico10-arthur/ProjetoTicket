@@ -20,11 +20,12 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"INSERT INTO Usuarios(Cpf, Nome, Email, PerfilId, Senha)
-        VALUES (@Cpf, @Nome, @Email, @PerfilId, @Senha)";
+        const string sql = @"INSERT INTO Usuarios(Id, Cpf, Nome, Email, PerfilId, Senha)
+        VALUES (@Id, @Cpf, @Nome, @Email, @PerfilId, @Senha)";
 
         connection.Execute(sql, new
         {
+            Id = usuario.Id,
             Cpf = usuario.Cpf,
             Nome = usuario.Nome,
             Email = usuario.Email,
@@ -35,19 +36,21 @@ public class UsuarioRepository : IUsuarioRepository
 
     /// <summary>
     /// ST-01: Persiste vendedor com todos os campos.
+    /// Spec 200: INSERT inclui Id (Guid).
     /// </summary>
     public int CadastrarVendedor(Usuario vendedor)
     {
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            INSERT INTO Usuarios (Cpf, Nome, NomeFantasia, Email, Senha, PerfilId,
+            INSERT INTO Usuarios (Id, Cpf, Nome, NomeFantasia, Email, Senha, PerfilId,
                                   Cnpj, Telefone, Plano, Ativo, DataCriacao)
-            VALUES (@Cpf, @Nome, @NomeFantasia, @Email, @Senha, @PerfilId,
+            VALUES (@Id, @Cpf, @Nome, @NomeFantasia, @Email, @Senha, @PerfilId,
                     @Cnpj, @Telefone, @Plano, @Ativo, @DataCriacao)";
 
         return connection.Execute(sql, new
         {
+            vendedor.Id,
             vendedor.Cpf,
             vendedor.Nome,
             vendedor.NomeFantasia,
@@ -71,7 +74,7 @@ public class UsuarioRepository : IUsuarioRepository
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            SELECT Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
+            SELECT Id, Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
                    Telefone, Plano, Ativo, DataCriacao
             FROM Usuarios
             WHERE Cnpj = @Cnpj OR Email = @Email";
@@ -93,7 +96,7 @@ public class UsuarioRepository : IUsuarioRepository
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            SELECT Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
+            SELECT Id, Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, 
                    Telefone, Plano, Ativo, DataCriacao
             FROM Usuarios
             WHERE Cnpj = @Cnpj";
@@ -114,7 +117,7 @@ public class UsuarioRepository : IUsuarioRepository
 
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
+        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha
                          FROM Usuarios
                          WHERE Cpf = @Cpf OR Email = @Email";
 
@@ -131,7 +134,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha
+        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha
                          FROM Usuarios
                          WHERE PerfilId = @PerfilId";
 
@@ -148,7 +151,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha, Ativo
+        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha, Ativo
                          FROM Usuarios
                          WHERE Email = @Email";
 
@@ -162,94 +165,130 @@ public class UsuarioRepository : IUsuarioRepository
     }
 
     public async Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct)
-{
-    cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
-
-    using var connection = _factory.CreateConnection();
-
-    const string sql = @"
-        SELECT 
-            u.Cpf,
-            u.Nome,
-            u.Email,
-            u.Senha,
-            u.PerfilId,
-            p.Id,
-            p.Nome
-        FROM Usuarios u
-        INNER JOIN Perfis p ON u.PerfilId = p.Id
-        WHERE u.Cpf = @Cpf";
-
-    var result = await connection.QueryAsync<Usuario, Perfil, Usuario>(
-        sql,
-        (usuario, perfil) =>
-        {
-            usuario.Perfil = perfil;
-            return usuario;
-        },
-        new { Cpf = cpf },
-        splitOn: "Id" 
-    );
-
-    return result.FirstOrDefault();
-}
-
-    public async Task RemoverUsuario(Usuario usuario, CancellationToken ct)
     {
-        string cpf = (usuario.Cpf?? string.Empty).Replace(".", "").Replace("-", "").Trim();
+        cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
 
-        using var connection =  _factory.CreateConnection();
+        using var connection = _factory.CreateConnection();
 
-        const string sql = "DELETE FROM Usuarios WHERE Cpf = @Cpf";
+        const string sql = @"
+            SELECT 
+                u.Id,
+                u.Cpf,
+                u.Nome,
+                u.Email,
+                u.Senha,
+                u.PerfilId,
+                p.Id,
+                p.Nome
+            FROM Usuarios u
+            INNER JOIN Perfis p ON u.PerfilId = p.Id
+            WHERE u.Cpf = @Cpf";
+
+        var result = await connection.QueryAsync<Usuario, Perfil, Usuario>(
+            sql,
+            (usuario, perfil) =>
+            {
+                usuario.Perfil = perfil;
+                return usuario;
+            },
+            new { Cpf = cpf },
+            splitOn: "Id"
+        );
+
+        return result.FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Spec 200: Busca usuário por Id (Guid PK).
+    /// </summary>
+    public async Task<Usuario?> BuscarPorId(Guid id, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = @"
+            SELECT 
+                u.Id,
+                u.Cpf,
+                u.Nome,
+                u.Email,
+                u.Senha,
+                u.PerfilId,
+                p.Id,
+                p.Nome
+            FROM Usuarios u
+            INNER JOIN Perfis p ON u.PerfilId = p.Id
+            WHERE u.Id = @Id";
+
+        var result = await connection.QueryAsync<Usuario, Perfil, Usuario>(
+            sql,
+            (usuario, perfil) =>
+            {
+                usuario.Perfil = perfil;
+                return usuario;
+            },
+            new { Id = id },
+            splitOn: "Id"
+        );
+
+        return result.FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Spec 200: Remove usuário por Id.
+    /// </summary>
+    public async Task RemoverUsuario(Guid id, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "DELETE FROM Usuarios WHERE Id = @Id";
 
         int linhasAfetadas = await connection.ExecuteAsync(
         new CommandDefinition(
-            sql, 
-            new { Cpf = cpf }, 
+            sql,
+            new { Id = id },
             cancellationToken: ct
         )
-    );
-
+        );
     }
 
-    public async Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct)
-{
-    cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
-
-    using var connection = _factory.CreateConnection();
-
-    const string sql = "UPDATE Usuarios SET Senha = @Senha WHERE Cpf = @Cpf";
-
-    int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
-        sql, 
-        new { Senha = novaSenha, Cpf = cpf }, 
-        cancellationToken: ct
-    ));
-
-}
-    public async Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct)
-{
-        using var connection = _factory.CreateConnection();
-
-        const string sql = "UPDATE Usuarios SET Email = @Email WHERE Cpf = @Cpf";
-
-        int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
-            sql,
-            new {Email = usuario.Email, Cpf = usuario.Cpf},
-            cancellationToken: ct
-        ));
-
-
-}
-    public async Task AtualizarNomeAsync(Usuario usuario, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Atualiza senha por Id.
+    /// </summary>
+    public async Task AtualizarSenha(Guid id, string novaSenha, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = "UPDATE Usuarios SET Nome = @Nome WHERE Cpf = @Cpf";
+        const string sql = "UPDATE Usuarios SET Senha = @Senha WHERE Id = @Id";
 
         int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
             sql,
-            new {Nome = usuario.Nome, Cpf = usuario.Cpf},
+            new { Senha = novaSenha, Id = id },
+            cancellationToken: ct
+        ));
+    }
+
+    public async Task AtualizarEmailAsync(Guid id, string novoEmail, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "UPDATE Usuarios SET Email = @Email WHERE Id = @Id";
+
+        int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { Email = novoEmail, Id = id },
+            cancellationToken: ct
+        ));
+    }
+
+    public async Task AtualizarNomeAsync(Guid id, string novoNome, CancellationToken ct)
+    {
+        using var connection = _factory.CreateConnection();
+
+        const string sql = "UPDATE Usuarios SET Nome = @Nome WHERE Id = @Id";
+
+        int linhasAfetadas = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { Nome = novoNome, Id = id },
             cancellationToken: ct
         ));
     }
@@ -260,6 +299,7 @@ public class UsuarioRepository : IUsuarioRepository
 
         const string sql = @"
         SELECT 
+            u.Id,
             u.Cpf,
             u.Nome,
             u.Email,
@@ -270,9 +310,9 @@ public class UsuarioRepository : IUsuarioRepository
         FROM Usuarios u
         INNER JOIN Perfis p ON u.PerfilId = p.Id";
 
-        var usuarios = await connection.QueryAsync<Usuario,Perfil,Usuario>(
+        var usuarios = await connection.QueryAsync<Usuario, Perfil, Usuario>(
             sql,
-            (usuario,perfil) =>
+            (usuario, perfil) =>
             {
                 usuario.Perfil = perfil;
                 return usuario;
@@ -281,14 +321,13 @@ public class UsuarioRepository : IUsuarioRepository
         );
 
         return usuarios;
-    
     }
 
     public async Task<IEnumerable<Usuario>> ListarTodos(CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Cpf, Nome, Email, PerfilId, Senha FROM Usuarios";
+        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha FROM Usuarios";
 
         return await connection.QueryAsync<Usuario>(new CommandDefinition(sql, cancellationToken: ct));
     }

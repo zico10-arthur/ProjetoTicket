@@ -5,10 +5,18 @@ namespace Application.Interfaces;
 public interface IEventoService
 {
     Task<IEnumerable<EventoResponseDTO>> GetAllAsync();
-    Task<IEnumerable<EventoResponseDTO>> GetAllByVendedorAsync(string vendedorCpf);
+    
+    /// <summary>Spec 200: vendedorId como Guid.</summary>
+    Task<IEnumerable<EventoResponseDTO>> GetAllByVendedorAsync(Guid vendedorId);
+    
     Task<EventoResponseDTO?> GetByIdAsync(Guid id);
 
-    Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto, string vendedorCpf);
-    Task UpdateAsync(Guid id, EventoRequestDTO dto, string vendedorCpf);
-    Task DeleteAsync(Guid id, string vendedorCpf, bool isAdmin = false);
+    /// <summary>Spec 200: vendedorId como Guid.</summary>
+    Task<Guid> CriarEventoAsync(EventoRequestDTO eventoDto, Guid vendedorId);
+    
+    /// <summary>Spec 200: vendedorId como Guid.</summary>
+    Task UpdateAsync(Guid id, EventoRequestDTO dto, Guid vendedorId);
+    
+    /// <summary>Spec 200: vendedorId como Guid.</summary>
+    Task DeleteAsync(Guid id, Guid vendedorId, bool isAdmin = false);
 }

@@ -27,10 +27,15 @@ public class EventoRepository : IEventoRepository
         return await conn.QueryAsync<Evento>("SELECT * FROM dbo.Eventos");
     }
 
-    public async Task<IEnumerable<Evento>> GetAllByVendedorAsync(string vendedorCpf)
+    /// <summary>
+    /// Spec 200: Busca por VendedorId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<Evento>> GetAllByVendedorAsync(Guid vendedorId)
     {
         using var conn = _connectionFactory.CreateConnection();
-        return await conn.QueryAsync<Evento>("SELECT * FROM dbo.Eventos WHERE VendedorCpf = @VendedorCpf", new { VendedorCpf = vendedorCpf });
+        return await conn.QueryAsync<Evento>(
+            "SELECT * FROM dbo.Eventos WHERE VendedorId = @VendedorId", 
+            new { VendedorId = vendedorId });
     }
 
 
@@ -54,9 +59,10 @@ public class EventoRepository : IEventoRepository
 
         try
         {
+            // Spec 200: VendedorCpf → VendedorId
             const string sqlEvento = @"
-                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorCpf, Tipo, Descricao, Local, Cancelado)
-                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorCpf, @Tipo, @Descricao, @Local, @Cancelado)";
+                INSERT INTO dbo.Eventos (id, Nome, CapacidadeTotal, DataEvento, PrecoPadrao, VendedorId, Tipo, Descricao, Local, Cancelado)
+                VALUES (@Id, @Nome, @CapacidadeTotal, @DataEvento, @PrecoPadrao, @VendedorId, @Tipo, @Descricao, @Local, @Cancelado)";
 
             await conn.ExecuteAsync(sqlEvento, evento, transacao);
 

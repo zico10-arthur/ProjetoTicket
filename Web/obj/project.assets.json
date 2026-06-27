@@ -649,7 +649,7 @@
           }
         }
       },
-      "MudBlazor/9.5.0": {
+      "MudBlazor/9.6.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Components": "9.0.1",
@@ -1778,10 +1778,10 @@
         "microsoft.sqlserver.server.nuspec"
       ]
     },
-    "MudBlazor/9.5.0": {
-      "sha512": "mZiuKdOG42RkA/cZhiwNwbBZAKBExDx387ylvxzokcenRFHi8n4tq8olGuXs/oWNX1Qgo7Tj7J0AhOjjSnTpcw==",
+    "MudBlazor/9.6.0": {
+      "sha512": "2bziL5wy8axn82R3hPB0WBlK7o+dKYOOje0Jw7E0oqxAhFll/uqZkvVdFR/rfyA5I7sldyPs6eWO6smkMJbDZQ==",
       "type": "package",
-      "path": "mudblazor/9.5.0",
+      "path": "mudblazor/9.6.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1802,7 +1802,7 @@
         "lib/net8.0/MudBlazor.xml",
         "lib/net9.0/MudBlazor.dll",
         "lib/net9.0/MudBlazor.xml",
-        "mudblazor.9.5.0.nupkg.sha512",
+        "mudblazor.9.6.0.nupkg.sha512",
         "mudblazor.nuspec",
         "staticwebassets/MudBlazor.min.css",
         "staticwebassets/MudBlazor.min.js",

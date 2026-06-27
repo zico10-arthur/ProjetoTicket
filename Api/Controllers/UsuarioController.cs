@@ -34,8 +34,15 @@ public class UsuarioController : ControllerBase
     [HttpPost("cadastrar-vendedor")]
     public async Task<IActionResult> CadastrarVendedor([FromBody] CadastrarVendedorDTO dto, CancellationToken ct)
     {
+       try
+    {
         var resultado = await _service.CadastrarVendedor(dto, ct);
         return CreatedAtAction(nameof(CadastrarVendedor), resultado);
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.ToString());
+    }
     }
 
     /// <summary>
@@ -48,30 +55,37 @@ public class UsuarioController : ControllerBase
         return Ok(resposta);
     }
 
-    
-
-    [HttpGet("ListarUsuarioEspecifico/{cpf}")]
-    public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute]string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Rota usa {id:guid} em vez de {cpf}.
+    /// </summary>
+    [HttpGet("ListarUsuarioEspecifico/{id:guid}")]
+    public async Task<IActionResult> ListarUsuarioEspecifico([FromRoute] Guid id, CancellationToken ct)
     {
-        UsuarioSaidaDTO dto = await _service.UsuarioEspecifico(cpf, ct);
+        UsuarioSaidaDTO dto = await _service.UsuarioEspecifico(id, ct);
 
         return Ok(dto);
     }
 
-    [HttpDelete("DeletarUsuario/{cpf}")]
+    /// <summary>
+    /// Spec 200: Rota usa {id:guid} em vez de {cpf}.
+    /// </summary>
+    [HttpDelete("DeletarUsuario/{id:guid}")]
 
-    public async Task<IActionResult> RemoverUusuario([FromRoute]string cpf, CancellationToken ct)
+    public async Task<IActionResult> RemoverUusuario([FromRoute] Guid id, CancellationToken ct)
     {
-        await _service.RemoverUsuario(cpf, ct);
+        await _service.RemoverUsuario(id, ct);
 
         return Ok(new{message = "Usuario deletado com sucesso"});
     }
 
-    [HttpPut("alterarsenha/{cpf}")]
+    /// <summary>
+    /// Spec 200: Rota usa {id:guid} em vez de {cpf}.
+    /// </summary>
+    [HttpPut("alterarsenha/{id:guid}")]
 
-    public async Task<IActionResult> AlterarSenha([FromRoute]string cpf, [FromBody] AlterarSenhaDTO dto, CancellationToken ct)
+    public async Task<IActionResult> AlterarSenha([FromRoute] Guid id, [FromBody] AlterarSenhaDTO dto, CancellationToken ct)
     {
-        await _service.AlterarSenha(dto, cpf, ct);
+        await _service.AlterarSenha(dto, id, ct);
 
         return Ok(new{message = "senha alterada com sucesso"});
     }
@@ -84,24 +98,29 @@ public class UsuarioController : ControllerBase
         return Ok(usuarios);
     }
 
-    [HttpPut("alterarnome/{cpf}")]
+    /// <summary>
+    /// Spec 200: Rota usa {id:guid} em vez de {cpf}.
+    /// </summary>
+    [HttpPut("alterarnome/{id:guid}")]
 
-    public async Task<IActionResult> AlterarNome([FromRoute] string cpf, [FromBody] AlterarNomeDTO dto, CancellationToken ct )
+    public async Task<IActionResult> AlterarNome([FromRoute] Guid id, [FromBody] AlterarNomeDTO dto, CancellationToken ct )
     {
-        await _service.AlterarNomeAsync(cpf, dto, ct);
+        await _service.AlterarNomeAsync(id, dto, ct);
 
         return Ok(new{message = "Nome alterado com sucesso"});
     }
 
-    [HttpPut("alteraremail/{cpf}")]
+    /// <summary>
+    /// Spec 200: Rota usa {id:guid} em vez de {cpf}.
+    /// </summary>
+    [HttpPut("alteraremail/{id:guid}")]
 
-    public async Task<IActionResult> AlterarEmail([FromRoute] string cpf, [FromBody] AlterarEmailDTO dto, CancellationToken ct )
+    public async Task<IActionResult> AlterarEmail([FromRoute] Guid id, [FromBody] AlterarEmailDTO dto, CancellationToken ct )
     {
-        await _service.AlterarEmailAsync(cpf, dto, ct);
+        await _service.AlterarEmailAsync(id, dto, ct);
 
         return Ok(new{message = "Email alterado com sucesso"});
     }
-
 
 
     

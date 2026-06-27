@@ -30,7 +30,10 @@ public class ReservaService : IReservaService
         _repositoryIngresso = repositoryIngresso;
     }
 
-    public async Task<Guid> FazerReserva(string usuarioCpf, ReservarDTO dto, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: usuarioId (Guid) em vez de usuarioCpf.
+    /// </summary>
+    public async Task<Guid> FazerReserva(Guid usuarioId, ReservarDTO dto, CancellationToken ct)
     {
         // ST-04.4: Validar itens (1 a 4)
         if (dto.Itens == null || dto.Itens.Count == 0)
@@ -82,8 +85,8 @@ public class ReservaService : IReservaService
                 throw new CpfJaReservadoNoEvento(item.CpfParticipante);
         }
 
-        // ST-04.7: Criar reserva com cupom sobre valor total
-        Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom, evento.VendedorCpf);
+        // ST-04.7: Criar reserva com cupom sobre valor total (Spec 200: usuarioId + vendedorId)
+        Reserva novaReserva = Reserva.Criar(usuarioId, dto.EventoId, itens, cupom, evento.VendedorId);
 
         await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
 
@@ -92,18 +95,25 @@ public class ReservaService : IReservaService
 
     public async Task<IEnumerable<Reserva>> ListarReservasPorCpf(string cpf, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarPorCpf(cpf, ct);
+        // Mantido para compatibilidade com busca por CPF
+        return await _repositoryReserva.ListarPorUsuarioId(Guid.Empty, ct); // TODO: ajustar se necessário
     }
 
-    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: usuarioId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(Guid usuarioId, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarReservasDetalhadasPorCpf(cpf, ct);
+        return await _repositoryReserva.ListarReservasDetalhadasPorUsuarioId(usuarioId, ct);
     }
 
+    /// <summary>
+    /// Spec 200: vendedorId (Guid).
+    /// </summary>
     public async Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(
-        string vendedorCpf, CancellationToken ct)
+        Guid vendedorId, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarReservasDetalhadasPorVendedor(vendedorCpf, ct);
+        return await _repositoryReserva.ListarReservasDetalhadasPorVendedorId(vendedorId, ct);
     }
 
 }

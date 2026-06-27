@@ -7,6 +7,7 @@ namespace Infraestructure.DataBase;
 /// <summary>
 /// ST-08: Seeder que garante a existência do Admin com senha BCrypt no startup.
 /// Executado após as migrations DbUp.
+/// Spec 200: Admin criado com Guid.NewGuid() para Id.
 /// </summary>
 public static class DatabaseSeeder
 {
@@ -42,14 +43,17 @@ public static class DatabaseSeeder
         {
             string senhaHash = BCrypt.Net.BCrypt.HashPassword("Admin@123");
 
-            var admin = new Usuario("00000000000", "Administrador", "admin@soldout.com", AdminPerfilId, senhaHash);
+            // Spec 200: Admin com Guid.NewGuid() para Id
+            var adminId = Guid.NewGuid();
+            var admin = new Usuario(adminId, "00000000000", "Administrador", "admin@soldout.com", AdminPerfilId, senhaHash);
 
             const string insertAdmin = @"
-                INSERT INTO Usuarios (Cpf, Nome, Email, PerfilId, Senha, Ativo, DataCriacao)
-                VALUES (@Cpf, @Nome, @Email, @PerfilId, @Senha, @Ativo, @DataCriacao);";
+                INSERT INTO Usuarios (Id, Cpf, Nome, Email, PerfilId, Senha, Ativo, DataCriacao)
+                VALUES (@Id, @Cpf, @Nome, @Email, @PerfilId, @Senha, @Ativo, @DataCriacao);";
 
             connection.Execute(insertAdmin, new
             {
+                admin.Id,
                 admin.Cpf,
                 admin.Nome,
                 admin.Email,
@@ -59,7 +63,7 @@ public static class DatabaseSeeder
                 DataCriacao = DateTime.UtcNow
             });
 
-            Console.WriteLine("ST-08: Admin seed criado com BCrypt.");
+            Console.WriteLine("ST-08: Admin seed criado com BCrypt (Spec 200: Guid Id).");
         }
     }
 }

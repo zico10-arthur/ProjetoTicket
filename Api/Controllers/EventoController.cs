@@ -28,14 +28,20 @@ public class EventoController : ControllerBase
         catch (Exception erro) { return StatusCode(500, $"Evento não encontrado | {erro.Message}"); }
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpGet("meus")]
     [Authorize(Roles = "Vendedor")]
     public async Task<ActionResult<EventoResponseDTO>> GetMeusEventosAsync()
     {
-        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-        if (string.IsNullOrEmpty(cpf)) return Unauthorized();
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-        var eventos = await _eventoService.GetAllByVendedorAsync(cpf);
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized();
+
+        var eventos = await _eventoService.GetAllByVendedorAsync(userId);
         return Ok(eventos);
     }
 
@@ -51,6 +57,9 @@ public class EventoController : ControllerBase
         catch (Exception erro) { return StatusCode(500, $"Evento não encontrado | {erro.Message}"); }
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpPost]
     [Authorize(Roles = "Vendedor")]
     [Consumes("application/json")]
@@ -58,15 +67,21 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-            if (string.IsNullOrEmpty(cpf)) return Unauthorized();
+            var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                            ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-            var id = await _eventoService.CriarEventoAsync(evento, cpf);
+            if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+
+            var id = await _eventoService.CriarEventoAsync(evento, userId);
             return Ok(new { id });
         }
         catch (Exception erro) { return BadRequest($"Erro ao criar novo evento | {erro.Message}"); }
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpPut("{id}")]
     [Authorize(Roles = "Vendedor")]
     [Consumes("application/json")]
@@ -74,10 +89,13 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-            if (string.IsNullOrEmpty(cpf)) return Unauthorized();
+            var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                            ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-            await _eventoService.UpdateAsync(id, evento, cpf);
+            if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized();
+
+            await _eventoService.UpdateAsync(id, evento, userId);
             return Ok();
         }
         catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }
@@ -85,6 +103,9 @@ public class EventoController : ControllerBase
         catch (Exception erro) { return BadRequest($"Erro ao atualizar o evento | {erro.Message}"); }
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Roles = "Vendedor,Admin")]
     [Consumes("application/json")]
@@ -92,11 +113,16 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-            if (string.IsNullOrEmpty(cpf)) return Unauthorized();
+            var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                            ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+
+            // Admin pode não ter userId (usa cpf antigo)
+            Guid userId = Guid.Empty;
+            if (!string.IsNullOrEmpty(userIdStr))
+                Guid.TryParse(userIdStr, out userId);
 
             var isAdmin = User.IsInRole("Admin");
-            await _eventoService.DeleteAsync(id, cpf, isAdmin);
+            await _eventoService.DeleteAsync(id, userId, isAdmin);
             return Ok();
         }
         catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }

@@ -24,19 +24,19 @@ public class ReservaRepository : IReservaRepository
 
         try
         {
-            // 1. Inserir Reserva
+            // 1. Inserir Reserva (Spec 200: UsuarioId, VendedorId)
             const string sqlReserva = @"
-                INSERT INTO Reservas (Id, UsuarioCpf, EventoId, CupomUtilizado, ValorFinalPago, VendedorCpf)
-                VALUES (@Id, @UsuarioCpf, @EventoId, @CupomUtilizado, @ValorFinalPago, @VendedorCpf)";
+                INSERT INTO Reservas (Id, UsuarioId, EventoId, CupomUtilizado, ValorFinalPago, VendedorId)
+                VALUES (@Id, @UsuarioId, @EventoId, @CupomUtilizado, @ValorFinalPago, @VendedorId)";
 
             await conn.ExecuteAsync(new CommandDefinition(sqlReserva, new
             {
                 reserva.Id,
-                reserva.UsuarioCpf,
+                reserva.UsuarioId,
                 reserva.EventoId,
                 reserva.CupomUtilizado,
                 reserva.ValorFinalPago,
-                reserva.VendedorCpf
+                reserva.VendedorId
             }, transacao, cancellationToken: ct));
 
             // 2. Inserir ItensReserva
@@ -83,14 +83,17 @@ public class ReservaRepository : IReservaRepository
         );
     }
 
-    public async Task<IEnumerable<Reserva>> ListarPorCpf(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Listar reservas por UsuarioId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<Reserva>> ListarPorUsuarioId(Guid usuarioId, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = "SELECT * FROM Reservas WHERE UsuarioCpf = @Cpf";
+        const string sql = "SELECT * FROM Reservas WHERE UsuarioId = @UsuarioId";
 
         return await connection.QueryAsync<Reserva>(
-            new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
+            new CommandDefinition(sql, new { UsuarioId = usuarioId }, cancellationToken: ct)
         );
     }
 
@@ -136,7 +139,10 @@ public class ReservaRepository : IReservaRepository
         );
     }
 
-    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarReservasDetalhadasPorCpf(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Listar reservas detalhadas por UsuarioId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarReservasDetalhadasPorUsuarioId(Guid usuarioId, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
@@ -154,14 +160,17 @@ public class ReservaRepository : IReservaRepository
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
-            WHERE r.UsuarioCpf = @Cpf
+            WHERE r.UsuarioId = @UsuarioId
             GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago";
 
         return await connection.QueryAsync<ReservaDetalhadaDTO>(
-            new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
+            new CommandDefinition(sql, new { UsuarioId = usuarioId }, cancellationToken: ct)
         );
     }
 
+    /// <summary>
+    /// Spec 200: JOIN com Usuarios via UsuarioId (Guid).
+    /// </summary>
     public async Task<IEnumerable<ReservaAdminDTO>> ListarTodasDetalhadasAdmin(CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
@@ -177,20 +186,23 @@ public class ReservaRepository : IReservaRepository
                 r.ValorFinalPago,
                 r.Pago,
                 u.Nome AS NomeUsuario,
-                u.Cpf AS CpfUsuario
+                u.Id AS UsuarioId
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
             INNER JOIN Ingressos i ON ir.IngressoId = i.Id
-            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, u.Nome, u.Cpf
+            INNER JOIN Usuarios u ON r.UsuarioId = u.Id
+            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, u.Nome, u.Id
             ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaAdminDTO>(new CommandDefinition(sql, cancellationToken: ct));
     }
 
-    public async Task<IEnumerable<ReservaVendedorDTO>> ListarReservasDetalhadasPorVendedor(
-        string vendedorCpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Listar reservas por VendedorId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<ReservaVendedorDTO>> ListarReservasDetalhadasPorVendedorId(
+        Guid vendedorId, CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
@@ -202,14 +214,14 @@ public class ReservaRepository : IReservaRepository
                 r.ValorFinalPago,
                 r.Pago,
                 u.Nome AS NomeComprador,
-                u.Cpf AS CpfComprador
+                u.Id AS CompradorId
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
-            INNER JOIN Usuarios u ON r.UsuarioCpf = u.Cpf
-            WHERE r.VendedorCpf = @VendedorCpf
+            INNER JOIN Usuarios u ON r.UsuarioId = u.Id
+            WHERE r.VendedorId = @VendedorId
             ORDER BY e.Nome, r.Id";
 
         return await connection.QueryAsync<ReservaVendedorDTO>(
-            new CommandDefinition(sql, new { VendedorCpf = vendedorCpf }, cancellationToken: ct));
+            new CommandDefinition(sql, new { VendedorId = vendedorId }, cancellationToken: ct));
     }
 }

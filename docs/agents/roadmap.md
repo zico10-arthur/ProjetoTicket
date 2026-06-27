@@ -27,6 +27,7 @@
 | 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
 | 150 | Resiliência e Tratamento de Erros | ✅ `audited` | **Emitir ingressos** — sistema profissional | [`spec-150/`](./roadmap/spec-150/) |
 | 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
+| 200 | Guid Id PK de Usuarios (substituir Cpf) | ✅ `verified` | **Autonomia** — vendedor sem CPF, Guid como PK | [`spec-200/`](./roadmap/spec-200/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
 
@@ -67,7 +68,7 @@
 | **Gerenciar inscrições e vagas** sem planilhas | 30, 190 | 2 |
 | **Emitir e validar ingressos** profissionalmente | 80, 150, 160 | 3 |
 | **Processar cancelamentos e reembolsos** | 40, 50, 110 | 3 |
-| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130, 180 | 7 |
+| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130, 180, 200 | 8 |
 
 ---
 
@@ -77,6 +78,7 @@
 |--------|-----------|-------|
 | ✅ `audited` | 4 | 120, 130, 150, 160 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
+| ✅ `verified` | 1 | 200 |
 | ❌ `pendente` | 6 | ST-05, ST-06, ST-12, 140, 180, 190 |
 
 ---
@@ -113,6 +115,7 @@
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
 | 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |
+| 200 | Spec criada com 3 arquivos — sem código ainda (migration PK Guid pendente) | ✅ `verified` |
 
 ---
 

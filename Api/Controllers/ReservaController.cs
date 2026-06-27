@@ -19,20 +19,24 @@ public class ReservaController : ControllerBase
         _repository = repository;
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT em vez de cpf.
+    /// </summary>
     [HttpPost("criar")]
     [Authorize]
     public async Task<IActionResult> CriarReserva([FromBody] ReservarDTO dto, CancellationToken ct)
     {
-        var cpfUsuarioLogado = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-        if (string.IsNullOrEmpty(cpfUsuarioLogado))
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
         {
-            return Unauthorized(new { message = "Não foi possível identificar o CPF no token do usuário logado." });
+            return Unauthorized(new { message = "Não foi possível identificar o usuário logado." });
         }
 
         try
         {
-            var id = await _service.FazerReserva(cpfUsuarioLogado, dto, ct);
+            var id = await _service.FazerReserva(userId, dto, ct);
             return Ok(new { reservaId = id, message = "Reserva realizada com sucesso!" });
         }
         catch (Domain.Exceptions.DomainException ex)
@@ -41,18 +45,22 @@ public class ReservaController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpGet("minhas")]
     [Authorize]
     public async Task<IActionResult> ListarMinhasReservas(CancellationToken ct)
     {
-        var cpfUsuarioLogado = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-        if (string.IsNullOrEmpty(cpfUsuarioLogado))
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
         {
             return Unauthorized(new { message = "Não foi possível identificar o usuário." });
         }
 
-        var reservas = await _service.ListarMinhasReservas(cpfUsuarioLogado, ct);
+        var reservas = await _service.ListarMinhasReservas(userId, ct);
         
         return Ok(reservas);
     }
@@ -65,15 +73,20 @@ public class ReservaController : ControllerBase
         return Ok(reservas);
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
     [HttpGet("minhas-vendas")]
     [Authorize(Roles = "Vendedor")]
     public async Task<IActionResult> ListarMinhasVendas(CancellationToken ct)
     {
-        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-        if (string.IsNullOrEmpty(cpf))
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
             return Unauthorized(new { message = "Não foi possível identificar o vendedor." });
 
-        var vendas = await _service.ListarVendasDoVendedor(cpf, ct);
+        var vendas = await _service.ListarVendasDoVendedor(userId, ct);
         return Ok(vendas);
     }
 }
