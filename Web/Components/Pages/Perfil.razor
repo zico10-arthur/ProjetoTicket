@@ -94,6 +94,7 @@
     private bool carregando = true;
     private bool dialogAberto = false;
     private string cpf = "";
+    private string userId = "";
 
     private class UsuarioPerfilModel
     {
@@ -119,11 +120,12 @@
             var doc = JsonDocument.Parse(json);
 
             cpf = doc.RootElement.GetProperty("cpf").GetString()!;
+            userId = doc.RootElement.GetProperty("userId").GetString()!;
 
             Http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var response = await Http.GetAsync($"api/Usuario/ListarUsuarioEspecifico/{cpf}");
+            var response = await Http.GetAsync($"api/Usuario/ListarUsuarioEspecifico/{userId}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -153,7 +155,7 @@
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarsenha/{cpf}", new { NovaSenha = novaSenha });
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarsenha/{userId}", new { NovaSenha = novaSenha });
 
         if (response.IsSuccessStatusCode)
         {
@@ -172,7 +174,7 @@
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarnome/{cpf}", new { NovoNome = novoNome });
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alterarnome/{userId}", new { NovoNome = novoNome });
 
         if (response.IsSuccessStatusCode)
         {
@@ -192,7 +194,7 @@
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-        var response = await Http.PutAsJsonAsync($"api/Usuario/alteraremail/{cpf}", new { NovoEmail = novoEmail });
+        var response = await Http.PutAsJsonAsync($"api/Usuario/alteraremail/{userId}", new { NovoEmail = novoEmail });
 
         if (response.IsSuccessStatusCode)
         {
@@ -212,7 +214,7 @@
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-        var response = await Http.DeleteAsync($"api/Usuario/DeletarUsuario/{cpf}");
+        var response = await Http.DeleteAsync($"api/Usuario/DeletarUsuario/{userId}");
 
         if (response.IsSuccessStatusCode)
         {
