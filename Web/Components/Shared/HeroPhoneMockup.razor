@@ -1,0 +1,55 @@
+@namespace Web.Components.Shared
+
+<div class="hero-phone-scene" aria-hidden="true">
+    <div class="hero-phone">
+        <div class="hero-phone__frame">
+            <div class="hero-phone__notch"></div>
+            <div class="hero-phone__screen">
+                <div class="hero-phone__appbar">
+                    <img src="brand/logo-icon.png" alt="" class="hero-phone__appbar-icon" />
+                    <span class="hero-phone__appbar-title">Escolher assentos</span>
+                </div>
+
+                <div class="hero-phone__event">
+                    <span class="hero-phone__event-name">Espetáculo Teatral</span>
+                    <span class="hero-phone__event-meta">15/12 · 19:00</span>
+                </div>
+
+                <div class="hero-phone__stage">PALCO</div>
+
+                <div class="hero-phone__map">
+                    @foreach (var seat in _seats)
+                    {
+                        <div class="hero-phone__seat hero-phone__seat--@seat"></div>
+                    }
+                </div>
+
+                <div class="hero-phone__legend">
+                    <span><i class="hero-phone__dot hero-phone__dot--geral"></i>Geral</span>
+                    <span><i class="hero-phone__dot hero-phone__dot--vip"></i>VIP</span>
+                    <span><i class="hero-phone__dot hero-phone__dot--selected"></i>Seu</span>
+                </div>
+
+                <div class="hero-phone__checkout">
+                    <div class="hero-phone__checkout-row">
+                        <span>Fila C · Assento 5, 6</span>
+                        <strong>R$ 90,00</strong>
+                    </div>
+                    <div class="hero-phone__cta">Confirme seu lugar!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // g=geral, v=vip, s=selected, o=occupied
+    private static readonly string[] _seats =
+    [
+        "o", "g", "g", "g", "v", "o",
+        "g", "g", "o", "g", "v", "v",
+        "g", "s", "s", "g", "v", "o",
+        "o", "g", "g", "g", "g", "v",
+        "g", "g", "o", "g", "v", "v",
+    ];
+}

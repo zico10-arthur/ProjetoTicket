@@ -3,22 +3,31 @@
 @using Web.Mock
 
 <MudStack Spacing="6">
-    <!-- Hero -->
+
+    <!-- ══════════════════════════════════════
+         HERO SECTION
+    ══════════════════════════════════════════ -->
     <MudPaper Elevation="0" Class="plateia-hero pa-8 pa-sm-10">
         <div class="plateia-hero__mesh"></div>
         <div class="plateia-hero__orb plateia-hero__orb--1"></div>
         <div class="plateia-hero__orb plateia-hero__orb--2"></div>
 
-        <MudGrid Class="plateia-hero__content">
+        <MudGrid Class="plateia-hero__content" Spacing="4">
+
+            <!-- Coluna Esquerda: Textos e CTAs -->
             <MudItem xs="12" md="7">
-                <MudStack Row="true" Spacing="2" Class="mb-5 flex-wrap">
+
+                <!-- Estatísticas (glassmorphism) -->
+                <MudStack Row="true" Spacing="2" Class="mb-6 flex-wrap">
                     <div class="plateia-hero__stat">
-                        <div class="plateia-hero__stat-value">@(_totalEventosAtivos?.ToString() ?? "—")</div>
-                        <div class="plateia-hero__stat-label">Eventos ativos</div>
+                        <div class="plateia-hero__stat-value">
+                            @(_totalEventosAtivos?.ToString() ?? "—")
+                        </div>
+                        <div class="plateia-hero__stat-label">Eventos Ativos</div>
                     </div>
                     <div class="plateia-hero__stat">
                         <div class="plateia-hero__stat-value">4</div>
-                        <div class="plateia-hero__stat-label">Assentos por reserva</div>
+                        <div class="plateia-hero__stat-label">Assentos por Reserva</div>
                     </div>
                     <div class="plateia-hero__stat">
                         <div class="plateia-hero__stat-value">100%</div>
@@ -26,67 +35,110 @@
                     </div>
                 </MudStack>
 
-                <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 800; line-height: 1.15;">
-                    Sua plateia. Seu lugar. Sua experiência.
+                <!-- H1 Headline -->
+                <MudText Typo="Typo.h3"
+                         Class="mb-4"
+                         Style="color: #fff; font-weight: 800; line-height: 1.15;">
+                    Sua plateia. Seu lugar.<br />Sua experiência.
                 </MudText>
-                <MudText Typo="Typo.body1" Class="mb-6" Style="color: rgba(255,255,255,0.88); max-width: 480px; font-size: 1.05rem;">
-                    Teatros, palestras e workshops com mapa de assentos interativo, cupons e checkout em poucos cliques.
+
+                <!-- Sub-headline -->
+                <MudText Typo="Typo.body1"
+                         Class="mb-7"
+                         Style="color: rgba(255,255,255,0.88); max-width: 480px; font-size: 1.05rem; line-height: 1.65;">
+                    Teatros, palestras e workshops com mapa de assentos interativo,
+                    cupons e checkout em poucos cliques.
                 </MudText>
+
+                <!-- CTAs -->
                 <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
                     <MudButton Variant="Variant.Filled"
-                               Style="background: #fff; color: var(--plateia-primary); font-weight: 700;"
+                               Style="background: #fff; color: var(--plateia-primary); font-weight: 700; box-shadow: 0 4px 16px rgba(0,0,0,0.18);"
                                Href="#eventos"
+                               Size="Size.Large"
                                StartIcon="@Icons.Material.Filled.Event">
                         Explorar eventos
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
                                Class="plateia-cta-accent"
                                Href="/cadastro-vendedor"
+                               Size="Size.Large"
                                StartIcon="@Icons.Material.Filled.Storefront">
                         Quero vender
                     </MudButton>
                 </MudStack>
+
             </MudItem>
 
+            <!-- Coluna Direita: Mockup do celular -->
             <MudItem xs="12" md="5" Class="d-flex align-center justify-center">
-                <div class="plateia-hero__logo-wrap">
-                    <img src="brand/logo.png" alt="Plateia — ingressos & eventos" class="plateia-hero__logo-showcase" />
-                </div>
+                <HeroPhoneMockup />
             </MudItem>
+
         </MudGrid>
     </MudPaper>
 
-    <!-- Features -->
-    <div class="plateia-features">
-        <div class="plateia-feature-card">
-            <div class="plateia-feature-icon plateia-feature-icon--purple">
-                <MudIcon Icon="@Icons.Material.Filled.EventSeat" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Assentos em tempo real</b></MudText>
-            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                Escolha VIP ou Geral no mapa interativo — veja disponibilidade ao vivo.
-            </MudText>
-        </div>
-        <div class="plateia-feature-card">
-            <div class="plateia-feature-icon plateia-feature-icon--teal">
-                <MudIcon Icon="@Icons.Material.Filled.Groups" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Compre para o grupo</b></MudText>
-            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                Até 4 participantes por reserva — informe o CPF de cada um no checkout.
-            </MudText>
-        </div>
-        <div class="plateia-feature-card">
-            <div class="plateia-feature-icon plateia-feature-icon--gold">
-                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Cupons e eventos grátis</b></MudText>
-            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                Descontos exclusivos e reservas gratuitas sem passar pelo pagamento.
-            </MudText>
-        </div>
-    </div>
+    <!-- ══════════════════════════════════════
+         SEÇÃO DE RECURSOS (Feature Cards)
+    ══════════════════════════════════════════ -->
+    <MudGrid Spacing="3">
 
+        <!-- Card 1: Assentos em tempo real -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="1" Class="plateia-feature-card h-100">
+                <MudCardContent>
+                    <div class="plateia-feature-icon plateia-feature-icon--purple mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.EventSeat" />
+                    </div>
+                    <MudText Typo="Typo.subtitle1" Class="mb-2">
+                        <b>Assentos em tempo real</b>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Style="color: #0F766E; line-height: 1.6;">
+                        Escolha VIP ou Geral no mapa interativo — veja disponibilidade ao vivo.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Card 2: Compre para o grupo -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="1" Class="plateia-feature-card h-100">
+                <MudCardContent>
+                    <div class="plateia-feature-icon plateia-feature-icon--teal mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Groups" />
+                    </div>
+                    <MudText Typo="Typo.subtitle1" Class="mb-2">
+                        <b>Compre para o grupo</b>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Style="color: #0F766E; line-height: 1.6;">
+                        Até 4 participantes por reserva — informe o CPF de cada um no checkout.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Card 3: Cupons e eventos grátis -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="1" Class="plateia-feature-card h-100">
+                <MudCardContent>
+                    <div class="plateia-feature-icon plateia-feature-icon--gold mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalOffer" />
+                    </div>
+                    <MudText Typo="Typo.subtitle1" Class="mb-2">
+                        <b>Cupons e eventos grátis</b>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Style="color: #A8863F; line-height: 1.6;">
+                        Descontos exclusivos e reservas gratuitas sem passar pelo pagamento.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- ══════════════════════════════════════
+         BLOCO DE DEMO (apenas em DEBUG)
+    ══════════════════════════════════════════ -->
 #if DEBUG
     <MudPaper Elevation="0" Class="pa-4" Outlined="true" Style="border-radius: 12px;">
         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
@@ -106,14 +158,20 @@
     </MudPaper>
 #endif
 
+    <!-- Banner de modo demo -->
     @if (_modoDemo)
     {
-        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Dense="true" Style="border-radius: 12px;">
+        <MudAlert Severity="Severity.Warning"
+                  Variant="Variant.Outlined"
+                  Dense="true"
+                  Style="border-radius: 12px;">
             API indisponível — exibindo <b>eventos de exemplo</b>.
         </MudAlert>
     }
 
-    <!-- Eventos -->
+    <!-- ══════════════════════════════════════
+         SEÇÃO DE EVENTOS
+    ══════════════════════════════════════════ -->
     <div id="eventos">
         <div class="plateia-section-header">
             <MudText Class="plateia-section-title">Eventos disponíveis</MudText>
@@ -158,6 +216,7 @@
             }
         }
     </MudGrid>
+
 </MudStack>
 
 @code {
