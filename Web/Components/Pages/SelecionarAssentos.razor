@@ -1,0 +1,37 @@
+@page "/evento/{EventoId}/assentos"
+@rendermode InteractiveServer
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <div class="d-flex align-center mb-4">
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Inherit"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Href="/">
+            Voltar
+        </MudButton>
+    </div>
+
+    <SeatMap Title="@_eventTitle"
+             Subtitle="Auditório Campus Quinta — UNIFESO"
+             Seats="_seats"
+             OnCheckout="OnCheckout" />
+</MudContainer>
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+
+    private string _eventTitle = "TicketPrime — Seleção de Assentos";
+    private List<SeatModel> _seats = QuintaAuditorioSeatData.CreateDemoLayout();
+
+    private Task OnCheckout(IReadOnlyList<SeatModel> selected)
+    {
+        var labels = string.Join(", ", selected.Select(s => s.DisplayLabel));
+        Snackbar.Add($"{selected.Count} assento(s) selecionado(s): {labels}", Severity.Success);
+
+        // TODO: POST api/Reserva com EventoId + ids dos ingressos
+        // NavManager.NavigateTo($"/checkout/{EventoId}?seats={...}");
+        return Task.CompletedTask;
+    }
+}

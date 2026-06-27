@@ -1,44 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj": {}
+    "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Web\\Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
+    "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\obj\\",
+        "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\yurid\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\yurid\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -53,11 +45,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "AutoMapper": {
@@ -88,43 +79,49 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+    "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\obj\\",
+        "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\yurid\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\yurid\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -139,11 +136,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -156,47 +152,53 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
         "projectName": "Infraestructure",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\Infraestructure.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\infraestructure\\obj\\",
+        "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "packagesPath": "C:\\Users\\yurid\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Infraestructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\yurid\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Domain\\Domain.csproj"
               }
             }
           }
@@ -211,11 +213,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -226,9 +227,21 @@
               "target": "Package",
               "version": "[2.1.72, )"
             },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.17.0, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[6.1.4, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Options.ConfigurationExtensions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "dbup-sqlserver": {
               "target": "Package",
@@ -246,47 +259,53 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj": {
+    "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Web\\Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
+        "projectUniqueName": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Web\\Web.csproj",
         "projectName": "Web",
-        "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\Web.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Web\\obj\\",
+        "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Web\\Web.csproj",
+        "packagesPath": "C:\\Users\\yurid\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Web\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\yurid\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj"
+              "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\yurid\\faculdade\\ProjetoTicket\\Application\\Application.csproj"
               }
             }
           }
@@ -301,11 +320,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "MudBlazor": {
@@ -324,6 +342,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -332,7 +368,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

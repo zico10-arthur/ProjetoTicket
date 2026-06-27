@@ -1,0 +1,37 @@
+@namespace Web.Components.Features.SeatMap
+
+<MudTooltip Text="@TooltipText" Placement="Placement.Top">
+    <MudButton Variant="@ButtonVariant"
+               Color="@ButtonColor"
+               Size="Size.Small"
+               Disabled="@IsOccupied"
+               Class="@SeatCssClass"
+               OnClick="HandleClick">
+        @Seat.SeatNumber
+    </MudButton>
+</MudTooltip>
+
+@code {
+    [Parameter, EditorRequired] public SeatModel Seat { get; set; } = null!;
+    [Parameter] public EventCallback<int> OnToggle { get; set; }
+
+    private bool IsOccupied => Seat.Status == SeatStatus.Occupied;
+    private bool IsSelected => Seat.Status == SeatStatus.Selected;
+
+    private Variant ButtonVariant => IsSelected ? Variant.Filled : Variant.Outlined;
+
+    private Color ButtonColor => IsSelected ? Color.Primary : Color.Default;
+
+    private string SeatCssClass => IsOccupied ? "seat-item seat-item--occupied" : "seat-item";
+
+    private string TooltipText =>
+        IsOccupied
+            ? $"{Seat.DisplayLabel} — Ocupado"
+            : $"{Seat.DisplayLabel} — {Seat.Price:C}";
+
+    private async Task HandleClick()
+    {
+        if (IsOccupied) return;
+        await OnToggle.InvokeAsync(Seat.Id);
+    }
+}

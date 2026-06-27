@@ -45,6 +45,9 @@
     [Parameter]
     public EventoViewModel Evento { get; set; } = null!;
 
+    [Parameter]
+    public bool ModoDemo { get; set; }
+
     private bool isExpanded;
 
     private void ToggleCard()
@@ -54,6 +57,12 @@
 
     private async Task IrParaCompra()
     {
+        if (ModoDemo)
+        {
+            NavManager.NavigateTo("/demo/assentos");
+            return;
+        }
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (!authState.User.Identity?.IsAuthenticated ?? true)
             NavManager.NavigateTo($"/login?returnUrl=/comprar/{Evento.Id}/ingressos");

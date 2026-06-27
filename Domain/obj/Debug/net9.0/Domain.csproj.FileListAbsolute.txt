@@ -46,3 +46,15 @@ c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Doma
 c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
 c:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
 C:\Users\tempu\OneDrive\ProjetoTicket\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.deps.json
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.dll
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\bin\Debug\net9.0\Domain.pdb
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.sourcelink.json
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.dll
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\refint\Domain.dll
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\Domain.pdb
+C:\Users\yurid\faculdade\ProjetoTicket\Domain\obj\Debug\net9.0\ref\Domain.dll

@@ -1,42 +1,77 @@
 @page "/"
 @inject HttpClient Http
+@using Web.Mock
 
-<MudGrid Spacing="4">
-    @if (eventos is null)
+<MudStack Spacing="4">
+    <MudPaper Elevation="1" Class="pa-4">
+        <MudText Typo="Typo.h6" Class="mb-2">Simulação do mapa de assentos</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+            Visualize o auditório UNIFESO com dados mockados — sem conectar API ou banco.
+        </MudText>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Href="/demo/assentos"
+                   StartIcon="@Icons.Material.Filled.EventSeat">
+            Abrir demonstração
+        </MudButton>
+    </MudPaper>
+
+    @if (_modoDemo)
     {
-        <MudItem xs="12">
-            <MudText>Carregando eventos...</MudText>
-        </MudItem>
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Dense="true">
+            API indisponível — exibindo <b>eventos de exemplo</b>. Clique em comprar para ir ao mapa mockado.
+        </MudAlert>
     }
-    else if (!eventos.Any())
-    {
-        <MudItem xs="12">
-            <MudText>Nenhum evento disponível.</MudText>
-        </MudItem>
-    }
-    else
-    {
-        @foreach (var evento in eventos)
+
+    <MudGrid Spacing="4">
+        @if (eventos is null)
         {
-            <MudItem xs="12" sm="6" md="4">
-                <CartaoEvento Evento="@evento" />
+            <MudItem xs="12">
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
             </MudItem>
         }
-    }
-</MudGrid>
+        else if (!eventos.Any())
+        {
+            <MudItem xs="12">
+                <MudText>Nenhum evento na API.</MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/demo/assentos" Class="mt-2">
+                    Ver mapa de assentos (mock)
+                </MudButton>
+            </MudItem>
+        }
+        else
+        {
+            @foreach (var evento in eventos)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <CartaoEvento Evento="@evento" ModoDemo="@_modoDemo" />
+                </MudItem>
+            }
+        }
+    </MudGrid>
+</MudStack>
 
 @code {
     private List<EventoViewModel>? eventos;
+    private bool _modoDemo;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento");
+            if (eventos is null || eventos.Count == 0)
+                CarregarMock();
         }
         catch
         {
-            eventos = new();
+            CarregarMock();
         }
+    }
+
+    private void CarregarMock()
+    {
+        _modoDemo = true;
+        eventos = TicketPrimeMockData.GetEventos();
     }
 }

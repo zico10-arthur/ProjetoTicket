@@ -1,8 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@using Web.Theme
 @inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@TicketPrimeTheme.Theme" IsDarkMode="false" />
 <MudDialogProvider />
 <MudSnackbarProvider /> 
 <MudPopoverProvider />
