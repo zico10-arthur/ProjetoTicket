@@ -26,7 +26,7 @@
 | 160 | Cupons de Desconto | ✅ `audited` | **Emitir ingressos** — AdminId via JWT, não rota | [`spec-160/`](./roadmap/spec-160/) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
 | 150 | Resiliência e Tratamento de Erros | ✅ `audited` | **Emitir ingressos** — sistema profissional | [`spec-150/`](./roadmap/spec-150/) |
-| 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
+| 180 | Serviço de E-mail + Redef. de Senha | ✅ `audited` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
 
@@ -75,9 +75,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 6 | 120, 130, 150, 160, 140, 190 |
-| ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 4 | ST-05, ST-06, ST-12, 180 |
+| ✅ `audited` | 7 | 120, 130, 150, 160, 140, 190, 180 |
+| ✅ `implemented` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
+| ❌ `pendente` | 3 | ST-05, ST-06, ST-12 |
 
 ---
 
@@ -111,7 +111,7 @@
 | 150 | `GlobalExceptionHandlerMiddleware` sanitizado, `[Authorize]` no IngressoController, DTOs com data annotations + Trim, 8 testes passando | ✅ `audited` |
 | 160 | CupomController: AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs | ✅ `audited` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
-| 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
+| 180 | Spec auditada — build ✅ 0 erros, 8 arquivos criados, 8 editados, todos FRs verificados | ✅ `audited` |
 | 190 | `LiberacaoAssentosJob.cs` com Hangfire recurring job, `LiberacaoAssentosWorker.cs` removido, dashboard `/hangfire` restrito a Admin — build + 112/114 testes passando | ✅ `audited` |
 
 ---

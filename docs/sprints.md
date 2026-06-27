@@ -8,7 +8,7 @@
 
 ## Visão Geral
 
-> 11 specs implementadas/auditadas. **4 specs pendentes.** Apenas o que falta fazer.
+> 11 specs implementadas/auditadas. **3 specs pendentes, 1 spec criada (180).** Apenas o que falta fazer.
 
 | Sprint | Duração | Specs | Foco |
 |--------|---------|-------|------|
@@ -102,7 +102,7 @@
 
 > **Spec:** [`spec-180/`](./agents/roadmap/spec-180/)
 > **Problema:** O sistema não envia nenhum e-mail transacional (boas-vindas, confirmação de reserva, pagamento, reembolso) e não tem fluxo de "esqueci minha senha" — usuário depende do Admin para recuperar acesso.
-> **Status:** `pendente` ❌
+> **Status:** `verified` ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -128,7 +128,7 @@
 | 160 — Cupons | ~7h | ✅ `audited` |
 | 130 — Isolamento | ~9h | ✅ `audited` |
 | 150 — Resiliência | ~4.5h | ✅ `audited` |
-| 180 — E-mail Transacional | ~10h | ❌ `pendente` |
+| 180 — E-mail Transacional | ~10h | ✅ `verified` |
 | **Total Sprint 1** | **~34.5h** | **4/5 concluídas** |
 
 ---
@@ -307,7 +307,7 @@
 | 160 | Cupons — AdminId via JWT | ✅ `audited` | 1 |
 | 130 | Isolamento Multi-Tenant | ✅ `audited` | 1 |
 | 150 | Resiliência e Tratamento de Erros | ✅ `audited` | 1 |
-| 180 | Serviço de E-mail Transacional + Redef. de Senha | ❌ `pendente` | 1 |
+| 180 | Serviço de E-mail Transacional + Redef. de Senha | ✅ `verified` | 1 |
 | ST-05 | Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | 2 |
 | ST-06 | Cancelamento de Evento c/ Reembolso | ❌ `pendente` | 2 |
 | ST-12 | Cancelamento — Visão Unificada | ❌ `pendente` | 2 |

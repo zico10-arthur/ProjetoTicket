@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Interface;
 using Domain.Validators;
 using Domain.DTOs;
+using Infraestructure.Email;
 
 namespace Application.Service;
 
@@ -15,19 +16,22 @@ public class ReservaService : IReservaService
     private readonly IEventoRepository _repositoryEvento;
     private readonly ICupomRepository _repositoryCupom;
     private readonly IIngressoRepository _repositoryIngresso;
+    private readonly Domain.Interface.IEmailSender _emailSender;
 
     public ReservaService(
         IReservaRepository repositoryReserva, 
         IUsuarioRepository repositoryUsuario, 
         IEventoRepository repositoryEvento,
         ICupomRepository repositoryCupom,
-        IIngressoRepository repositoryIngresso)
+        IIngressoRepository repositoryIngresso,
+        Domain.Interface.IEmailSender emailSender)
     {
         _repositoryUsuario = repositoryUsuario;
         _repositoryReserva = repositoryReserva;
         _repositoryEvento = repositoryEvento;
         _repositoryCupom = repositoryCupom;
         _repositoryIngresso = repositoryIngresso;
+        _emailSender = emailSender;
     }
 
     public async Task<Guid> FazerReserva(string usuarioCpf, ReservarDTO dto, CancellationToken ct)
@@ -86,6 +90,14 @@ public class ReservaService : IReservaService
         Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom, evento.VendedorCpf);
 
         await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
+
+        // Spec 180: Enfileirar e-mail de confirmação de reserva
+        var usuario = await _repositoryUsuario.BuscarCpf(usuarioCpf, ct);
+        var destinatario = usuario?.Email ?? usuarioCpf;
+        var nomeEvento = evento.Nome;
+        var emailReserva = EmailTemplates.ReservaConfirmada(
+            destinatario, nomeEvento, evento.DataEvento, itens.Count, novaReserva.ValorFinalPago);
+        await _emailSender.EnfileirarAsync(emailReserva, ct);
 
         return novaReserva.Id;
     }

@@ -5,19 +5,26 @@ using Application.Exceptions;
 using Domain.Entities;
 using Domain.Validators;
 using AutoMapper;
+using Infraestructure.Email;
+using Microsoft.Extensions.Configuration;
 namespace Application.Service;
 
 public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _repository;
     private readonly IMapper _mapper;
-
     private readonly ITokenService _tokenservice;
-    public UsuarioService(IUsuarioRepository repository, IMapper mapper, ITokenService tokenservice)
+    private readonly Domain.Interface.IEmailSender _emailSender;
+    private readonly IConfiguration _configuration;
+
+    public UsuarioService(IUsuarioRepository repository, IMapper mapper, ITokenService tokenservice,
+        Domain.Interface.IEmailSender emailSender, IConfiguration configuration)
     {
         _repository = repository;
         _mapper = mapper;
         _tokenservice = tokenservice;
+        _emailSender = emailSender;
+        _configuration = configuration;
     }
 
     public async Task CadastrarComprador(CadastrarUsuarioDTO dto, CancellationToken ct)
@@ -33,6 +40,10 @@ public class UsuarioService : IUsuarioService
 
         Usuario? novocomprador = Usuario.CriarComprador(dto.Cpf, dto.Nome, dto.Email, senhaHash);
         _repository.CadastrarUsuario(novocomprador);
+
+        // Spec 180: Enfileirar e-mail de boas-vindas (fire-and-forget)
+        var email = EmailTemplates.BoasVindasComprador(dto.Email, dto.Nome);
+        await _emailSender.EnfileirarAsync(email, ct);
     }
 
     /// <summary>
@@ -66,6 +77,11 @@ public class UsuarioService : IUsuarioService
 
         // 6. Persistir
         _repository.CadastrarVendedor(vendedor);
+
+        // Spec 180: Enfileirar e-mail de boas-vindas
+        var emailBoasVindas = EmailTemplates.BoasVindasVendedor(
+            vendedor.Email, vendedor.NomeFantasia!, "Gratuito");
+        await _emailSender.EnfileirarAsync(emailBoasVindas, ct);
 
         // 7. Retornar resposta
         return new VendedorCadastradoDTO
@@ -194,5 +210,54 @@ public class UsuarioService : IUsuarioService
             Email = u.Email,
             Perfil = u.Perfil != null ? u.Perfil.Nome: "Sem Perfil"
         });
+    }
+
+    /// <summary>
+    /// Spec 180: Solicitar redefinição de senha.
+    /// Busca usuário por email, gera token JWT de redefinição,
+    /// enfileira e-mail com link. Se email não existir ou usuário inativo,
+    /// retorna sem fazer nada (não vaza informação).
+    /// </summary>
+    public async Task SolicitarRedefinicaoSenha(string email, CancellationToken ct)
+    {
+        var usuario = await _repository.BuscarEmail(email, ct);
+        if (usuario == null || !usuario.Ativo)
+            return; // Não vaza informação
+
+        var token = _tokenservice.GerarTokenRedefinicaoSenha(usuario);
+
+        var baseUrl = _configuration["App:BaseUrl"] ?? "https://soldouttickets.com";
+        var link = $"{baseUrl}/redefinir-senha?token={Uri.EscapeDataString(token)}";
+
+        var msg = EmailTemplates.RedefinicaoSenha(usuario.Email, usuario.Nome, link);
+        await _emailSender.EnfileirarAsync(msg, ct);
+    }
+
+    /// <summary>
+    /// Spec 180: Redefinir senha.
+    /// Valida token JWT de redefinição, valida nova senha,
+    /// aplica BCrypt e atualiza no banco.
+    /// Lança TokenRedefinicaoInvalido se token inválido/expirado.
+    /// Lança exceção de validação se senha fraca.
+    /// </summary>
+    public async Task RedefinirSenha(string token, string novaSenha, CancellationToken ct)
+    {
+        // 1. Validar token JWT
+        var email = _tokenservice.ValidarTokenRedefinicaoSenha(token);
+        if (email == null)
+            throw new TokenRedefinicaoInvalido();
+
+        // 2. Buscar usuário
+        var usuario = await _repository.BuscarEmail(email, ct);
+        if (usuario == null || !usuario.Ativo)
+            throw new TokenRedefinicaoInvalido();
+
+        // 3. Validar senha bruta (lança exceção se inválida)
+        Usuario.ValidarSenhaBruta(novaSenha);
+
+        // 4. Hashear e persistir
+        string senhaHash = BCrypt.Net.BCrypt.HashPassword(novaSenha);
+        usuario.AlterarSenha(senhaHash);
+        await _repository.AtualizarSenha(usuario.Cpf, senhaHash, ct);
     }
 }

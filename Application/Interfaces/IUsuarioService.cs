@@ -29,4 +29,19 @@ public interface IUsuarioService
     Task<IEnumerable<UsuarioResponseDTO>> ListarUsuariosAsync(CancellationToken ct);
 
 
+    /// <summary>
+    /// Spec 180: Busca usuário por email, gera token JWT de redefinição,
+    /// enfileira e-mail com link. Se email não existir ou usuário inativo,
+    /// retorna sem fazer nada (não vaza informação).
+    /// </summary>
+    Task SolicitarRedefinicaoSenha(string email, CancellationToken ct);
+
+    /// <summary>
+    /// Spec 180: Valida token JWT de redefinição, valida nova senha,
+    /// aplica BCrypt e atualiza no banco.
+    /// Lança TokenRedefinicaoInvalido se token inválido/expirado.
+    /// Lança exceção de validação se senha fraca.
+    /// </summary>
+    Task RedefinirSenha(string token, string novaSenha, CancellationToken ct);
+
 }

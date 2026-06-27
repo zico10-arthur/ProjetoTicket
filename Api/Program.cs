@@ -6,6 +6,7 @@ using Api.Middlewares;
 using Infrastructure.Database;
 using Application.Mappings;
 using Infraestructure.DataBase;
+using Infraestructure.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -52,6 +53,20 @@ builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IIngressoService, IngressoService>();
 builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
+
+// Spec 180: Configuração SMTP
+builder.Services.Configure<Infraestructure.Email.SmtpSettings>(
+    builder.Configuration.GetSection("Smtp"));
+
+// Spec 180: Serviço de envio de e-mail (scoped)
+builder.Services.AddScoped<Infraestructure.Email.SmtpEmailSender>();
+
+// Spec 180: Background worker de e-mail (singleton — mesma instância = mesmo Channel)
+builder.Services.AddSingleton<Infraestructure.Email.EmailBackgroundWorker>();
+builder.Services.AddSingleton<Domain.Interface.IEmailSender>(
+    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
+builder.Services.AddHostedService(
+    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
 
 builder.Services.AddAutoMapper(cfg =>
 {

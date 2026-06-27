@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Interface;
@@ -102,7 +103,42 @@ public class UsuarioController : ControllerBase
         return Ok(new{message = "Email alterado com sucesso"});
     }
 
+    /// <summary>
+    /// Spec 180: Solicitar redefinição de senha. Sempre retorna 200 OK.
+    /// </summary>
+    [HttpPost("esqueci-senha")]
+    public async Task<IActionResult> EsqueciSenha([FromBody] EsqueciSenhaDTO dto, CancellationToken ct)
+    {
+        await _service.SolicitarRedefinicaoSenha(dto.Email, ct);
+        return Ok(new { message = "Se o e-mail estiver cadastrado, um link de redefinição será enviado." });
+    }
 
-
-    
+    /// <summary>
+    /// Spec 180: Redefinir senha com token JWT.
+    /// </summary>
+    [HttpPost("redefinir-senha")]
+    public async Task<IActionResult> RedefinirSenha([FromBody] RedefinirSenhaDTO dto, CancellationToken ct)
+    {
+        try
+        {
+            await _service.RedefinirSenha(dto.Token, dto.NovaSenha, ct);
+            return Ok(new { message = "Senha redefinida com sucesso." });
+        }
+        catch (TokenRedefinicaoInvalido ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Domain.Exceptions.SenhaInvalida ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Domain.Exceptions.Senha8digitos ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Domain.Exceptions.SenhaVazia ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
