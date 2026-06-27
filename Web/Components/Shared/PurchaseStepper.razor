@@ -1,0 +1,42 @@
+@namespace Web.Components.Shared
+
+<MudPaper Elevation="0" Class="pa-3 mb-4 purchase-stepper-bar">
+    <div class="d-flex justify-space-between align-center flex-wrap gap-2">
+        @foreach (var step in _steps)
+        {
+            var active = step.Index == ActiveStep;
+            var done = step.Index < ActiveStep;
+            <div class="d-flex align-center gap-2 purchase-step @(active ? "purchase-step--active" : done ? "purchase-step--done" : "")">
+                <MudAvatar Size="Size.Small" Color="@(active || done ? Color.Primary : Color.Default)">
+                    @if (done)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                    }
+                    else
+                    {
+                        @(step.Index + 1)
+                    }
+                </MudAvatar>
+                <MudText Typo="Typo.body2" Class="@(active ? "font-weight-bold" : "")">@step.Label</MudText>
+            </div>
+        }
+    </div>
+</MudPaper>
+
+<style>
+    .purchase-stepper-bar { border: 1px solid #E2E8F0; border-radius: 12px; }
+    .purchase-step { opacity: 0.55; }
+    .purchase-step--active, .purchase-step--done { opacity: 1; }
+</style>
+
+@code {
+    [Parameter] public int ActiveStep { get; set; }
+
+    private readonly (int Index, string Label)[] _steps =
+    [
+        (0, "Assentos"),
+        (1, "Checkout"),
+        (2, "Pagamento"),
+        (3, "Confirmado"),
+    ];
+}

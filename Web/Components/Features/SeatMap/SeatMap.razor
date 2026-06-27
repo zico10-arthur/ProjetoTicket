@@ -1,7 +1,8 @@
 @namespace Web.Components.Features.SeatMap
+@inject ISnackbar Snackbar
 
 <div class="seat-map-root">
-    <MudPaper Elevation="0" Class="pa-4 mb-4">
+    <MudPaper Elevation="0" Class="pa-4 mb-2">
         <MudText Typo="Typo.h5" Class="mb-1">@Title</MudText>
         @if (!string.IsNullOrWhiteSpace(Subtitle))
         {
@@ -9,141 +10,102 @@
         }
     </MudPaper>
 
-    <div class="d-flex flex-wrap gap-4 mb-4">
-        <div class="d-flex align-center gap-2">
-            <span class="seat-map-legend-dot seat-map-legend-dot--available"></span>
-            <MudText Typo="Typo.caption">Livre</MudText>
-        </div>
-        <div class="d-flex align-center gap-2">
-            <span class="seat-map-legend-dot seat-map-legend-dot--selected"></span>
-            <MudText Typo="Typo.caption">Selecionado</MudText>
-        </div>
-        <div class="d-flex align-center gap-2">
-            <span class="seat-map-legend-dot seat-map-legend-dot--occupied"></span>
-            <MudText Typo="Typo.caption">Ocupado</MudText>
-        </div>
-    </div>
+    <SeatMapLegend ShowSectorFilter="@ShowSectorFilter"
+                   Filter="@_sectorFilter"
+                   FilterChanged="OnSectorFilterChanged" />
 
-    <MudPaper Elevation="2" Class="pa-4 mb-4">
-        <div class="seat-map-stage mb-6">Palco</div>
+    <SeatMapControls SelectedCount="@SelectedCount"
+                     OnZoomIn="ZoomIn"
+                     OnZoomOut="ZoomOut"
+                     OnReset="ResetView" />
 
-        @foreach (var row in GetRowGroups())
-        {
-            <MudGrid Class="mb-2" Justify="Justify.Center" Spacing="1">
-                <MudItem xs="1" Class="d-flex align-center justify-center">
-                    <span class="seat-map-row-label">@row.Key</span>
-                </MudItem>
-
-                <MudItem xs="5" Class="d-flex justify-end flex-wrap gap-1">
-                    @foreach (var seat in row.LeftSeats)
-                    {
-                        <SeatItem Seat="seat" OnToggle="ToggleSeatSelection" />
-                    }
-                </MudItem>
-
-                <MudItem xs="1" Class="seat-map-aisle d-flex align-center justify-center">
-                    <MudText Typo="Typo.caption" Color="Color.Secondary">‖</MudText>
-                </MudItem>
-
-                <MudItem xs="5" Class="d-flex justify-start flex-wrap gap-1">
-                    @foreach (var seat in row.RightSeats)
-                    {
-                        <SeatItem Seat="seat" OnToggle="ToggleSeatSelection" />
-                    }
-                </MudItem>
-            </MudGrid>
-        }
+    <MudPaper Elevation="2" Class="pa-2 mb-4 seat-map-paper">
+        <SeatMapCanvas @ref="_canvas"
+                       Seats="Seats"
+                       SectorFilter="@_sectorFilter"
+                       OnToggle="ToggleSeatSelection" />
     </MudPaper>
 
-    <MudPaper Elevation="8" Class="checkout-panel pa-4 d-flex flex-column gap-3">
-        <div>
-            <MudText Typo="Typo.overline" Color="Color.Secondary">Resumo</MudText>
-            <MudText Typo="Typo.h6">
-                @SelectedCount Assento@(SelectedCount == 1 ? "" : "s") Selecionado@(SelectedCount == 1 ? "" : "s")
-            </MudText>
-            @if (SelectedCount > 0)
-            {
-                <MudText Typo="Typo.body2" Color="Color.Primary">
-                    Total: <b>@SelectedTotal.ToString("C")</b>
-                </MudText>
-                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-1">
-                    @string.Join(", ", GetSelectedLabels())
-                </MudText>
-            }
-        </div>
-
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Size="Size.Large"
-                   FullWidth="true"
-                   Disabled="@(SelectedCount == 0 || CheckoutInProgress)"
-                   OnClick="HandleCheckout"
-                   Class="checkout-panel__cta py-3">
-            Avançar para Pagamento
-        </MudButton>
-    </MudPaper>
+    <SeatMapSummary SelectedCount="@SelectedCount"
+                    SelectedTotal="@SelectedTotal"
+                    SelectedLabels="@GetSelectedLabels()"
+                    CheckoutInProgress="@CheckoutInProgress"
+                    OnCheckout="HandleCheckout" />
 </div>
 
 @code {
-  [Parameter] public string Title { get; set; } = "Escolha seus assentos";
-  [Parameter] public string Subtitle { get; set; } = "Auditório Campus Quinta — UNIFESO";
-  [Parameter] public List<SeatModel> Seats { get; set; } = QuintaAuditorioSeatData.CreateDemoLayout();
-  [Parameter] public EventCallback<IReadOnlyList<SeatModel>> OnCheckout { get; set; }
+    [Parameter] public string Title { get; set; } = "Escolha seus assentos";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public List<SeatModel> Seats { get; set; } = QuintaAuditorioSeatData.CreateDemoLayout();
+    [Parameter] public bool ShowSectorFilter { get; set; } = true;
+    [Parameter] public EventCallback<IReadOnlyList<SeatModel>> OnCheckout { get; set; }
 
-  private bool CheckoutInProgress;
+    private SeatMapCanvas? _canvas;
+    private bool CheckoutInProgress;
+    private string _sectorFilter = "Todos";
 
-  private int SelectedCount => Seats.Count(s => s.Status == SeatStatus.Selected);
+    private int SelectedCount => Seats.Count(s => s.Status == SeatStatus.Selected);
 
-  private decimal SelectedTotal => Seats
-      .Where(s => s.Status == SeatStatus.Selected)
-      .Sum(s => s.Price);
+    private decimal SelectedTotal => Seats
+        .Where(s => s.Status == SeatStatus.Selected)
+        .Sum(s => s.Price);
 
-  /// <summary>
-  /// Alterna seleção de um assento (ligar à API depois validando disponibilidade).
-  /// </summary>
-  private void ToggleSeatSelection(int id)
-  {
-      var seat = Seats.FirstOrDefault(s => s.Id == id);
-      if (seat is null || seat.Status == SeatStatus.Occupied)
-          return;
+    private void ToggleSeatSelection(int id)
+    {
+        var seat = Seats.FirstOrDefault(s => s.Id == id);
+        if (seat is null || seat.Status == SeatStatus.Occupied)
+            return;
 
-      seat.Status = seat.Status == SeatStatus.Selected
-          ? SeatStatus.Available
-          : SeatStatus.Selected;
+        if (seat.Status != SeatStatus.Selected && SelectedCount >= SeatModel.MaxSelection)
+        {
+            Snackbar.Add($"Limite máximo de {SeatModel.MaxSelection} participantes por reserva.", Severity.Warning);
+            return;
+        }
 
-      StateHasChanged();
-  }
+        seat.Status = seat.Status == SeatStatus.Selected
+            ? SeatStatus.Available
+            : SeatStatus.Selected;
 
-  private IEnumerable<string> GetSelectedLabels() =>
-      Seats.Where(s => s.Status == SeatStatus.Selected).Select(s => s.DisplayLabel);
+        StateHasChanged();
+    }
 
-  private async Task HandleCheckout()
-  {
-      if (SelectedCount == 0) return;
+    private IEnumerable<string> GetSelectedLabels() =>
+        Seats.Where(s => s.Status == SeatStatus.Selected)
+            .Select(s => $"{s.DisplayLabel} · {s.Setor} · {s.Price:C}");
 
-      CheckoutInProgress = true;
-      try
-      {
-          var selected = Seats.Where(s => s.Status == SeatStatus.Selected).ToList();
-          await OnCheckout.InvokeAsync(selected);
-      }
-      finally
-      {
-          CheckoutInProgress = false;
-      }
-  }
+    private async Task HandleCheckout()
+    {
+        if (SelectedCount == 0) return;
 
-  private IEnumerable<SeatRowGroup> GetRowGroups() =>
-      Seats
-          .GroupBy(s => s.RowLabel)
-          .OrderBy(g => g.Key)
-          .Select(g => new SeatRowGroup(
-              g.Key,
-              g.Where(s => s.Block == SeatBlock.Left).OrderBy(s => s.SeatNumber),
-              g.Where(s => s.Block == SeatBlock.Right).OrderBy(s => s.SeatNumber)));
+        CheckoutInProgress = true;
+        try
+        {
+            var selected = Seats.Where(s => s.Status == SeatStatus.Selected).ToList();
+            await OnCheckout.InvokeAsync(selected);
+        }
+        finally
+        {
+            CheckoutInProgress = false;
+        }
+    }
 
-  private sealed record SeatRowGroup(
-      string Key,
-      IEnumerable<SeatModel> LeftSeats,
-      IEnumerable<SeatModel> RightSeats);
+    private void OnSectorFilterChanged(string value)
+    {
+        _sectorFilter = value;
+    }
+
+    private async Task ZoomIn()
+    {
+        if (_canvas is not null) await _canvas.ZoomInAsync();
+    }
+
+    private async Task ZoomOut()
+    {
+        if (_canvas is not null) await _canvas.ZoomOutAsync();
+    }
+
+    private async Task ResetView()
+    {
+        if (_canvas is not null) await _canvas.ResetViewAsync();
+    }
 }

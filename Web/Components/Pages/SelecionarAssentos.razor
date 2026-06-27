@@ -22,7 +22,7 @@
 @code {
     [Parameter] public string EventoId { get; set; } = "";
 
-    private string _eventTitle = "TicketPrime — Seleção de Assentos";
+    private string _eventTitle = "Plateia — Seleção de Assentos";
     private List<SeatModel> _seats = QuintaAuditorioSeatData.CreateDemoLayout();
 
     private Task OnCheckout(IReadOnlyList<SeatModel> selected)

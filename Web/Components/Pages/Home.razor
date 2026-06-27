@@ -2,46 +2,86 @@
 @inject HttpClient Http
 @using Web.Mock
 
-<MudStack Spacing="4">
-    <MudPaper Elevation="1" Class="pa-4">
-        <MudText Typo="Typo.h6" Class="mb-2">Simulação do mapa de assentos</MudText>
+<MudStack Spacing="5">
+    <MudPaper Elevation="0" Class="plateia-hero pa-8">
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h3" Class="mb-3" Style="color: #fff; font-weight: 700;">
+                    Encontre palestras, workshops e teatro perto de você
+                </MudText>
+                <MudText Typo="Typo.body1" Class="mb-6" Style="color: rgba(255,255,255,0.9); max-width: 520px;">
+                    Escolha seu lugar no mapa interativo — experiência inspirada nas melhores plataformas de ingresso do Brasil.
+                </MudText>
+                <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+                    <MudButton Variant="Variant.Filled"
+                               Class="plateia-cta-accent"
+                               Href="/cadastro-vendedor"
+                               StartIcon="@Icons.Material.Filled.Storefront">
+                        Quero Vender
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Style="border-color: rgba(255,255,255,0.6); color: #fff;"
+                               Href="/cadastro"
+                               StartIcon="@Icons.Material.Filled.PersonAdd">
+                        Criar conta
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+#if DEBUG
+    <MudPaper Elevation="1" Class="pa-4" Outlined="true">
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Demonstração do mapa de assentos</MudText>
         <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
-            Visualize o auditório UNIFESO com dados mockados — sem conectar API ou banco.
+            Auditório UNIFESO com dados mockados — layout estilo Ticket360.
         </MudText>
-        <MudButton Variant="Variant.Filled"
+        <MudButton Variant="Variant.Outlined"
                    Color="Color.Primary"
                    Href="/demo/assentos"
                    StartIcon="@Icons.Material.Filled.EventSeat">
             Abrir demonstração
         </MudButton>
     </MudPaper>
+#endif
 
     @if (_modoDemo)
     {
         <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Dense="true">
-            API indisponível — exibindo <b>eventos de exemplo</b>. Clique em comprar para ir ao mapa mockado.
+            API indisponível — exibindo <b>eventos de exemplo</b>.
         </MudAlert>
     }
 
-    <MudGrid Spacing="4">
+    <MudText Typo="Typo.h5">Eventos disponíveis</MudText>
+
+    <MudGrid Spacing="4" Class="plateia-stagger">
         @if (eventos is null)
         {
-            <MudItem xs="12">
-                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
-            </MudItem>
+            @for (var i = 0; i < 3; i++)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="220px" />
+                </MudItem>
+            }
         }
         else if (!eventos.Any())
         {
             <MudItem xs="12">
-                <MudText>Nenhum evento na API.</MudText>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/demo/assentos" Class="mt-2">
-                    Ver mapa de assentos (mock)
-                </MudButton>
+                <MudPaper Class="pa-8 text-center" Outlined="true">
+                    <MudIcon Icon="@Icons.Material.Filled.EventBusy" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                    <MudText Typo="Typo.h6">Nenhum evento disponível no momento</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+                        Volte em breve ou cadastre-se como vendedor para publicar seu evento.
+                    </MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/cadastro-vendedor">
+                        Quero Vender
+                    </MudButton>
+                </MudPaper>
             </MudItem>
         }
         else
         {
-            @foreach (var evento in eventos)
+            @foreach (var evento in eventos.Where(e => !e.Cancelado))
             {
                 <MudItem xs="12" sm="6" md="4">
                     <CartaoEvento Evento="@evento" ModoDemo="@_modoDemo" />
@@ -72,6 +112,6 @@
     private void CarregarMock()
     {
         _modoDemo = true;
-        eventos = TicketPrimeMockData.GetEventos();
+        eventos = PlateiaMockData.GetEventos();
     }
 }

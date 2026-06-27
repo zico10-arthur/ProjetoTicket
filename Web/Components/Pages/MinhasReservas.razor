@@ -4,74 +4,82 @@
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 @using System.Net.Http.Headers
+@using System.Text.Json
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-2">
     <div class="d-flex align-center mb-6">
         <MudIcon Icon="@Icons.Material.Filled.ConfirmationNumber" Size="Size.Large" Color="Color.Primary" Class="mr-3" />
         <MudText Typo="Typo.h4">Minhas Reservas</MudText>
     </div>
 
-    @if (carregando)
+    @if (_carregando)
     {
-        <div class="d-flex justify-center mt-16">
-            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
-        </div>
+        @for (var i = 0; i < 2; i++)
+        {
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="160px" Class="mb-4" />
+        }
     }
-    else if (!reservas.Any())
+    else if (!_reservas.Any())
     {
-        <MudAlert Severity="Severity.Info" Class="mt-4">
-            Você ainda não possui nenhuma reserva ou ingresso.
-        </MudAlert>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" Href="/">
-            Explorar Eventos
-        </MudButton>
+        <MudPaper Class="pa-8 text-center" Outlined="true">
+            <MudIcon Icon="@Icons.Material.Filled.EventSeat" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+            <MudText Typo="Typo.h6">Você ainda não possui reservas</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+                Explore eventos e escolha seu lugar no mapa interativo.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/">
+                Explorar eventos
+            </MudButton>
+        </MudPaper>
     }
     else
     {
         <MudGrid>
-            @foreach (var reserva in reservas)
+            @foreach (var reserva in _reservas)
             {
-                <MudItem xs="12" sm="6">
-                    <MudCard Elevation="3" Style="border-left: 5px solid #512DA8;">
+                <MudItem xs="12" md="6">
+                    <MudCard Elevation="2" Class="h-100" Style="border-left: 4px solid var(--plateia-primary);">
                         <MudCardHeader>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.h6">@reserva.NomeEvento</MudText>
-                                <MudText Typo="Typo.caption" Color="Color.Success">
-                                    <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Small" Class="mr-1" Style="vertical-align: text-bottom;" />
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">
                                     @reserva.DataEvento.ToString("dd/MM/yyyy 'às' HH:mm")
                                 </MudText>
                             </CardHeaderContent>
+                            <CardHeaderActions>
+                                @if (reserva.Reembolsada)
+                                {
+                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Reembolsada</MudChip>
+                                }
+                                else if (reserva.Pago || reserva.ValorFinalPago == 0)
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small">@(reserva.ValorFinalPago == 0 ? "Gratuito" : "Pago")</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Color="Color.Info" Size="Size.Small">Pendente</MudChip>
+                                }
+                            </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
-                            <div class="d-flex align-center gap-2 mb-3">
-                                <MudText Typo="Typo.body2">
-                                    <b>Setor:</b> @reserva.SetorIngresso
-                                </MudText>
-                                
-                                @if (reserva.SetorIngresso.ToUpper() == "VIP")
-                                {
-                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small" Variant="Variant.Filled">VIP</MudChip>
-                                }
-                            </div>
-                            
-                            <MudText Typo="Typo.body2" Class="mb-3">
-                                <b>Assento:</b> @reserva.PosicaoIngresso
-                            </MudText>
-
-                            <MudDivider Class="my-2" />
-                            
-                            <div class="d-flex justify-space-between align-center mt-2">
-                                <MudText Typo="Typo.body1"><b>Valor Pago:</b></MudText>
-                                <MudText Typo="Typo.h6" Color="Color.Primary"><b>@reserva.ValorFinalPago.ToString("C")</b></MudText>
-                            </div>
-
+                            <MudText Typo="Typo.body2"><b>Setor:</b> @reserva.SetorIngresso</MudText>
+                            <MudText Typo="Typo.body2" Class="mb-2"><b>Assento:</b> @reserva.PosicaoIngresso</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">@reserva.ValorFinalPago.ToString("C")</MudText>
                             @if (!string.IsNullOrEmpty(reserva.CupomUtilizado))
                             {
-                                <MudText Typo="Typo.caption" Style="color: #E65100;">
-                                    * Cupom aplicado: @reserva.CupomUtilizado
-                                </MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Cupom: @reserva.CupomUtilizado</MudText>
                             }
                         </MudCardContent>
+                        <MudCardActions>
+                            @if (!reserva.Reembolsada && reserva.DataEvento > DateTime.Now)
+                            {
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Error"
+                                           OnClick="() => SolicitarCancelamento(reserva.Id)">
+                                    Cancelar reserva
+                                </MudButton>
+                            }
+                        </MudCardActions>
                     </MudCard>
                 </MudItem>
             }
@@ -79,27 +87,31 @@
     }
 </MudContainer>
 
-@code {
-    private bool carregando = true;
-    private List<ReservaDetalhadaDTO> reservas = new();
+<MudDialog @bind-Visible="_dialogCancelar" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Cancelar reserva</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>Deseja cancelar esta reserva? Eventos pagos terão reembolso registrado.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => _dialogCancelar = false">Voltar</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="ExecutarCancelamento">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>
 
-    public class ReservaDetalhadaDTO
-    {
-        public Guid Id { get; set; }
-        public string NomeEvento { get; set; } = "";
-        public DateTime DataEvento { get; set; }
-        public string PosicaoIngresso { get; set; } = "";
-        public string SetorIngresso { get; set; } = "";
-        public string? CupomUtilizado { get; set; }
-        public decimal ValorFinalPago { get; set; }
-    }
+@code {
+    private bool _carregando = true;
+    private bool _dialogCancelar;
+    private Guid _reservaParaCancelar;
+    private readonly DialogOptions _dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+    private List<ReservaDetalhadaDTO> _reservas = [];
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-            
             if (string.IsNullOrEmpty(token))
             {
                 NavManager.NavigateTo("/login");
@@ -107,13 +119,8 @@
             }
 
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var resultado = await Http.GetFromJsonAsync<List<ReservaDetalhadaDTO>>("api/Reserva/ListarPorCpf");
-            
-            if (resultado != null)
-            {
-                reservas = resultado;
-            }
+            var resultado = await Http.GetFromJsonAsync<List<ReservaDetalhadaDTO>>("api/reserva/minhas");
+            _reservas = resultado ?? [];
         }
         catch
         {
@@ -121,7 +128,48 @@
         }
         finally
         {
-            carregando = false;
+            _carregando = false;
         }
+    }
+
+    private void SolicitarCancelamento(Guid reservaId)
+    {
+        _reservaParaCancelar = reservaId;
+        _dialogCancelar = true;
+    }
+
+    private async Task ExecutarCancelamento()
+    {
+        _dialogCancelar = false;
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/reserva/{_reservaParaCancelar}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                Snackbar.Add(ExtrairMensagem(json), Severity.Error);
+                return;
+            }
+
+            Snackbar.Add("Reserva cancelada com sucesso.", Severity.Success);
+            _reservas = await Http.GetFromJsonAsync<List<ReservaDetalhadaDTO>>("api/reserva/minhas") ?? [];
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro: {ex.Message}", Severity.Error);
+        }
+    }
+    private static string ExtrairMensagem(string json)
+    {
+        try
+        {
+            var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("message", out var m))
+                return m.GetString() ?? "Erro ao cancelar.";
+        }
+        catch { /* ignore */ }
+
+        return "Erro ao cancelar.";
     }
 }

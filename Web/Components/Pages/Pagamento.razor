@@ -1,133 +1,145 @@
+@page "/pagamento/{ReservaId:guid}"
 @page "/pagamento/{EventoId}/{IngressoId}"
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 @inject HttpClient Http
 @inject IJSRuntime JS
 @using System.Net.Http.Headers
+@using System.Text.Json
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
-    <MudText Typo="Typo.h4" Class="mb-2">Pagamento</MudText>
-    @if (Total != null)
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-2">
+    <PurchaseStepper ActiveStep="2" />
+
+    <MudText Typo="Typo.h4" Class="mb-6">Pagamento</MudText>
+
+    @if (!string.IsNullOrEmpty(_totalFormatado))
     {
-        <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-6">Total: R$ @Total</MudText>
+        <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-4">Total: @_totalFormatado</MudText>
     }
 
-    @if (!pago)
+    @if (!_pago)
     {
-        <MudCard Elevation="3" Class="pa-6">
+        <MudCard Elevation="2" Class="pa-6">
             <MudText Typo="Typo.h6" Class="mb-4">Selecione a forma de pagamento</MudText>
 
-            <div class="d-flex flex-column gap-3">
-                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
-                          Style="@(metodoPagamento == "pix" ? "border-color:#1976D2;border-width:2px;" : "")"
-                          @onclick='() => metodoPagamento = "pix"'>
-                    <div class="d-flex align-center gap-3">
-                        <MudIcon Icon="@Icons.Material.Filled.QrCode" Color="Color.Primary" />
-                        <MudText>PIX</MudText>
-                    </div>
-                </MudPaper>
+            <MudStack Spacing="2">
+                @foreach (var metodo in _metodos)
+                {
+                    <MudPaper Outlined="true"
+                              Class="@GetPaymentClass(metodo.Key)"
+                              @onclick="() => _metodoPagamento = metodo.Key">
+                        <div class="d-flex align-center gap-3">
+                            <MudIcon Icon="@metodo.Icon" Color="Color.Primary" />
+                            <MudText>@metodo.Label</MudText>
+                        </div>
+                    </MudPaper>
+                }
+            </MudStack>
 
-                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
-                          Style="@(metodoPagamento == "credito" ? "border-color:#1976D2;border-width:2px;" : "")"
-                          @onclick='() => metodoPagamento = "credito"'>
-                    <div class="d-flex align-center gap-3">
-                        <MudIcon Icon="@Icons.Material.Filled.CreditCard" Color="Color.Primary" />
-                        <MudText>Cartão de Crédito</MudText>
-                    </div>
-                </MudPaper>
-
-                <MudPaper Outlined="true" Class="pa-4 cursor-pointer"
-                          Style="@(metodoPagamento == "debito" ? "border-color:#1976D2;border-width:2px;" : "")"
-                          @onclick='() => metodoPagamento = "debito"'>
-                    <div class="d-flex align-center gap-3">
-                        <MudIcon Icon="@Icons.Material.Filled.Payment" Color="Color.Primary" />
-                        <MudText>Cartão de Débito</MudText>
-                    </div>
-                </MudPaper>
-            </div>
-
-            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Size="Size.Large"
-                       Class="mt-6" Disabled="@(string.IsNullOrEmpty(metodoPagamento) || processando)"
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large"
+                       Class="mt-6"
+                       Disabled="@(string.IsNullOrEmpty(_metodoPagamento) || _processando || ReservaId == Guid.Empty)"
                        OnClick="ConfirmarPagamento">
-                @if (processando)
+                @if (_processando)
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
                     <span>Processando...</span>
                 }
                 else
                 {
-                    <span>Confirmar Pagamento</span>
+                    <span>Confirmar pagamento</span>
                 }
             </MudButton>
         </MudCard>
     }
     else
     {
-        <MudCard Elevation="3" Class="pa-6 text-center">
-            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size:64px;" />
-            <MudText Typo="Typo.h5" Class="mt-4 mb-2">Pagamento Confirmado!</MudText>
+        <MudCard Elevation="2" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size: 72px;" />
+            <MudText Typo="Typo.h5" Class="mt-4 mb-2">Pagamento confirmado!</MudText>
             <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mb-6">
-                Seu ingresso foi confirmado com sucesso.
+                Seus ingressos estão disponíveis em Minhas Reservas.
             </MudText>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/reservas">
-                Ver Meus Ingressos
+                Ver minhas reservas
             </MudButton>
         </MudCard>
     }
 </MudContainer>
 
-@code {
-    [Parameter] public string EventoId { get; set; } = "";
-    [Parameter] public string IngressoId { get; set; } = "";
-    [SupplyParameterFromQuery(Name = "total")] public string? Total { get; set; }
-    [SupplyParameterFromQuery(Name = "cupom")] public string? Cupom { get; set; }
+<style>
+    .payment-option { transition: border-color 0.2s; cursor: pointer; }
+    .payment-option--active { border-color: var(--plateia-primary) !important; border-width: 2px !important; }
+</style>
 
-    private string metodoPagamento = "";
-    private bool processando = false;
-    private bool pago = false;
+@code {
+    [Parameter] public Guid ReservaId { get; set; }
+    [Parameter] public string? EventoId { get; set; }
+    [Parameter] public string? IngressoId { get; set; }
+    [SupplyParameterFromQuery(Name = "total")] public string? Total { get; set; }
+
+    private string _metodoPagamento = "pix";
+    private bool _processando;
+    private bool _pago;
+    private string _totalFormatado = "";
+
+    private readonly (string Key, string Label, string Icon)[] _metodos =
+    [
+        ("pix", "PIX", Icons.Material.Filled.QrCode),
+        ("credito", "Cartão de Crédito", Icons.Material.Filled.CreditCard),
+        ("debito", "Cartão de Débito", Icons.Material.Filled.Payment),
+    ];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        if (!string.IsNullOrEmpty(EventoId) && !string.IsNullOrEmpty(IngressoId))
+        {
+            Snackbar.Add("Fluxo de pagamento atualizado. Use checkout → pagamento por reserva.", Severity.Warning);
+            NavManager.NavigateTo($"/checkout/{EventoId}/{IngressoId}");
+            return;
+        }
+
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            NavManager.NavigateTo("/login");
+            return;
+        }
+
+        Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        if (!string.IsNullOrEmpty(Total) && decimal.TryParse(Total, out var total))
+            _totalFormatado = total.ToString("C");
+        else
+            _totalFormatado = "";
+
+        StateHasChanged();
+    }
 
     private async Task ConfirmarPagamento()
     {
-        processando = true;
+        if (ReservaId == Guid.Empty) return;
+
+        _processando = true;
 
         try
         {
-            var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
-
-            if (string.IsNullOrEmpty(token))
-            {
-                Snackbar.Add("Você precisa estar logado.", Severity.Warning);
-                NavManager.NavigateTo("/login");
-                return;
-            }
-
-            var payload = new
-            {
-                EventoId = Guid.Parse(EventoId),
-                IngressoId = Guid.Parse(IngressoId),
-                CupomUtilizado = Cupom
-            };
-
-            using var request = new HttpRequestMessage(HttpMethod.Post, "api/Reserva/FazerReserva");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            request.Content = JsonContent.Create(payload);
-
-            var response = await Http.SendAsync(request);
+            var payload = new { metodo = _metodoPagamento };
+            var response = await Http.PostAsJsonAsync($"api/pagamento/checkout/{ReservaId}", payload);
 
             if (!response.IsSuccessStatusCode)
             {
-                var erro = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Erro ao confirmar reserva: {erro}", Severity.Error);
+                var json = await response.Content.ReadAsStringAsync();
+                Snackbar.Add(ExtrairMensagem(json), Severity.Error);
                 return;
             }
 
-            // Confirma o pagamento — muda ingresso para Status = 2 (vendido)
-            using var requestPagamento = new HttpRequestMessage(HttpMethod.Post, $"api/Reserva/ConfirmarPagamento/{IngressoId}");
-            requestPagamento.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            await Http.SendAsync(requestPagamento);
-
-            await Task.Delay(1000);
-            pago = true;
+            _pago = true;
             Snackbar.Add("Pagamento realizado com sucesso!", Severity.Success);
         }
         catch (Exception ex)
@@ -136,7 +148,23 @@
         }
         finally
         {
-            processando = false;
+            _processando = false;
         }
     }
+
+    private static string ExtrairMensagem(string json)
+    {
+        try
+        {
+            var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("message", out var m))
+                return m.GetString() ?? "Erro no pagamento.";
+        }
+        catch { /* ignore */ }
+
+        return "Erro no pagamento.";
+    }
+
+    private string GetPaymentClass(string key) =>
+        $"pa-4 cursor-pointer payment-option {(_metodoPagamento == key ? "payment-option--active" : "")}";
 }

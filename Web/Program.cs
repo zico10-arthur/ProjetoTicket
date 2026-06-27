@@ -2,6 +2,7 @@ using MudBlazor.Services;
 using Web.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Web.Auth;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddAuthorizationCore(options =>
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<PurchaseStateService>();
 
 builder.Services.AddCors(options =>
 {

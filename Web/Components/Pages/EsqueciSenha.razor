@@ -1,0 +1,27 @@
+@page "/esqueci-senha"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudCard Elevation="2" Class="pa-8">
+        <MudText Typo="Typo.h5" Class="mb-4">Esqueci minha senha</MudText>
+        <MudTextField @bind-Value="_email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Enviar">
+            Enviar link de redefinição
+        </MudButton>
+        <MudLink Href="/login" Class="mt-4 d-block">Voltar ao login</MudLink>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private string _email = "";
+
+    private async Task Enviar()
+    {
+        var response = await Http.PostAsJsonAsync("api/usuario/esqueci-senha", new { email = _email });
+        if (response.IsSuccessStatusCode)
+            Snackbar.Add("Se o e-mail existir, você receberá instruções em breve.", Severity.Success);
+        else
+            Snackbar.Add("Não foi possível processar a solicitação.", Severity.Warning);
+    }
+}

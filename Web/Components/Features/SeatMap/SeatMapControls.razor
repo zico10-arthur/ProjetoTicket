@@ -1,0 +1,21 @@
+@namespace Web.Components.Features.SeatMap
+
+<div class="seat-map-controls d-flex align-center gap-2 mb-3 flex-wrap">
+    <MudText Typo="Typo.caption" Color="Color.Secondary">
+        @SelectedCount / @MaxSeats assento(s)
+    </MudText>
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small" OnClick="OnZoomOut" aria-label="Diminuir zoom" />
+    <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="OnZoomIn" aria-label="Aumentar zoom" />
+    <MudButton Variant="Variant.Text" Size="Size.Small" StartIcon="@Icons.Material.Filled.CenterFocusStrong" OnClick="OnReset">
+        Centralizar
+    </MudButton>
+</div>
+
+@code {
+    [Parameter] public int SelectedCount { get; set; }
+    [Parameter] public int MaxSeats { get; set; } = SeatModel.MaxSelection;
+    [Parameter] public EventCallback OnZoomIn { get; set; }
+    [Parameter] public EventCallback OnZoomOut { get; set; }
+    [Parameter] public EventCallback OnReset { get; set; }
+}

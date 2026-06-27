@@ -3,7 +3,7 @@ using Application.DTOs;
 namespace Web.Components.Features.SeatMap;
 
 /// <summary>
-/// Converte ingressos da API para o modelo do mapa. Ajuste o parsing conforme o contrato final da API.
+/// Converte ingressos da API para o modelo do mapa.
 /// </summary>
 public static class SeatMapMapper
 {
@@ -21,9 +21,11 @@ public static class SeatMapMapper
             list.Add(new SeatModel
             {
                 Id = id++,
+                IngressoId = ingresso.Id,
                 RowLabel = row,
                 SeatNumber = seatInBlock,
                 Block = block,
+                Setor = string.IsNullOrWhiteSpace(ingresso.Setor) ? "Geral" : ingresso.Setor,
                 Price = ingresso.Preco,
                 Status = MapStatus(ingresso.Status),
             });
@@ -32,11 +34,17 @@ public static class SeatMapMapper
         return list;
     }
 
-    private static SeatStatus MapStatus(string status) =>
-        status.Equals("Disponivel", StringComparison.OrdinalIgnoreCase)
-        || status == "0"
-            ? SeatStatus.Available
-            : SeatStatus.Occupied;
+    private static SeatStatus MapStatus(string status)
+    {
+        if (string.IsNullOrWhiteSpace(status)) return SeatStatus.Available;
+
+        if (status.Equals("Disponivel", StringComparison.OrdinalIgnoreCase)
+            || status == "0"
+            || status.Equals("Livre", StringComparison.OrdinalIgnoreCase))
+            return SeatStatus.Available;
+
+        return SeatStatus.Occupied;
+    }
 
     private static (string Row, int SeatNumber) ParsePosicao(string posicao)
     {
@@ -45,7 +53,11 @@ public static class SeatMapMapper
         var seatPart = parts.Length > 1 ? parts[1] : "1";
 
         var row = rowPart.Replace("Fila", "", StringComparison.OrdinalIgnoreCase).Trim();
-        if (string.IsNullOrEmpty(row)) row = "A";
+        if (string.IsNullOrEmpty(row))
+        {
+            var digits = new string(rowPart.Where(char.IsLetter).ToArray());
+            row = string.IsNullOrEmpty(digits) ? "A" : digits;
+        }
 
         var seatDigits = new string(seatPart.Where(char.IsDigit).ToArray());
         _ = int.TryParse(seatDigits, out var seatNum);

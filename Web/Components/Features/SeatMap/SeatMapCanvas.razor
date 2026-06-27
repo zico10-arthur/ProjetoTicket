@@ -1,0 +1,139 @@
+@namespace Web.Components.Features.SeatMap
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="seat-map-viewport" id="@_viewportId">
+    <div class="seat-map-stage-bar">PALCO</div>
+    <div class="seat-map-transform">
+        <svg class="seat-map-svg" viewBox="@ViewBox" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="stageGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#E2E8F0" />
+                    <stop offset="100%" stop-color="#F1F5F9" />
+                </linearGradient>
+            </defs>
+
+            <rect x="@(_layout.StageX)" y="8" width="@(_layout.StageWidth)" height="28" rx="8" fill="url(#stageGradient)" class="seat-map-stage-rect" />
+
+            @foreach (var item in _renderItems)
+            {
+                <SeatSvg Seat="item.Seat"
+                         X="item.X"
+                         Y="item.Y"
+                         Size="_layout.SeatSize"
+                         OnToggle="OnToggle" />
+            }
+        </svg>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<SeatModel> Seats { get; set; } = [];
+    [Parameter] public string SectorFilter { get; set; } = "Todos";
+    [Parameter] public EventCallback<int> OnToggle { get; set; }
+
+    private readonly string _viewportId = $"seat-map-{Guid.NewGuid():N}";
+    private SeatLayoutMetrics _layout = new();
+    private List<SeatRenderItem> _renderItems = [];
+    private string ViewBox => $"0 0 {_layout.Width} {_layout.Height}";
+    private bool _jsInitialized;
+
+    protected override void OnParametersSet()
+    {
+        _layout = SeatLayoutMetrics.Compute(Seats);
+        _renderItems = BuildRenderItems();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_jsInitialized) return;
+        await JS.InvokeVoidAsync("plateiaSeatMap.init", _viewportId, DotNetObjectReference.Create(this));
+        _jsInitialized = true;
+    }
+
+    private List<SeatRenderItem> BuildRenderItems()
+    {
+        var items = new List<SeatRenderItem>();
+        var rows = Seats
+            .GroupBy(s => s.RowLabel)
+            .OrderBy(g => g.Key)
+            .Select((g, index) => (Key: g.Key, Index: index, Seats: g.ToList()))
+            .ToList();
+
+        foreach (var row in rows)
+        {
+            var rowY = _layout.RowStartY + row.Index * _layout.RowGap;
+
+            var xLeft = _layout.LeftBlockX;
+            foreach (var seat in row.Seats.Where(s => s.Block == SeatBlock.Left).OrderBy(s => s.SeatNumber))
+            {
+                if (MatchesFilter(seat))
+                {
+                    items.Add(new SeatRenderItem(seat, xLeft, rowY));
+                    xLeft += _layout.SeatSize + _layout.SeatGap;
+                }
+            }
+
+            var xRight = _layout.RightBlockX;
+            foreach (var seat in row.Seats.Where(s => s.Block == SeatBlock.Right).OrderBy(s => s.SeatNumber))
+            {
+                if (MatchesFilter(seat))
+                {
+                    items.Add(new SeatRenderItem(seat, xRight, rowY));
+                    xRight += _layout.SeatSize + _layout.SeatGap;
+                }
+            }
+        }
+
+        return items;
+    }
+
+    private bool MatchesFilter(SeatModel seat) =>
+        SectorFilter == "Todos" || seat.Setor.Equals(SectorFilter, StringComparison.OrdinalIgnoreCase);
+
+    public async Task ZoomInAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.zoomIn", _viewportId);
+    public async Task ZoomOutAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.zoomOut", _viewportId);
+    public async Task ResetViewAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.reset", _viewportId);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsInitialized)
+            await JS.InvokeVoidAsync("plateiaSeatMap.dispose", _viewportId);
+    }
+
+    private sealed record SeatRenderItem(SeatModel Seat, double X, double Y);
+
+    private sealed class SeatLayoutMetrics
+    {
+        public double Width { get; init; }
+        public double Height { get; init; }
+        public double StageX { get; init; }
+        public double StageWidth { get; init; }
+        public double RowStartY { get; init; }
+        public double RowGap { get; init; }
+        public double SeatSize { get; init; } = 28;
+        public double SeatGap { get; init; } = 6;
+        public double LeftBlockX { get; init; }
+        public double RightBlockX { get; init; }
+
+        public static SeatLayoutMetrics Compute(List<SeatModel> seats)
+        {
+            var rowCount = seats.Select(s => s.RowLabel).Distinct().Count();
+            if (rowCount == 0) rowCount = 8;
+
+            var width = 520;
+            var height = 56 + rowCount * 40 + 32;
+            return new SeatLayoutMetrics
+            {
+                Width = width,
+                Height = height,
+                StageX = 80,
+                StageWidth = width - 160,
+                RowStartY = 56,
+                RowGap = 40,
+                LeftBlockX = 48,
+                RightBlockX = width / 2 + 24,
+            };
+        }
+    }
+}

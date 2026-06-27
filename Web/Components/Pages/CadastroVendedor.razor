@@ -1,0 +1,66 @@
+@page "/cadastro-vendedor"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@using System.Text.Json
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudText Typo="Typo.h4" Class="mb-2">Cadastro de vendedor</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+        Crie sua conta e comece a vender ingressos na Plateia.
+    </MudText>
+
+    <MudCard Elevation="2" Class="pa-6">
+        <MudTextField @bind-Value="_dto.Cnpj" Label="CNPJ" Variant="Variant.Outlined" Class="mb-3" />
+        <MudTextField @bind-Value="_dto.RazaoSocial" Label="Razão Social" Variant="Variant.Outlined" Class="mb-3" />
+        <MudTextField @bind-Value="_dto.NomeFantasia" Label="Nome Fantasia" Variant="Variant.Outlined" Class="mb-3" />
+        <MudTextField @bind-Value="_dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-3" />
+        <MudTextField @bind-Value="_dto.Telefone" Label="Telefone" Variant="Variant.Outlined" Class="mb-3" />
+        <MudTextField @bind-Value="_dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="Cadastrar">
+            Cadastrar
+        </MudButton>
+
+        <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-4">
+            Já tem conta? <MudLink Href="/login">Entrar</MudLink>
+        </MudText>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private CadastroVendedorDto _dto = new();
+
+    private class CadastroVendedorDto
+    {
+        public string Cnpj { get; set; } = "";
+        public string RazaoSocial { get; set; } = "";
+        public string NomeFantasia { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Senha { get; set; } = "";
+        public string Telefone { get; set; } = "";
+    }
+
+    private async Task Cadastrar()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/usuario/cadastrar-vendedor", _dto);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Conta criada! Faça login para acessar o painel.", Severity.Success);
+                NavManager.NavigateTo("/login");
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = JsonDocument.Parse(json);
+            var msg = doc.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Erro ao cadastrar.";
+            Snackbar.Add(msg ?? "Erro ao cadastrar.", Severity.Error);
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
+        }
+    }
+}

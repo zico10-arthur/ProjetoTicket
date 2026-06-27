@@ -6,77 +6,170 @@
 
 <AuthorizeView Roles="Vendedor">
     <Authorized>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
-            <div class="d-flex align-center mb-6">
-                <MudText Typo="Typo.h5">Meus Eventos</MudText>
-                <MudSpacer />
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/eventos/criar">
-                    + Novo Evento
-                </MudButton>
-            </div>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-2">
+            <MudText Typo="Typo.h4" Class="mb-6">Painel do Vendedor</MudText>
 
-            @if (eventos is null)
+            @if (_carregando)
             {
-                <MudText>Carregando...</MudText>
-            }
-            else if (!eventos.Any())
-            {
-                <MudText>Nenhum evento cadastrado.</MudText>
+                <MudGrid Class="mb-6">
+                    @for (var i = 0; i < 3; i++)
+                    {
+                        <MudItem xs="12" sm="4">
+                            <MudSkeleton Height="100px" />
+                        </MudItem>
+                    }
+                </MudGrid>
             }
             else
             {
-                <MudGrid Spacing="4">
-                    @foreach (var evento in eventos)
+                <MudGrid Class="mb-6">
+                    <MudItem xs="12" sm="4">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.overline" Color="Color.Secondary">Eventos</MudText>
+                            <MudText Typo="Typo.h4" Color="Color.Primary">@(_eventos?.Count ?? 0)</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.overline" Color="Color.Secondary">Ingressos vendidos</MudText>
+                            <MudText Typo="Typo.h4" Color="Color.Primary">@_vendas.Count(v => v.Pago && !v.Reembolsada)</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.overline" Color="Color.Secondary">Receita estimada</MudText>
+                            <MudText Typo="Typo.h4" Color="Color.Primary">
+                                @_vendas.Where(v => v.Pago && !v.Reembolsada).Sum(v => v.ValorFinalPago).ToString("C")
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            }
+
+            <div class="d-flex align-center mb-4">
+                <MudText Typo="Typo.h6">Meus Eventos</MudText>
+                <MudSpacer />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/eventos/criar" StartIcon="@Icons.Material.Filled.Add">
+                    Novo evento
+                </MudButton>
+            </div>
+
+            @if (_eventos is null)
+            {
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+            }
+            else if (!_eventos.Any())
+            {
+                <MudPaper Class="pa-6 text-center" Outlined="true">
+                    <MudText Class="mb-3">Nenhum evento cadastrado ainda.</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/eventos/criar">Criar primeiro evento</MudButton>
+                </MudPaper>
+            }
+            else
+            {
+                <MudGrid Spacing="3" Class="mb-8">
+                    @foreach (var evento in _eventos)
                     {
                         <MudItem xs="12" sm="6" md="4">
-                            <MudCard Elevation="3">
+                            <MudCard Elevation="2">
                                 <MudCardContent>
+                                    <MudStack Row="true" Spacing="1" Class="mb-2">
+                                        <MudChip T="string" Size="Size.Small">@evento.TipoLabel</MudChip>
+                                        @if (evento.IsGratuito)
+                                        {
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Secondary">Gratuito</MudChip>
+                                        }
+                                    </MudStack>
                                     <MudText Typo="Typo.h6"><b>@evento.Nome</b></MudText>
-                                    <MudText>Data: @evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
-                                    <MudText>Capacidade: @evento.CapacidadeTotal pessoas</MudText>
-                                    <MudText Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
+                                    <MudText Typo="Typo.body2">@evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
                                 </MudCardContent>
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="@($"/eventos/editar/{evento.Id}")">Editar</MudButton>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => Deletar(evento.Id)">Excluir</MudButton>
+                                    <MudButton Size="Size.Small" Href="@($"/eventos/editar/{evento.Id}")">Editar</MudButton>
+                                    <MudButton Size="Size.Small" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
+                                    <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => Deletar(evento.Id)">Excluir</MudButton>
                                 </MudCardActions>
                             </MudCard>
                         </MudItem>
                     }
                 </MudGrid>
             }
+
+            <MudText Typo="Typo.h6" Class="mb-3">Vendas recentes</MudText>
+            @if (!_vendas.Any())
+            {
+                <MudText Color="Color.Secondary">Nenhuma venda registrada.</MudText>
+            }
+            else
+            {
+                <MudTable Items="@_vendas.Take(10)" Hover="true" Dense="true" Elevation="1">
+                    <HeaderContent>
+                        <MudTh>Evento</MudTh>
+                        <MudTh>Comprador</MudTh>
+                        <MudTh>Valor</MudTh>
+                        <MudTh>Status</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="venda">
+                        <MudTd>@venda.NomeEvento</MudTd>
+                        <MudTd>@venda.NomeComprador</MudTd>
+                        <MudTd>@venda.ValorFinalPago.ToString("C")</MudTd>
+                        <MudTd>
+                            @if (venda.Reembolsada)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">Reembolsada</MudChip>
+                            }
+                            else if (venda.Pago)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success">Pago</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small">Pendente</MudChip>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
         </MudContainer>
     </Authorized>
     <NotAuthorized>
         <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-            <MudAlert Severity="Severity.Warning">Você precisa estar logado como Vendedor para acessar esta página.</MudAlert>
-            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Ir para Login</MudButton>
+            <MudAlert Severity="Severity.Warning">Faça login como vendedor para acessar o painel.</MudAlert>
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Entrar</MudButton>
         </MudContainer>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    private List<EventoViewModel>? eventos;
+    private List<EventoViewModel>? _eventos;
+    private List<ReservaVendedorDTO> _vendas = [];
+    private bool _carregando = true;
 
     protected override async Task OnInitializedAsync()
     {
-        await CarregarEventos();
+        await CarregarDados();
     }
 
-    private async Task CarregarEventos()
+    private async Task CarregarDados()
     {
+        _carregando = true;
         try
         {
             var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
             Http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
-            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento/meus") ?? new();
+            _eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento/meus") ?? new();
+            _vendas = await Http.GetFromJsonAsync<List<ReservaVendedorDTO>>("api/reserva/minhas-vendas") ?? new();
         }
         catch
         {
-            eventos = new();
+            _eventos = new();
+            _vendas = new();
+        }
+        finally
+        {
+            _carregando = false;
         }
     }
 
@@ -91,7 +184,7 @@
         if (response.IsSuccessStatusCode)
         {
             Snackbar.Add("Evento excluído.", Severity.Success);
-            await CarregarEventos();
+            await CarregarDados();
         }
         else
         {

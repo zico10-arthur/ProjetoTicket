@@ -12,16 +12,11 @@ public static class QuintaAuditorioSeatData
     private const int SeatsPerBlock = 6;
     private const decimal DefaultPrice = 45m;
     private const decimal FrontRowPrice = 55m;
+    private const decimal VipPrice = 75m;
 
-    /// <summary>
-    /// Layout padrão: maioria livre, alguns ocupados (realista para teste de seleção).
-    /// </summary>
     public static List<SeatModel> CreateDemoLayout() =>
         BuildLayout(new HashSet<int> { 3, 7, 14, 22, 31, 48, 52, 61, 72, 85 });
 
-    /// <summary>
-    /// Poucos assentos livres — útil para testar escassez visual.
-    /// </summary>
     public static List<SeatModel> CreateAlmostFullLayout()
     {
         var livres = new HashSet<int> { 10, 25, 40, 55, 70, 88 };
@@ -29,9 +24,6 @@ public static class QuintaAuditorioSeatData
         return BuildLayout(ocupados);
     }
 
-    /// <summary>
-    /// Quase tudo livre — útil para testar seleção múltipla.
-    /// </summary>
     public static List<SeatModel> CreateSparseLayout() =>
         BuildLayout(new HashSet<int> { 5, 18, 44 });
 
@@ -43,7 +35,9 @@ public static class QuintaAuditorioSeatData
         for (var rowIndex = 0; rowIndex < Rows.Length; rowIndex++)
         {
             var row = Rows[rowIndex];
-            var price = rowIndex < 2 ? FrontRowPrice : DefaultPrice;
+            var isVipRow = rowIndex < 2;
+            var setor = isVipRow ? "VIP" : "Geral";
+            var price = isVipRow ? VipPrice : rowIndex < 4 ? FrontRowPrice : DefaultPrice;
 
             for (var block = 0; block < 2; block++)
             {
@@ -54,9 +48,11 @@ public static class QuintaAuditorioSeatData
                     seats.Add(new SeatModel
                     {
                         Id = id,
+                        IngressoId = Guid.Parse($"aaaaaaaa-aaaa-aaaa-aaaa-{id:D12}"),
                         RowLabel = row,
                         SeatNumber = seatNum,
                         Block = seatBlock,
+                        Setor = setor,
                         Price = price,
                         Status = occupiedIds.Contains(id) ? SeatStatus.Occupied : SeatStatus.Available,
                     });

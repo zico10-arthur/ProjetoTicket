@@ -5,12 +5,18 @@ namespace Web.Components.Features.SeatMap;
 /// </summary>
 public sealed class SeatModel
 {
+    public const int MaxSelection = 4;
+
     public int Id { get; init; }
+    public Guid IngressoId { get; init; }
     public string RowLabel { get; init; } = "";
     public int SeatNumber { get; init; }
     public SeatBlock Block { get; init; }
+    public string Setor { get; init; } = "Geral";
     public SeatStatus Status { get; set; }
     public decimal Price { get; init; }
 
     public string DisplayLabel => $"{RowLabel}{SeatNumber}";
+
+    public bool IsVip => Setor.Equals("VIP", StringComparison.OrdinalIgnoreCase);
 }

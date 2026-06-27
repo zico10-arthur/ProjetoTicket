@@ -4,12 +4,14 @@
 @inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <PurchaseStepper ActiveStep="0" />
+
     <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4" Icon="@Icons.Material.Filled.TheaterComedy">
-        <b>Modo demonstração</b> — dados mockados. Não é necessário API, login nem banco de dados.
+        <b>Modo demonstração</b> — mapa interativo estilo Ticket360 com dados mockados.
     </MudAlert>
 
     <MudPaper Elevation="2" Class="pa-4 mb-4">
-        <MudText Typo="Typo.h6">@TicketPrimeMockData.EventoUnifesoNome</MudText>
+        <MudText Typo="Typo.h6">@PlateiaMockData.EventoUnifesoNome</MudText>
         <MudText Typo="Typo.body2" Color="Color.Secondary">
             15/12/2026 · 19:00 · Auditório Campus Quinta — UNIFESO
         </MudText>
@@ -41,12 +43,12 @@
 
 @code {
     private MockCenarioAssentos _cenario = MockCenarioAssentos.Padrao;
-    private List<SeatModel> _seats = TicketPrimeMockData.GetAssentos();
+    private List<SeatModel> _seats = PlateiaMockData.GetAssentos();
 
     private void AlterarCenario(MockCenarioAssentos cenario)
     {
         _cenario = cenario;
-        _seats = TicketPrimeMockData.GetAssentos(cenario);
+        _seats = PlateiaMockData.GetAssentos(cenario);
     }
 
     private Task OnCheckout(IReadOnlyList<SeatModel> selected)

@@ -1,0 +1,44 @@
+@namespace Web.Components.Features.SeatMap
+
+<g class="seat-svg-group" transform="translate(@X, @Y)">
+    <title>@TooltipText</title>
+    @if (IsOccupied)
+    {
+        <rect class="seat-svg seat-svg--occupied"
+              width="@Size" height="@Size" rx="4"
+              @onclick="HandleClick" @onclick:stopPropagation="true" />
+    }
+    else
+    {
+        <rect class="seat-svg @CssClass"
+              width="@Size" height="@Size" rx="4"
+              @onclick="HandleClick"
+              @onclick:stopPropagation="true" />
+    }
+    @((MarkupString)$"<text x=\"{Size / 2}\" y=\"{Size / 2 + 4}\" text-anchor=\"middle\" class=\"seat-svg-label\">{Seat.SeatNumber}</text>")
+</g>
+
+@code {
+    [Parameter, EditorRequired] public SeatModel Seat { get; set; } = null!;
+    [Parameter] public double X { get; set; }
+    [Parameter] public double Y { get; set; }
+    [Parameter] public double Size { get; set; } = 28;
+    [Parameter] public EventCallback<int> OnToggle { get; set; }
+
+    private bool IsOccupied => Seat.Status == SeatStatus.Occupied;
+    private bool IsSelected => Seat.Status == SeatStatus.Selected;
+
+    private string CssClass => IsSelected
+        ? "seat-svg--selected"
+        : Seat.IsVip ? "seat-svg--vip" : "seat-svg--geral";
+
+    private string TooltipText => IsOccupied
+        ? $"{Seat.DisplayLabel} · {Seat.Setor} — Ocupado"
+        : $"{Seat.DisplayLabel} · {Seat.Setor} — {Seat.Price:C}";
+
+    private async Task HandleClick()
+    {
+        if (IsOccupied) return;
+        await OnToggle.InvokeAsync(Seat.Id);
+    }
+}

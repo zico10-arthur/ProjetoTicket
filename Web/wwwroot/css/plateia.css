@@ -1,0 +1,88 @@
+:root {
+    --plateia-primary: #4F46E5;
+    --plateia-accent: #F97316;
+    --plateia-bg: #F8FAFC;
+    --plateia-text: #0F172A;
+    --plateia-muted: #64748B;
+    --plateia-seat-vip: #7C3AED;
+    --plateia-seat-geral: #6366F1;
+    --plateia-seat-occupied: #CBD5E1;
+    --plateia-seat-selected: #F97316;
+    --plateia-radius: 10px;
+}
+
+html, body {
+    font-family: "Plus Jakarta Sans", system-ui, "Segoe UI", sans-serif;
+    background-color: var(--plateia-bg);
+}
+
+.plateia-page-enter {
+    animation: plateiaFadeUp 0.25s ease-out;
+}
+
+@keyframes plateiaFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plateia-stagger > * {
+    animation: plateiaFadeUp 0.4s ease-out both;
+}
+
+.plateia-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.plateia-stagger > *:nth-child(2) { animation-delay: 50ms; }
+.plateia-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.plateia-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.plateia-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.plateia-stagger > *:nth-child(6) { animation-delay: 250ms; }
+
+.plateia-hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 45%, #7C3AED 100%);
+    border-radius: 16px;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+}
+
+.plateia-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.35), transparent 50%);
+    pointer-events: none;
+}
+
+.plateia-navbar {
+    border-bottom: 1px solid var(--plateia-border, #E2E8F0) !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+}
+
+.plateia-logo {
+    height: 32px;
+    width: auto;
+    cursor: pointer;
+}
+
+.plateia-cta-accent {
+    background-color: var(--plateia-accent) !important;
+    color: #fff !important;
+}
+
+.plateia-cta-accent:hover {
+    background-color: #EA580C !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plateia-page-enter,
+    .plateia-stagger > *,
+    .event-card {
+        animation: none !important;
+        transition: none !important;
+    }
+}

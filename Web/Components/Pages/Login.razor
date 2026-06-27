@@ -7,21 +7,28 @@
 @using System.Text.Json
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudCard Elevation="3" Class="pa-8 rounded-lg">
-        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Entrar no Sistema</MudText>
-        
+    <div class="text-center mb-6">
+        <img src="brand/logo.svg" alt="Plateia" style="height: 40px;" />
+    </div>
+
+    <MudCard Elevation="2" Class="pa-8">
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Entrar na Plateia</MudText>
+
         <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
-        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-6" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-2" />
+
+        <MudLink Href="/esqueci-senha" Class="mb-6 d-block">Esqueci minha senha</MudLink>
 
         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin">
-            Fazer Login
+            Fazer login
         </MudButton>
 
-        <div class="mt-6 text-center">
-            <MudLink Href="/cadastro" Color="Color.Info">
-                Ainda não possui uma conta? Clique e cadastre-se!
-            </MudLink>
-        </div>
+        <MudDivider Class="my-6" />
+
+        <MudStack Spacing="1" AlignItems="AlignItems.Center">
+            <MudLink Href="/cadastro">Criar conta de comprador</MudLink>
+            <MudLink Href="/cadastro-vendedor">Quero vender ingressos</MudLink>
+        </MudStack>
     </MudCard>
 </MudContainer>
 
@@ -37,25 +44,41 @@
         try
         {
             var response = await Http.PostAsJsonAsync("api/Usuario/login", dto);
-            
-            if (response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var doc = JsonDocument.Parse(json);
-                var token = doc.RootElement.GetProperty("token").GetString()!;
-                
-                await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-                ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
-                
-                Snackbar.Add("Login bem sucedido!", Severity.Success);
-                NavManager.NavigateTo(ReturnUrl ?? "/");
+                Snackbar.Add("E-mail ou senha inválidos.", Severity.Warning);
+                return;
             }
-            else
+
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = JsonDocument.Parse(json);
+            var token = doc.RootElement.GetProperty("token").GetString()!;
+
+            await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+            ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
+
+            var perfil = doc.RootElement.TryGetProperty("usuario", out var usuarioEl)
+                && usuarioEl.TryGetProperty("perfil", out var perfilEl)
+                    ? perfilEl.GetString() ?? ""
+                    : "";
+
+            Snackbar.Add("Login realizado com sucesso!", Severity.Success);
+
+            if (!string.IsNullOrEmpty(ReturnUrl))
             {
-                Snackbar.Add("Você ainda não está cadastrado!! Cadastre-se no link logo abaixo desta caixa de Login!", Severity.Warning);
+                NavManager.NavigateTo(ReturnUrl);
+                return;
             }
+
+            NavManager.NavigateTo(perfil switch
+            {
+                "Vendedor" => "/eventos/meus",
+                "Admin" => "/admin/eventos",
+                _ => "/"
+            });
         }
-        catch (Exception)
+        catch
         {
             Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
         }
