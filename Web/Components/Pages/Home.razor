@@ -12,7 +12,7 @@
         <div class="plateia-hero__orb plateia-hero__orb--1"></div>
         <div class="plateia-hero__orb plateia-hero__orb--2"></div>
 
-        <MudGrid Class="plateia-hero__content" Spacing="4">
+        <MudGrid Class="plateia-hero__content align-center" Spacing="4">
 
             <!-- Coluna Esquerda: Textos e CTAs -->
             <MudItem xs="12" md="7">
@@ -70,8 +70,8 @@
 
             </MudItem>
 
-            <!-- Coluna Direita: Mockup do celular -->
-            <MudItem xs="12" md="5" Class="d-flex align-center justify-center">
+            <!-- Coluna Direita: Mockup do celular (CSS) -->
+            <MudItem xs="12" md="5" Class="d-flex align-center justify-center plateia-hero__visual">
                 <HeroPhoneMockup />
             </MudItem>
 
@@ -135,39 +135,6 @@
         </MudItem>
 
     </MudGrid>
-
-    <!-- ══════════════════════════════════════
-         BLOCO DE DEMO (apenas em DEBUG)
-    ══════════════════════════════════════════ -->
-#if DEBUG
-    <MudPaper Elevation="0" Class="pa-4" Outlined="true" Style="border-radius: 12px;">
-        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
-            <div>
-                <MudText Typo="Typo.subtitle2"><b>Demo do mapa de assentos</b></MudText>
-                <MudText Typo="Typo.body2" Color="Color.Secondary">
-                    Auditório UNIFESO — layout estilo Ticket360 com assentos realistas.
-                </MudText>
-            </div>
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       Href="/demo/assentos"
-                       StartIcon="@Icons.Material.Filled.EventSeat">
-                Abrir demonstração
-            </MudButton>
-        </MudStack>
-    </MudPaper>
-#endif
-
-    <!-- Banner de modo demo -->
-    @if (_modoDemo)
-    {
-        <MudAlert Severity="Severity.Warning"
-                  Variant="Variant.Outlined"
-                  Dense="true"
-                  Style="border-radius: 12px;">
-            API indisponível — exibindo <b>eventos de exemplo</b>.
-        </MudAlert>
-    }
 
     <!-- ══════════════════════════════════════
          SEÇÃO DE EVENTOS

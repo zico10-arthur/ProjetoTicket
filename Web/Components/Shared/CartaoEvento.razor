@@ -2,7 +2,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @using Web.Helpers
 
-<MudCard Elevation="0" Class="event-card h-100">
+<MudCard Elevation="3" Class="event-card h-100">
     <div class="event-card__image-wrap">
         <img src="@_coverUrl"
              alt="@Evento.Nome"
@@ -11,16 +11,11 @@
         <div class="event-card__overlay"></div>
 
         <div class="event-card__chips">
+            @* Apenas a categoria — o preço já está no canto direito da imagem *@
             <MudChip T="string" Size="Size.Small" Variant="Variant.Filled"
                      Style="@($"background: {(_tipoChipBg)}; color: #fff;")">
                 @Evento.TipoLabel
             </MudChip>
-            @if (Evento.IsGratuito)
-            {
-                <MudChip T="string" Size="Size.Small" Color="Color.Tertiary" Variant="Variant.Filled">
-                    Gratuito
-                </MudChip>
-            }
         </div>
 
         <div class="event-card__price-tag @(Evento.IsGratuito ? "event-card__price-tag--free" : "")">
@@ -34,17 +29,34 @@
         @if (!string.IsNullOrWhiteSpace(Evento.Local))
         {
             <div class="d-flex align-center mb-2">
-                <MudIcon Icon="@Icons.Material.Filled.Place" Size="Size.Small" Color="Color.Secondary" Class="mr-2" />
-                <MudText Typo="Typo.body2" Color="Color.Secondary" Style="line-height: 1.3;">@Evento.Local</MudText>
+                @* Ícone em teal, texto em cinza escuro para melhor contraste *@
+                <MudIcon Icon="@Icons.Material.Filled.Place"
+                         Size="Size.Small"
+                         Color="Color.Secondary"
+                         Class="mr-1 flex-shrink-0" />
+                <MudText Typo="Typo.body2"
+                         Style="color: #334155; line-height: 1.3;">
+                    @Evento.Local
+                </MudText>
             </div>
         }
 
         <div class="d-flex align-center justify-space-between">
             <div class="d-flex align-center">
-                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" Color="Color.Primary" Class="mr-2" />
-                <MudText Typo="Typo.body2"><b>@Evento.DataEvento.ToString("dd/MM/yyyy")</b> · @Evento.DataEvento.ToString("HH:mm")</MudText>
+                @* Ícone em roxo, data em preto *@
+                <MudIcon Icon="@Icons.Material.Filled.DateRange"
+                         Size="Size.Small"
+                         Color="Color.Primary"
+                         Class="mr-1 flex-shrink-0" />
+                <MudText Typo="Typo.body2">
+                    <b>@Evento.DataEvento.ToString("dd/MM/yyyy")</b>
+                    · @Evento.DataEvento.ToString("HH:mm")
+                </MudText>
             </div>
-            <MudText Typo="Typo.caption" Color="Color.Secondary">@Evento.CapacidadeTotal lugares</MudText>
+            @* Capacidade em cinza escuro, não mais teal *@
+            <MudText Typo="Typo.caption" Style="color: #64748B;">
+                @Evento.CapacidadeTotal lugares
+            </MudText>
         </div>
     </MudCardContent>
 
