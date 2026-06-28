@@ -317,10 +317,11 @@ C:\Users\Erick\Documents\ProjetoTicket\Web\obj\Debug\net9.0\refint\Web.dll
 C:\Users\Erick\Documents\ProjetoTicket\Web\obj\Debug\net9.0\Web.pdb
 C:\Users\Erick\Documents\ProjetoTicket\Web\obj\Debug\net9.0\Web.genruntimeconfig.cache
 C:\Users\Erick\Documents\ProjetoTicket\Web\obj\Debug\net9.0\ref\Web.dll
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-nq21ts4qye.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-cf158k2j5i.gz
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-jsf39xodda.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Web\bin\Debug\net9.0\BCrypt-Net-Next.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\tzxjg6is5z-8fy1no3hvo.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\0wz98yz2xy-a4sy8psjxz.gz
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\web\obj\Debug\net9.0\compressed\o7k4cxtn0u-nla2550lvf.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\bin\Debug\net9.0\BCrypt-Net-Next.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\tzxjg6is5z-8fy1no3hvo.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\0wz98yz2xy-a4sy8psjxz.gz
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Web\obj\Debug\net9.0\compressed\o7k4cxtn0u-nla2550lvf.gz

@@ -93,12 +93,6 @@ public class ReservaService : IReservaService
         return novaReserva.Id;
     }
 
-    public async Task<IEnumerable<Reserva>> ListarReservasPorCpf(string cpf, CancellationToken ct)
-    {
-        // Mantido para compatibilidade com busca por CPF
-        return await _repositoryReserva.ListarPorUsuarioId(Guid.Empty, ct); // TODO: ajustar se necessário
-    }
-
     /// <summary>
     /// Spec 200: usuarioId (Guid).
     /// </summary>

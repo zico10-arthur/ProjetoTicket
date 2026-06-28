@@ -1,6 +1,6 @@
 ---
 name: "Guid Id como PK de Usuarios (substituir Cpf)"
-status: "verified"
+status: "audited"
 references:
   - "requirements.md (este diretório)"
   - "ADR-001 (Clean Architecture)"

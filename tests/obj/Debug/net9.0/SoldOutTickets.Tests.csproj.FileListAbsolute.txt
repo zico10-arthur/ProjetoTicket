@@ -173,3 +173,14 @@ C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Swashbuckle
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Api.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\tests\bin\Debug\net9.0\Api.pdb
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_SoldOutTickets.Tests
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\bin\Debug\net9.0\CoverletSourceRootsMapping_SoldOutTickets.Tests
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.csproj.AssemblyReference.cache
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.AssemblyInfoInputs.cache
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.AssemblyInfo.cs
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.csproj.CoreCompileInputs.cache
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.sourcelink.json
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\refint\SoldOutTickets.Tests.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\tests\obj\Debug\net9.0\SoldOutTickets.Tests.pdb

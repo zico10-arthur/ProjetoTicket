@@ -7,7 +7,6 @@ C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.csproj.Co
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\obj\Debug\net9.0\Api.sourcelink.json
-C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\appsettings.json
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Api.staticwebassets.endpoints.json
 C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\Api.exe
@@ -282,3 +281,4 @@ C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\Erick\Documents\ProjetoTicket\Api\obj\Debug\net9.0\ref\Api.dll
 C:\Users\rezen\OneDrive\Desktop\ProjetoTicket\Api\bin\Debug\net9.0\BCrypt-Net-Next.dll
+C:\Users\dudsl\Documents\GitHub\ProjetoTicket\Api\bin\Debug\net9.0\BCrypt-Net-Next.dll

@@ -1,6 +1,6 @@
 ---
 name: "Guid Id como PK de Usuarios (substituir Cpf)"
-status: "verified"
+status: "audited"
 references:
   - "requirements.md (este diretório)"
   - "design.md (este diretório)"
@@ -66,7 +66,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] Coluna `VendedorCpf` removida de Eventos
 - [ ] FKs novas apontam para `Usuarios(Id)`
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -103,7 +103,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] `Reserva` usa `UsuarioId`/`VendedorId`
 - [ ] `Evento` usa `VendedorId`
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -134,7 +134,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] Métodos de atualização usam `Guid id`
 - [ ] `IReservaRepository` usa `Guid` para buscas
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -168,7 +168,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] INSERTs incluem `Id`
 - [ ] SELECTs incluem `Id`
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -201,7 +201,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] Nenhum query referencia `UsuarioCpf` ou `VendedorCpf`
 - [ ] Todos os JOINs usam `UsuarioId`/`VendedorId`
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -243,7 +243,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] Nenhum método usa `string cpf` como parâmetro de identificação (exceto `CadastrarComprador`)
 - [ ] `Login` retorna `Id` no DTO
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -275,7 +275,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] `TokenService` gera claim `userId`
 - [ ] `ReservaService` usa `Guid` para identificação de usuário/vendedor
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -300,7 +300,7 @@ Task 1 (Migration SQL Script0013)
 - [ ] `LoginResponseDTO.Usuario` inclui `Id`
 - [ ] `VendedorCadastradoDTO` inclui `Id`
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -337,7 +337,7 @@ if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId)
 - [ ] `ReservaController` extrai `userId` do JWT
 - [ ] `dotnet build` compila
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -359,7 +359,7 @@ if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId)
 - [ ] Admin seed funciona após migration
 - [ ] `admin@soldout.com` loga com sucesso
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -384,7 +384,7 @@ if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId)
 - [ ] `ResilicienciaTests`: 8/8 pass
 - [ ] `dotnet test` completo: sem novas falhas
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 

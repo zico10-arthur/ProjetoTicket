@@ -1,6 +1,6 @@
 ---
 name: "Guid Id como PK de Usuarios (substituir Cpf)"
-status: "verified"
+status: "audited"
 references:
   - "visao.md §2 (Autonomia — cadastrar e vender sem Admin)"
   - "Spec 130 (Isolamento Multi-Tenant)"
