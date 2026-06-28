@@ -2,6 +2,8 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Interface;
 using Domain.Entities;
+using Domain.DTOs;
+using Domain.Exceptions;
 using AutoMapper;
 
 namespace Application.Service;
@@ -97,13 +99,38 @@ public class EventoService : IEventoService
         await _eventoRepository.UpdateAsync(id, eventoAtualizado);
     }
 
-    public async Task DeleteAsync(Guid id, string vendedorCpf, bool isAdmin = false)
+    public async Task<StatusCancelamentoDTO> ObterStatusCancelamento(
+        Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct)
     {
-        var evento = await _eventoRepository.GetByIdAsync(id);
-        if (evento is null) throw new KeyNotFoundException($"Evento {id} não encontrado");
-        if (!isAdmin && evento.VendedorCpf != vendedorCpf) throw new UnauthorizedAccessException("Você não tem permissão para excluir este evento.");
+        var evento = await _eventoRepository.GetByIdAsync(eventoId);
+        if (evento == null)
+            throw new KeyNotFoundException($"Evento {eventoId} não encontrado.");
 
-        await _eventoRepository.DeleteAsync(id);
+        if (!isAdmin && evento.VendedorCpf != vendedorCpf)
+            throw new UnauthorizedAccessException("Você não tem permissão para acessar este evento.");
+
+        var status = await _eventoRepository.ObterStatusCancelamento(eventoId, ct);
+
+        var mensagem = status.ReembolsoNecessario
+            ? $"{status.TotalIngressosVendidos} ingressos vendidos. O cancelamento exigirá reembolso de R$ {status.ValorTotalReembolso:F2}. Deseja continuar?"
+            : "Nenhum ingresso vendido. O cancelamento não exige reembolso.";
+
+        return status with { Mensagem = mensagem };
+    }
+
+    public async Task CancelarEvento(Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct)
+    {
+        var evento = await _eventoRepository.GetByIdAsync(eventoId);
+        if (evento == null)
+            throw new KeyNotFoundException($"Evento {eventoId} não encontrado.");
+
+        if (!isAdmin && evento.VendedorCpf != vendedorCpf)
+            throw new UnauthorizedAccessException("Você não tem permissão para cancelar este evento.");
+
+        if (evento.Cancelado)
+            throw new DomainException("Evento já foi cancelado.");
+
+        await _eventoRepository.CancelarComTransacao(eventoId, evento.Gratuito, ct);
     }
 
 

@@ -140,27 +140,42 @@ public class ReservaRepository : IReservaRepository
     {
         using var connection = _factory.CreateConnection();
 
+        var reservaDict = new Dictionary<Guid, ReservaDetalhadaDTO>();
+
         const string sql = @"
             SELECT 
                 r.Id,
                 e.Nome AS NomeEvento,
                 e.DataEvento,
-                STRING_AGG(i.Posicao, ', ') AS PosicaoIngresso,
-                STRING_AGG(i.Setor, ', ') AS SetorIngresso,
-                r.CupomUtilizado,
                 r.ValorFinalPago,
                 r.Pago,
-                r.Reembolsada
+                r.Reembolsada,
+                ir.Id AS ItemId,
+                ir.CpfParticipante,
+                ir.PrecoUnitario,
+                ir.Reembolsado
             FROM Reservas r
             INNER JOIN Eventos e ON r.EventoId = e.Id
             INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
-            INNER JOIN Ingressos i ON ir.IngressoId = i.Id
-            WHERE r.UsuarioCpf = @Cpf
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago, r.Reembolsada";
+            WHERE r.UsuarioCpf = @Cpf";
 
-        return await connection.QueryAsync<ReservaDetalhadaDTO>(
-            new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct)
+        await connection.QueryAsync<ReservaDetalhadaDTO, ItemReservaResponseDTO, ReservaDetalhadaDTO>(
+            new CommandDefinition(sql, new { Cpf = cpf }, cancellationToken: ct),
+            (reserva, item) =>
+            {
+                if (!reservaDict.TryGetValue(reserva.Id, out var existing))
+                {
+                    existing = reserva;
+                    existing.Itens = new List<ItemReservaResponseDTO>();
+                    reservaDict[reserva.Id] = existing;
+                }
+                existing.Itens.Add(item);
+                return existing;
+            },
+            splitOn: "ItemId"
         );
+
+        return reservaDict.Values;
     }
 
     public async Task<IEnumerable<ReservaAdminDTO>> ListarTodasDetalhadasAdmin(CancellationToken ct)

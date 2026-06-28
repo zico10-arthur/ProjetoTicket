@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,22 +86,55 @@ public class EventoController : ControllerBase
         catch (Exception erro) { return BadRequest($"Erro ao atualizar o evento | {erro.Message}"); }
     }
 
-    [HttpDelete("{id}")]
+    [HttpGet("{id:guid}/status-cancelamento")]
     [Authorize(Roles = "Vendedor,Admin")]
-    [Consumes("application/json")]
-    public async Task<ActionResult<EventoResponseDTO>> DeleteAsync(Guid id)
+    public async Task<IActionResult> StatusCancelamento(Guid id, CancellationToken ct)
     {
+        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        if (string.IsNullOrEmpty(cpf))
+            return Unauthorized(new { message = "Token inválido: claim 'cpf' não encontrada." });
+
         try
         {
-            var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-            if (string.IsNullOrEmpty(cpf)) return Unauthorized();
-
             var isAdmin = User.IsInRole("Admin");
-            await _eventoService.DeleteAsync(id, cpf, isAdmin);
-            return Ok();
+            var status = await _eventoService.ObterStatusCancelamento(id, cpf, isAdmin, ct);
+            return Ok(status);
         }
-        catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }
-        catch (UnauthorizedAccessException) { return Forbid(); }
-        catch (Exception erro) { return BadRequest($"Erro ao deletar o evento | {erro.Message}"); }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return StatusCode(403, new { message = e.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Vendedor,Admin")]
+    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken ct)
+    {
+        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        if (string.IsNullOrEmpty(cpf))
+            return Unauthorized(new { message = "Token inválido: claim 'cpf' não encontrada." });
+
+        try
+        {
+            var isAdmin = User.IsInRole("Admin");
+            await _eventoService.CancelarEvento(id, cpf, isAdmin, ct);
+            return Ok(new { message = "Evento cancelado com sucesso." });
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return StatusCode(403, new { message = e.Message });
+        }
+        catch (DomainException e)
+        {
+            return Conflict(new { message = e.Message });
+        }
     }
 }

@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj": {}
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj": {}
   },
   "projects": {
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\Api.csproj",
         "projectName": "Api",
-        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\obj\\",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\Api.csproj",
+        "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,19 +22,17 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj"
               },
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -53,11 +47,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "Hangfire": {
@@ -104,25 +97,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\obj\\",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -130,19 +119,17 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -157,11 +144,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "AutoMapper": {
@@ -197,25 +183,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\obj\\",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -223,12 +205,10 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -243,11 +223,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -265,25 +244,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
         "projectName": "Infraestructure",
-        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\obj\\",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj",
+        "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -291,16 +266,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj"
               }
             }
           }
@@ -315,11 +288,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -330,9 +302,21 @@
               "target": "Package",
               "version": "[2.1.72, )"
             },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.17.0, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[6.1.4, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Options.ConfigurationExtensions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "dbup-sqlserver": {
               "target": "Package",
@@ -355,25 +339,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj": {
+    "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
         "projectName": "SoldOutTickets.Tests",
-        "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
-        "packagesPath": "C:\\Users\\tempu\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\tests\\obj\\",
+        "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\tests\\SoldOutTickets.Tests.csproj",
+        "packagesPath": "C:\\Users\\dudsl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\tests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\tempu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\dudsl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -381,25 +361,23 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Api\\Api.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\Api.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Api\\Api.csproj"
               },
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Application\\Application.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Application\\Application.csproj"
               },
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Domain\\Domain.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Domain\\Domain.csproj"
               },
-              "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
-                "projectPath": "c:\\Users\\tempu\\OneDrive\\ProjetoTicket\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
+              "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj": {
+                "projectPath": "C:\\Users\\dudsl\\Documents\\GitHub\\ProjetoTicket\\Infraestructure\\Infraestructure.csproj"
               }
             }
           }
@@ -414,11 +392,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -462,7 +439,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

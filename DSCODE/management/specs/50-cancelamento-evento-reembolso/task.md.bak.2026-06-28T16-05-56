@@ -1,0 +1,462 @@
+---
+name: Vendedor Cancela Evento com Reembolso Obrigatório
+status: verified
+---
+
+# Spec 50: Vendedor Cancela Evento com Reembolso Obrigatório — Implementation Tasks
+
+## Task Order
+
+Tasks MUST be executed sequentially in numerical order. Each task depends on the completion of all preceding tasks.
+
+```
+Task 1 (DTO)
+  └→ Task 2 (interface repo) ──→ Task 3 (repo status) ──┐
+                                └→ Task 4 (repo cancel) ─┼→ Task 5 (interface svc) ──→ Task 6 (service) ──→ Task 7 (controller) ──→ Task 9 (testes)
+                                                          │
+                                                          └→ Task 8 (filtro eventos) ──→ Task 9 (testes)
+```
+
+---
+
+## Tasks
+
+### Task 1: Criar DTO `StatusCancelamentoDTO`
+
+**Objective:** Criar o record imutável que serve como response do endpoint de consulta de status de cancelamento. Sem este DTO, as interfaces de repositório e serviço não compilam.
+
+**Requirements Covered:** FR-001
+
+**Design References:** `design.md §Component 1`, `design.md §Data Structures — StatusCancelamentoDTO`
+
+**Actions:**
+1. Criar arquivo NOVO: `Application/DTOs/StatusCancelamentoDTO.cs`
+2. Conteúdo exato:
+```csharp
+namespace Application.DTOs;
+
+public record StatusCancelamentoDTO(
+    Guid EventoId,
+    string Nome,
+    bool Gratuito,
+    int TotalIngressosVendidos,
+    int TotalReservasAtivas,
+    bool ReembolsoNecessario,
+    decimal ValorTotalReembolso,
+    string Mensagem
+);
+```
+3. Verificar que o namespace é `Application.DTOs` (consistente com os DTOs existentes)
+
+**Validation:**
+- Projeto `Application` compila sem erros: `dotnet build Application/Application.csproj`
+- Arquivo existe em `Application/DTOs/StatusCancelamentoDTO.cs`
+
+**Status:** [x] done
+
+---
+
+### Task 2: Atualizar `IEventoRepository` (Domain)
+
+**Objective:** Adicionar os 2 novos métodos de cancelamento na interface do repositório e remover `DeleteAsync`.
+
+**Requirements Covered:** FR-001, FR-002
+
+**Design References:** `design.md §Component 2`
+
+**Actions:**
+1. Abrir `Domain/Interface/IEventoRepository.cs`
+2. Adicionar os 2 novos métodos à interface:
+```csharp
+Task<StatusCancelamentoDTO> ObterStatusCancelamento(Guid eventoId, CancellationToken ct);
+Task CancelarComTransacao(Guid eventoId, bool gratuito, CancellationToken ct);
+```
+3. Remover a declaração `Task DeleteAsync(Guid id);` da interface
+4. Adicionar `using Application.DTOs;` no topo do arquivo (necessário para `StatusCancelamentoDTO`)
+
+**Validation:**
+- Projeto `Domain` compila sem erros: `dotnet build Domain/Domain.csproj`
+- Interface `IEventoRepository` contém os 2 novos métodos
+- Interface `IEventoRepository` NÃO contém `DeleteAsync`
+- Projetos que referenciam `DeleteAsync` quebram a compilação — isso é esperado e será corrigido nas tasks seguintes
+
+**Status:** [x] done
+
+---
+
+### Task 3: Implementar `ObterStatusCancelamento` no Repository (Infrastructure)
+
+**Objective:** Implementar a consulta agregada de status de cancelamento no `EventoRepository`.
+
+**Requirements Covered:** FR-001
+
+**Design References:** `design.md §Component 3.1`, `design.md §Data Flow 1`
+
+**Actions:**
+1. Abrir `Infraestructure/Repository/EventoRepository.cs`
+2. Adicionar método:
+```csharp
+public async Task<StatusCancelamentoDTO> ObterStatusCancelamento(Guid eventoId, CancellationToken ct)
+{
+    using var connection = _factory.CreateConnection();
+
+    const string sql = @"
+        SELECT
+            e.Id              AS EventoId,
+            e.Nome            AS Nome,
+            CAST(CASE WHEN e.PrecoPadrao = 0 THEN 1 ELSE 0 END AS BIT) AS Gratuito,
+            COUNT(i.Id)       AS TotalIngressosVendidos,
+            COUNT(DISTINCT r.Id) AS TotalReservasAtivas,
+            CAST(CASE WHEN e.PrecoPadrao > 0 AND COUNT(i.Id) > 0 THEN 1 ELSE 0 END AS BIT) AS ReembolsoNecessario,
+            ISNULL(SUM(ir.PrecoUnitario), 0) AS ValorTotalReembolso
+        FROM Eventos e
+        LEFT JOIN Ingressos i ON i.EventoId = e.Id AND i.Status = 2
+        LEFT JOIN ItensReserva ir ON ir.IngressoId = i.Id
+        LEFT JOIN Reservas r ON r.EventoId = e.Id AND r.Reembolsada = 0
+        WHERE e.Id = @eventoId
+        GROUP BY e.Id, e.Nome, e.PrecoPadrao";
+
+    return await connection.QuerySingleOrDefaultAsync<StatusCancelamentoDTO>(
+        new CommandDefinition(sql, new { eventoId }, cancellationToken: ct));
+}
+```
+3. Adicionar `using Application.DTOs;` se ainda não existir
+
+**Validation:**
+- Projeto `Infraestructure` compila sem erros: `dotnet build Infraestructure/Infraestructure.csproj`
+- Método `ObterStatusCancelamento` existe em `EventoRepository.cs`
+
+**Status:** [x] done
+
+---
+
+### Task 4: Implementar `CancelarComTransacao` no Repository (Infrastructure)
+
+**Objective:** Implementar a transação atômica de cancelamento de evento com reembolso.
+
+**Requirements Covered:** FR-002, NFR-001
+
+**Design References:** `design.md §Component 3.2`, `design.md §Data Flow 2`
+
+**Actions:**
+1. Abrir `Infraestructure/Repository/EventoRepository.cs`
+2. Adicionar método:
+```csharp
+public async Task CancelarComTransacao(Guid eventoId, bool gratuito, CancellationToken ct)
+{
+    using var connection = _factory.CreateConnection();
+    await connection.OpenAsync(ct);
+    using var transaction = connection.BeginTransaction();
+
+    try
+    {
+        // 1. Marcar evento como cancelado
+        await connection.ExecuteAsync(new CommandDefinition(
+            "UPDATE Eventos SET Cancelado = 1 WHERE Id = @eventoId",
+            new { eventoId }, transaction, cancellationToken: ct));
+
+        // 2. Se evento pago: marcar ingressos como reembolsados
+        if (!gratuito)
+        {
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE Ingressos SET Status = 3 WHERE EventoId = @eventoId AND Status = 2",
+                new { eventoId }, transaction, cancellationToken: ct));
+        }
+
+        // 3. Marcar todas as reservas como reembolsadas
+        await connection.ExecuteAsync(new CommandDefinition(
+            "UPDATE Reservas SET Reembolsada = 1 WHERE EventoId = @eventoId AND Reembolsada = 0",
+            new { eventoId }, transaction, cancellationToken: ct));
+
+        // 4. Marcar todos os itens como reembolsados
+        await connection.ExecuteAsync(new CommandDefinition(@"
+            UPDATE ItensReserva SET Reembolsado = 1
+            WHERE ReservaId IN (SELECT Id FROM Reservas WHERE EventoId = @eventoId)",
+            new { eventoId }, transaction, cancellationToken: ct));
+
+        // 5. Marcar pagamentos como reembolsados (se evento pago)
+        if (!gratuito)
+        {
+            await connection.ExecuteAsync(new CommandDefinition(@"
+                UPDATE Pagamentos SET Status = 3
+                WHERE ReservaId IN (SELECT Id FROM Reservas WHERE EventoId = @eventoId)
+                AND Status = 1",
+                new { eventoId }, transaction, cancellationToken: ct));
+        }
+
+        await transaction.CommitAsync(ct);
+    }
+    catch
+    {
+        await transaction.RollbackAsync(ct);
+        throw;
+    }
+}
+```
+3. Usar `CommandDefinition` do Dapper (já importado no arquivo) com `transaction` e `cancellationToken`
+
+**Validation:**
+- Projeto `Infraestructure` compila sem erros: `dotnet build Infraestructure/Infraestructure.csproj`
+- Método `CancelarComTransacao` existe em `EventoRepository.cs`
+- A ordem dos UPDATEs segue exatamente o design: Eventos → Ingressos → Reservas → ItensReserva → Pagamentos
+- UPDATEs condicionais (`if (!gratuito)`) aplicados apenas para Ingressos e Pagamentos
+
+**Status:** [x] done
+
+---
+
+### Task 5: Atualizar `IEventoService` (Application)
+
+**Objective:** Substituir `DeleteAsync` por `CancelarEvento` e adicionar `ObterStatusCancelamento` na interface de serviço.
+
+**Requirements Covered:** FR-001, FR-002
+
+**Design References:** `design.md §Component 4`
+
+**Actions:**
+1. Abrir `Application/Interfaces/IEventoService.cs`
+2. Adicionar os 2 novos métodos:
+```csharp
+Task<StatusCancelamentoDTO> ObterStatusCancelamento(Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct);
+Task CancelarEvento(Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct);
+```
+3. Remover a declaração `Task DeleteAsync(Guid id, string vendedorCpf, bool isAdmin = false);`
+4. Adicionar `using Application.DTOs;` se necessário
+
+**Validation:**
+- Projeto `Application` compila com erros esperados em `EventoService` e `EventoController` (não implementam os novos métodos ainda) — isso é esperado e será corrigido nas próximas tasks
+- Interface `IEventoService` contém `ObterStatusCancelamento` e `CancelarEvento`
+- Interface `IEventoService` NÃO contém `DeleteAsync`
+
+**Status:** [x] done
+
+---
+
+### Task 6: Implementar `ObterStatusCancelamento` e `CancelarEvento` no Service (Application)
+
+**Objective:** Substituir a implementação de `DeleteAsync` pela nova lógica de cancelamento com reembolso.
+
+**Requirements Covered:** FR-001, FR-002
+
+**Design References:** `design.md §Component 5`
+
+**Actions:**
+1. Abrir `Application/Service/EventoService.cs`
+2. Remover completamente o método `DeleteAsync`
+3. Adicionar método `ObterStatusCancelamento`:
+```csharp
+public async Task<StatusCancelamentoDTO> ObterStatusCancelamento(
+    Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct)
+{
+    var evento = await _eventoRepository.GetByIdAsync(eventoId);
+    if (evento == null)
+        throw new KeyNotFoundException($"Evento {eventoId} não encontrado.");
+
+    if (!isAdmin && evento.VendedorCpf != vendedorCpf)
+        throw new UnauthorizedAccessException("Você não tem permissão para acessar este evento.");
+
+    var status = await _eventoRepository.ObterStatusCancelamento(eventoId, ct);
+
+    var mensagem = status.ReembolsoNecessario
+        ? $"{status.TotalIngressosVendidos} ingressos vendidos. O cancelamento exigirá reembolso de R$ {status.ValorTotalReembolso:F2}. Deseja continuar?"
+        : "Nenhum ingresso vendido. O cancelamento não exige reembolso.";
+
+    return status with { Mensagem = mensagem };
+}
+```
+4. Adicionar método `CancelarEvento`:
+```csharp
+public async Task CancelarEvento(Guid eventoId, string vendedorCpf, bool isAdmin, CancellationToken ct)
+{
+    var evento = await _eventoRepository.GetByIdAsync(eventoId);
+    if (evento == null)
+        throw new KeyNotFoundException($"Evento {eventoId} não encontrado.");
+
+    if (!isAdmin && evento.VendedorCpf != vendedorCpf)
+        throw new UnauthorizedAccessException("Você não tem permissão para cancelar este evento.");
+
+    if (evento.Cancelado)
+        throw new DomainException("Evento já foi cancelado.");
+
+    await _eventoRepository.CancelarComTransacao(eventoId, evento.Gratuito, ct);
+}
+```
+5. Adicionar `using Application.DTOs;` se necessário
+6. Verificar que as validações seguem a ordem exata: null check → autorização → já cancelado
+
+**Validation:**
+- Projeto `Application` compila sem erros: `dotnet build Application/Application.csproj`
+- Método `DeleteAsync` NÃO existe mais em `EventoService.cs`
+- `CancelarEvento` lança `KeyNotFoundException` para evento inexistente
+- `CancelarEvento` lança `UnauthorizedAccessException` para vendedor não dono
+- `CancelarEvento` lança `DomainException` para evento já cancelado
+
+**Status:** [x] done
+
+---
+
+### Task 7: Atualizar `EventoController` (API)
+
+**Objective:** Adicionar endpoint `GET /api/evento/{id}/status-cancelamento` e modificar `DELETE /api/evento/{id}` para cancelamento lógico.
+
+**Requirements Covered:** FR-001, FR-002, NFR-004
+
+**Design References:** `design.md §Component 6`
+
+**Actions:**
+1. Abrir `Api/Controllers/EventoController.cs`
+2. Adicionar novo endpoint ANTES do método `Delete` existente:
+```csharp
+[HttpGet("{id:guid}/status-cancelamento")]
+[Authorize(Roles = "Vendedor,Admin")]
+public async Task<IActionResult> StatusCancelamento(Guid id, CancellationToken ct)
+{
+    var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+    if (string.IsNullOrEmpty(cpf))
+        return Unauthorized(new { message = "Token inválido: claim 'cpf' não encontrada." });
+
+    try
+    {
+        var isAdmin = User.IsInRole("Admin");
+        var status = await _eventoService.ObterStatusCancelamento(id, cpf, isAdmin, ct);
+        return Ok(status);
+    }
+    catch (KeyNotFoundException e)
+    {
+        return NotFound(new { message = e.Message });
+    }
+    catch (UnauthorizedAccessException e)
+    {
+        return StatusCode(403, new { message = e.Message });
+    }
+}
+```
+3. Modificar o método `Delete` existente:
+   - Substituir `await _eventoService.DeleteAsync(id, cpf, isAdmin)` por `await _eventoService.CancelarEvento(id, cpf, isAdmin, ct)`
+   - Adicionar `CancellationToken ct` como parâmetro
+   - Alterar mensagem de sucesso para `"Evento cancelado com sucesso."`
+   - Adicionar catch para `DomainException` → `return Conflict(new { message = e.Message });`
+   - Alterar `Forbid()` para `StatusCode(403, new { message = e.Message })` (consistente com StatusCancelamento)
+4. Adicionar `using Domain.Exceptions;` se `DomainException` não estiver importado
+
+**Validation:**
+- Projeto `Api` compila sem erros: `dotnet build Api/Api.csproj`
+- Swagger exibe `GET /api/evento/{id}/status-cancelamento`
+- Swagger exibe `DELETE /api/evento/{id}` (verbo mantido, semântica alterada)
+- Ambos os endpoints extraem CPF de `User.Claims["cpf"]`, não de parâmetros
+- Ambos os endpoints retornam `401 Unauthorized` se claim `cpf` estiver ausente
+
+**Status:** [x] done
+
+---
+
+### Task 8: Filtrar Eventos Cancelados na Listagem Pública (Infrastructure)
+
+**Objective:** Impedir que eventos cancelados apareçam na listagem pública `GET /api/evento`.
+
+**Requirements Covered:** FR-003
+
+**Design References:** `design.md §Component 3.3`
+
+**Actions:**
+1. Abrir `Infraestructure/Repository/EventoRepository.cs`
+2. Localizar o método `GetAllAsync`
+3. Adicionar `WHERE Cancelado = 0` na query SQL de listagem:
+```sql
+-- Antes:
+SELECT * FROM Eventos
+
+-- Depois:
+SELECT * FROM Eventos WHERE Cancelado = 0
+```
+4. NÃO modificar queries de `GetByIdAsync`, `GetByVendedorCpfAsync` ou outros métodos — apenas `GetAllAsync`
+5. Se `GetAllAsync` tiver outras cláusulas WHERE, adicionar `AND Cancelado = 0` em vez de substituir
+
+**Validation:**
+- Projeto `Infraestructure` compila sem erros: `dotnet build Infraestructure/Infraestructure.csproj`
+- Query `GetAllAsync` contém `WHERE Cancelado = 0`
+- Outras queries de listagem (`GetByVendedorCpfAsync`, etc.) NÃO foram modificadas
+
+**Status:** [x] done
+
+---
+
+### Task 9: Criar Testes Automatizados
+
+**Objective:** Garantir cobertura de testes para todos os fluxos da spec 50.
+
+**Requirements Covered:** FR-001, FR-002, FR-003, NFR-001, NFR-004
+
+**Design References:** `design.md §Testing Strategy`
+
+**Actions:**
+1. Abrir `tests/EventoTests.cs` (se não existir, criar)
+2. Implementar os seguintes testes unitários para `EventoService`:
+
+**Testes para `ObterStatusCancelamento`:**
+| # | Nome do teste | Cenário | Assert |
+|---|---------------|---------|--------|
+| T1 | `ObterStatusCancelamento_EventoPagoComVendas_RetornaReembolsoNecessario` | Evento pago com ingressos vendidos | `result.ReembolsoNecessario == true`, `result.ValorTotalReembolso > 0` |
+| T2 | `ObterStatusCancelamento_EventoGratuito_RetornaReembolsoNaoNecessario` | Evento gratuito | `result.Gratuito == true`, `result.ReembolsoNecessario == false` |
+| T3 | `ObterStatusCancelamento_VendedorNaoDono_LancaUnauthorized` | Vendedor de outro evento | `Assert.ThrowsAsync<UnauthorizedAccessException>` |
+| T4 | `ObterStatusCancelamento_AdminAcessaEventoAlheio_Sucesso` | Admin acessa evento de outro | Não lança exceção |
+| T5 | `ObterStatusCancelamento_EventoInexistente_LancaKeyNotFound` | GUID aleatório | `Assert.ThrowsAsync<KeyNotFoundException>` |
+
+**Testes para `CancelarEvento`:**
+| # | Nome do teste | Cenário | Assert |
+|---|---------------|---------|--------|
+| T6 | `CancelarEvento_EventoPagoComVendas_Sucesso` | Evento pago com vendas | Não lança exceção |
+| T7 | `CancelarEvento_EventoGratuito_Sucesso` | Evento gratuito | Não lança exceção |
+| T8 | `CancelarEvento_EventoSemVendas_Sucesso` | Evento sem ingressos vendidos | Não lança exceção |
+| T9 | `CancelarEvento_JaCancelado_LancaDomainException` | `evento.Cancelado = true` | `Assert.ThrowsAsync<DomainException>` com mensagem "Evento já foi cancelado." |
+| T10 | `CancelarEvento_VendedorNaoDono_LancaUnauthorized` | Vendedor de outro evento | `Assert.ThrowsAsync<UnauthorizedAccessException>` |
+| T11 | `CancelarEvento_AdminCancelaEventoAlheio_Sucesso` | Admin cancela evento de outro | Não lança exceção |
+| T12 | `CancelarEvento_EventoInexistente_LancaKeyNotFound` | GUID aleatório | `Assert.ThrowsAsync<KeyNotFoundException>` |
+
+**Testes de integração para `EventoRepository`:**
+| # | Nome do teste | Cenário | Assert |
+|---|---------------|---------|--------|
+| T13 | `ObterStatusCancelamento_ComDadosReais_RetornaContagensCorretas` | Query com dados reais | Contagens e somas corretas |
+| T14 | `CancelarComTransacao_EventoPago_AtualizaTodasTabelas` | Executa transação e verifica BD | `Eventos.Cancelado = 1`, `Ingressos.Status = 3`, `Reservas.Reembolsada = 1`, `ItensReserva.Reembolsado = 1`, `Pagamentos.Status = 3` |
+| T15 | `CancelarComTransacao_EventoGratuito_NaoAtualizaPagamentos` | Evento gratuito | `Pagamentos` inalterados, `Ingressos` inalterados |
+| T16 | `CancelarComTransacao_RollbackEmErro_TabelasInalteradas` | Simular falha no 3º UPDATE | Todas as tabelas com dados originais após rollback |
+| T17 | `GetAllAsync_FiltraCancelados` | Query com eventos cancelados e ativos | Retorna apenas eventos com `Cancelado = 0` |
+
+**Testes de API para `EventoController`:**
+| # | Nome do teste | Cenário | HTTP + Assert |
+|---|---------------|---------|---------------|
+| T18 | `StatusCancelamento_Valido_Retorna200` | Evento válido, vendedor dono | `GET .../status-cancelamento` → `200 OK` + JSON com 8 campos |
+| T19 | `StatusCancelamento_SemClaimCpf_Retorna401` | JWT sem claim `cpf` | `GET .../status-cancelamento` → `401 Unauthorized` |
+| T20 | `StatusCancelamento_VendedorNaoDono_Retorna403` | Vendedor de outro evento | `GET .../status-cancelamento` → `403 Forbidden` |
+| T21 | `CancelarEvento_Valido_Retorna200` | Evento válido, vendedor dono | `DELETE .../{id}` → `200 OK` |
+| T22 | `CancelarEvento_JaCancelado_Retorna409` | `evento.Cancelado = true` | `DELETE .../{id}` → `409 Conflict` |
+| T23 | `CancelarEvento_VendedorNaoDono_Retorna403` | Vendedor de outro evento | `DELETE .../{id}` → `403 Forbidden` |
+| T24 | `CancelarEvento_Admin_Retorna200` | Admin cancela evento alheio | `DELETE .../{id}` → `200 OK` |
+| T25 | `GetAll_FiltraCancelados` | Listagem pública após cancelamento | `GET /api/evento` → não contém eventos com `Cancelado = 1` |
+
+3. Usar Moq para mockar `IEventoRepository` nos testes unitários
+4. Usar `CustomWebApplicationFactory` ou fixture de banco para testes de integração (seguir padrão existente em `ReservaTests.cs`)
+5. Para testes de API, usar `WebApplicationFactory<Program>` com JWT mockado (Claim `cpf`, Role `Vendedor`/`Admin`)
+
+**Validation:**
+- `dotnet test` passa com todos os 25 testes verdes
+- Cobertura de código para os fluxos de cancelamento de evento ≥ 80%
+
+**Status:** [ ] pending
+
+---
+
+## Resumo de Tarefas
+
+| # | Camada | Arquivo(s) | Ação | Esforço |
+|---|--------|-----------|------|---------|
+| 1 | Application | `DTOs/StatusCancelamentoDTO.cs` | **Criar** | 5 min |
+| 2 | Domain | `Interface/IEventoRepository.cs` | **Editar** (+2 métodos, -DeleteAsync) | 10 min |
+| 3 | Infraestructure | `Repository/EventoRepository.cs` | **Editar** (+ObterStatusCancelamento) | 15 min |
+| 4 | Infraestructure | `Repository/EventoRepository.cs` | **Editar** (+CancelarComTransacao) | 20 min |
+| 5 | Application | `Interfaces/IEventoService.cs` | **Editar** (+2 métodos, -DeleteAsync) | 10 min |
+| 6 | Application | `Service/EventoService.cs` | **Editar** (+2 métodos, -DeleteAsync) | 20 min |
+| 7 | Api | `Controllers/EventoController.cs` | **Editar** (+status, mod DELETE) | 15 min |
+| 8 | Infraestructure | `Repository/EventoRepository.cs` | **Editar** (filtro Cancelado=0) | 5 min |
+| 9 | tests | `EventoTests.cs` | **Editar** (+25 testes) | 60 min |
+| **Total** | **5 camadas** | **6 arquivos** | **9 tasks** | **~2h40** |

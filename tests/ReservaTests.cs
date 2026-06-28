@@ -460,4 +460,137 @@ public class ReservaTests
         _emailSenderMock.Verify(e => e.EnfileirarAsync(
             It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    // ==================== Spec 110: Visão Unificada de Cancelamento ====================
+
+    [Fact]
+    public async Task Spec110_T1_ListarMinhasReservas_Comprador_VeApenasSuas()
+    {
+        SetupService();
+        var cpf = "11122233344";
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Workshop",
+            DataEvento = DateTime.UtcNow.AddDays(10), Reembolsada = false
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.Single(result);
+        Assert.Equal(dto.Id, result.First().Id);
+    }
+
+    [Fact]
+    public async Task Spec110_T2_ListarMinhasReservas_Vendedor_VeApenasSuas()
+    {
+        SetupService();
+        var cpf = "99988877766";
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Peça Teatro",
+            DataEvento = DateTime.UtcNow.AddDays(5), Reembolsada = false
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.Single(result);
+        Assert.Equal("Peça Teatro", result.First().NomeEvento);
+    }
+
+    [Fact]
+    public async Task Spec110_T3_ListarMinhasReservas_Admin_VeApenasSuas()
+    {
+        SetupService();
+        var cpf = "00011122233";
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<ReservaDetalhadaDTO>());
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task Spec110_T4_ListarMinhasReservas_ComItensReembolsados()
+    {
+        SetupService();
+        var cpf = CpfValido;
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Evento Cancelado",
+            DataEvento = DateTime.UtcNow.AddDays(1), Reembolsada = true,
+            Itens = new List<ItemReservaResponseDTO>
+            {
+                new() { Id = Guid.NewGuid(), CpfParticipante = "11111111111", PrecoUnitario = 50, Reembolsado = true },
+                new() { Id = Guid.NewGuid(), CpfParticipante = "22222222222", PrecoUnitario = 50, Reembolsado = true }
+            }
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var reserva = result.First();
+
+        Assert.True(reserva.Reembolsada);
+        Assert.Equal(2, reserva.Itens.Count);
+        Assert.All(reserva.Itens, item => Assert.True(item.Reembolsado));
+    }
+
+    [Fact]
+    public async Task Spec110_T5_PodeCancelar_EventoFuturo_NaoReembolsada()
+    {
+        SetupService();
+        var cpf = CpfValido;
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Evento Futuro",
+            DataEvento = DateTime.UtcNow.AddDays(30), Reembolsada = false
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.True(result.First().PodeCancelar);
+    }
+
+    [Fact]
+    public async Task Spec110_T6_PodeCancelar_JaReembolsada()
+    {
+        SetupService();
+        var cpf = CpfValido;
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Evento Reembolsado",
+            DataEvento = DateTime.UtcNow.AddDays(30), Reembolsada = true
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.False(result.First().PodeCancelar);
+    }
+
+    [Fact]
+    public async Task Spec110_T7_PodeCancelar_EventoPassado()
+    {
+        SetupService();
+        var cpf = CpfValido;
+        var dto = new ReservaDetalhadaDTO
+        {
+            Id = Guid.NewGuid(), NomeEvento = "Evento Passado",
+            DataEvento = DateTime.UtcNow.AddDays(-1), Reembolsada = false
+        };
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { dto });
+
+        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+
+        Assert.False(result.First().PodeCancelar);
+    }
 }

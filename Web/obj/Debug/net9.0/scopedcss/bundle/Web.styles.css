@@ -1,4 +1,4 @@
-/* /Components/Layout/ReconnectModal.razor.rz.scp.css */
+/* _content/Web/Components/Layout/ReconnectModal.razor.rz.scp.css */
 #components-reconnect-modal[b-mzcemie4t6] {
     display: none;
     position: fixed;
@@ -219,7 +219,7 @@ dialog[open].components-resume-failed .components-resume-failed-visible[b-mzcemi
         padding: 16px;
     }
 }
-/* /Components/Shared/CartaoEvento.razor.rz.scp.css */
+/* _content/Web/Components/Shared/CartaoEvento.razor.rz.scp.css */
 .event-card[b-hmg3cnnos7] {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;

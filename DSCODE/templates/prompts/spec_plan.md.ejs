@@ -1,0 +1,101 @@
+<% if (planText) { %>
+The user provided the following brainstorming context:
+<brainstorming>
+<%= planText %>
+</brainstorming>
+<% } else { %>
+The user has been brainstorming in this conversation. Review the conversation history to extract the product ideas, features, and requirements that have been discussed.
+<% } %>
+
+Your task is to plan specs based on the brainstorming and align them with the existing vision document.
+
+Follow these steps:
+
+### Step 1: Read Existing Documents
+
+Read these files (use the `read` tool):
+1. `management/vision.md` — understand the existing value blocks and vision.
+2. `management/roadmap.md` — see existing planned/created specs.
+3. `management/arch.md` — refresh on architectural principles.
+4. `management/adr.md` — note any relevant architecture decisions.
+5. `management/lessons.md` — note any relevant lessons.
+
+### Step 2: Align Brainstorming with Vision
+
+Compare the brainstorming content with `vision.md`:
+
+- If the brainstorming introduces NEW value blocks that are not yet in `vision.md`, ADD them to `vision.md` as new value blocks (V###). **Always append — never renumber existing blocks.** Use the next available number.
+- If the brainstorming ADDS details to existing value blocks, UPDATE those blocks with the additional information. Do NOT remove or rephrase existing content — only add to it.
+- If the brainstorming REFINES or CLARIFIES the target audience or value proposition, update those sections additively.
+
+**All modifications to vision.md must be additive.** Never delete, renumber, or restructure existing sections. This prevents breaking references from other documents.
+
+### Step 3: Plan Specs
+
+For each value block (existing or newly added) that needs implementation, plan one or more feature specs. **Before assigning final numbers, you MUST estimate each spec's size and split if needed (see Step 4).** Use the rules below for initial planning, then refine in Step 4.
+
+1. Determine tentative SPEC NUMBERS:
+   - Feature specs are numbered in increments of 10: 10, 20, 30, 40, ...
+   - Use the next available multiple of 10 that is not already in the roadmap.
+   - Fix specs fill gaps after their feature spec: e.g., 11, 12 after spec 10.
+
+2. Name each spec concisely and descriptively (e.g., "10-user-auth", "20-dashboard-ui", "30-api-layer").
+
+3. For each planned spec, estimate the scope BEFORE adding to the roadmap.
+
+### Step 4: Estimate Size and Split Large Specs
+
+For EACH spec planned in Step 3, estimate how large it would be. A spec is **too large** if the requirements, design, and task documents would each exceed roughly 200–300 lines or if it would take more than ~2 sessions to implement. Concrete signals that a spec is too large:
+
+- **7+ functional requirements (FRs)** that are substantially different from each other
+- **4+ distinct modules or files** that would each need significant changes
+- **Multiple independent user-facing features** bundled into one spec
+- **A value block** that describes a broad, multi-faceted capability rather than a focused deliverable
+
+**If a spec is too large, split it** into 2 or more child specs using letter suffixes:
+
+```
+Original: 20-dashboard-ui
+Split into:
+  20A-dashboard-layout
+  20B-dashboard-charts
+  20C-dashboard-filters
+```
+
+Rules for numbering split specs:
+- Use the base number (e.g., 20) with uppercase letters: **20A**, **20B**, **20C**, etc.
+- Reserve the base number **20** for the umbrella entry that tracks overall progress (e.g., `20 | dashboard-ui | planned | V2`). Child specs reference the parent: `V2 (child of 20)`.
+- Give each child spec a distinct, focused name that reflects its specific scope.
+- Each child spec MUST be independently implementable — no circular dependencies.
+- If a child spec still looks too large, split it further (20B-1, 20B-2), but prefer to keep the split to one level when possible.
+
+**If a spec is NOT too large**, keep it as-is with the standard multiple-of-10 numbering.
+
+After estimating and splitting, you should have a final list of specs ready for the roadmap.
+
+### Step 5: Update Roadmap
+
+For each spec (parent umbrella + children), add an entry to the roadmap table in `management/roadmap.md`:
+
+```
+| 20 | dashboard-ui | planned | V2: Dashboard & Analytics |
+| 20A | dashboard-layout | planned | V2 (child of 20) |
+| 20B | dashboard-charts | planned | V2 (child of 20) |
+| 20C | dashboard-filters | planned | V2 (child of 20) |
+```
+
+The References column must link to:
+- The relevant value block(s) in `vision.md` (e.g., "V1: User Authentication")
+- Any relevant ADR entries (e.g., "ADR-001")
+- Any relevant lessons (e.g., "L1")
+- For child specs: indicate the parent spec (e.g., "child of 20")
+- Any other relevant documents
+
+### Step 6: Report
+
+After completing all steps, report:
+1. Which brainstorming items were incorporated.
+2. What was added to `vision.md` (new value blocks or enhancements).
+3. How many specs were planned and their numbers/names.
+4. **Which specs were split** (if any): for each split, list the parent spec and its children (e.g., "20-dashboard-ui → 20A-layout, 20B-charts, 20C-filters").
+5. The total specs now in the roadmap with their statuses.

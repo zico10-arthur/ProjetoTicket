@@ -109,7 +109,14 @@ public class ReservaService : IReservaService
 
     public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarReservasDetalhadasPorCpf(cpf, ct);
+        var reservas = await _repositoryReserva.ListarReservasDetalhadasPorCpf(cpf, ct);
+
+        foreach (var reserva in reservas)
+        {
+            reserva.PodeCancelar = !reserva.Reembolsada && reserva.DataEvento > DateTime.UtcNow;
+        }
+
+        return reservas;
     }
 
     public async Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(
