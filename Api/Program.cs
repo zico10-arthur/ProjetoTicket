@@ -1,4 +1,3 @@
-using Api.BackgroundTasks;
 using Infraestructure.Repository;
 using Domain.Interface;
 using Application.Service;
@@ -7,10 +6,13 @@ using Api.Middlewares;
 using Infrastructure.Database;
 using Application.Mappings;
 using Infraestructure.DataBase;
+using Infraestructure.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Hangfire;
+using Hangfire.SqlServer;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -52,7 +54,19 @@ builder.Services.AddScoped<IIngressoService, IngressoService>();
 builder.Services.AddScoped<IPagamentoRepository, PagamentoRepository>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 
-builder.Services.AddHostedService<LiberacaoAssentosWorker>();
+// Spec 180: Configuração SMTP
+builder.Services.Configure<Infraestructure.Email.SmtpSettings>(
+    builder.Configuration.GetSection("Smtp"));
+
+// Spec 180: Serviço de envio de e-mail (scoped)
+builder.Services.AddScoped<Infraestructure.Email.SmtpEmailSender>();
+
+// Spec 180: Background worker de e-mail (singleton — mesma instância = mesmo Channel)
+builder.Services.AddSingleton<Infraestructure.Email.EmailBackgroundWorker>();
+builder.Services.AddSingleton<Domain.Interface.IEmailSender>(
+    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
+builder.Services.AddHostedService(
+    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
 
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -89,6 +103,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// Hangfire
+builder.Services.AddHangfire(config =>
+{
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection")!;
+    config.UseSqlServerStorage(cs, new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        PrepareSchemaIfNecessary = true
+    });
+});
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection")!;
@@ -111,6 +141,24 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Hangfire dashboard (apenas Admin)
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAdminAuthorizationFilter() }
+});
+
+// Registrar recurring job de liberação de assentos
+using (var hangfireScope = app.Services.CreateScope())
+{
+    var recurringJobManager = hangfireScope.ServiceProvider
+        .GetRequiredService<IRecurringJobManager>();
+
+    recurringJobManager.AddOrUpdate<Api.BackgroundTasks.LiberacaoAssentosJob>(
+        "liberacao-assentos-expirados",
+        job => job.ExecutarAsync(default),
+        Cron.Minutely);
+}
 
 app.MapControllers();
 

@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -99,34 +100,71 @@ public class EventoController : ControllerBase
             return Ok();
         }
         catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }
-        catch (UnauthorizedAccessException erro) { return Forbid(); }
+        catch (UnauthorizedAccessException) { return Forbid(); }
         catch (Exception erro) { return BadRequest($"Erro ao atualizar o evento | {erro.Message}"); }
     }
 
     /// <summary>
+    /// Spec 50: Consulta status de cancelamento do evento.
+    /// Spec 200: Extrai userId (Guid) do JWT.
+    /// </summary>
+    [HttpGet("{id:guid}/status-cancelamento")]
+    [Authorize(Roles = "Vendedor,Admin")]
+    public async Task<IActionResult> StatusCancelamento(Guid id, CancellationToken ct)
+    {
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized(new { message = "Não foi possível identificar o usuário." });
+
+        try
+        {
+            var isAdmin = User.IsInRole("Admin");
+            var status = await _eventoService.ObterStatusCancelamento(id, userId, isAdmin, ct);
+            return Ok(status);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return StatusCode(403, new { message = e.Message });
+        }
+    }
+
+    /// <summary>
+    /// Spec 50: Cancela evento com reembolso. Substitui DeleteAsync.
     /// Spec 200: Extrai userId (Guid) do JWT.
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Roles = "Vendedor,Admin")]
-    [Consumes("application/json")]
-    public async Task<ActionResult<EventoResponseDTO>> DeleteAsync(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken ct)
     {
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized(new { message = "Não foi possível identificar o usuário." });
+
         try
         {
-            var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
-                            ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
-
-            // Admin pode não ter userId (usa cpf antigo)
-            Guid userId = Guid.Empty;
-            if (!string.IsNullOrEmpty(userIdStr))
-                Guid.TryParse(userIdStr, out userId);
-
             var isAdmin = User.IsInRole("Admin");
-            await _eventoService.DeleteAsync(id, userId, isAdmin);
-            return Ok();
+            await _eventoService.CancelarEvento(id, userId, isAdmin, ct);
+            return Ok(new { message = "Evento cancelado com sucesso." });
         }
-        catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }
-        catch (UnauthorizedAccessException) { return Forbid(); }
-        catch (Exception erro) { return BadRequest($"Erro ao deletar o evento | {erro.Message}"); }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return StatusCode(403, new { message = e.Message });
+        }
+        catch (DomainException e)
+        {
+            return Conflict(new { message = e.Message });
+        }
     }
 }

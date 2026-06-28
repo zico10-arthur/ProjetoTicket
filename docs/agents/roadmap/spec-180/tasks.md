@@ -1,661 +1,672 @@
-# Spec 180 — Tasks: Serviço de E-mail Transacional + Redefinição de Senha
+# Spec 180: Serviço de E-mail Transacional + Redefinição de Senha — Implementation Tasks
 
 > **Requirements:** [`requirements.md`](./requirements.md)
 > **Design:** [`design.md`](./design.md)
-> **Ordem:** Cada task depende das anteriores. Seguir a sequência numérica.
 
 ---
 
-## Task 1 — Value Object `EmailMessage` (Domain)
+## Task Order
 
-**Objetivo:** Criar o value object que representa uma mensagem de e-mail.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Domain/ValueObjects/EmailMessage.cs` |
-| Dependências | Nenhuma |
-
-**Conteúdo:** Conforme especificado em [`design.md §1.1`](./design.md#11-value-object-emailmessage).
-
-**Verificação:**
-- Projeto `Domain` compila sem erros.
-- `new EmailMessage("a@b.com", "Assunto", "<h1>Oi</h1>", "Oi")` cria objeto sem exceção.
-- `new EmailMessage("", "Assunto", "", "")` lança `ArgumentException`.
-- `new EmailMessage("a@b.com", "", "", "")` lança `ArgumentException`.
+Tasks MUST be executed sequentially in numerical order. Each task depends on the completion of all preceding tasks.
 
 ---
 
-## Task 2 — Interface `IEmailSender` (Domain)
+## Tasks
 
-**Objetivo:** Definir o contrato para enfileiramento de e-mails.
+### Task 1: Value Object `EmailMessage` (Domain)
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Domain/Interface/IEmailSender.cs` |
-| Dependências | Task 1 (EmailMessage) |
+**Objective:** Criar o value object imutável que representa uma mensagem de e-mail.
 
-**Conteúdo:** Conforme especificado em [`design.md §1.2`](./design.md#12-interface-iemailsender).
+**Requirements Covered:** FR-002
 
-```csharp
-// Domain/Interface/IEmailSender.cs
-using Domain.ValueObjects;
+**Design References:** [Component 1: EmailMessage](./design.md#component-1-emailmessage-value-object--domain)
 
-namespace Domain.Interface;
+**Actions:**
+1. Criar arquivo `Domain/ValueObjects/EmailMessage.cs`.
+2. Namespace: `Domain.ValueObjects`.
+3. Implementar classe `EmailMessage` com 4 propriedades read-only, construtor com validação (destinatário/assunto obrigatórios, corpoHtml/corpoTexto default `string.Empty`).
+4. Código exato conforme [design.md §Component 1](./design.md#component-1-emailmessage-value-object--domain).
 
-public interface IEmailSender
-{
-    ValueTask EnfileirarAsync(EmailMessage email, CancellationToken ct);
-}
-```
+**Validation:**
+- `dotnet build Domain/Domain.csproj` — compila sem erros.
+- `new EmailMessage("a@b.com", "Assunto", "<h1>Oi</h1>", "Oi")` cria sem exceção.
+- `new EmailMessage("", "Assunto", "", "")` lança `ArgumentException` com "Destinatário".
+- `new EmailMessage("a@b.com", "", "", "")` lança `ArgumentException` com "Assunto".
+- `new EmailMessage("a@b.com", "A", null, null)` tem `CorpoHtml == string.Empty` e `CorpoTexto == string.Empty`.
 
-**Verificação:** Projeto `Domain` compila sem erros.
-
----
-
-## Task 3 — `SmtpSettings` (Infrastructure)
-
-**Objetivo:** Criar a classe de configuração SMTP mapeada de `appsettings.json`.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Infraestructure/Email/SmtpSettings.cs` |
-| Dependências | Nenhuma |
-
-**Conteúdo:** Conforme especificado em [`design.md §2.1`](./design.md#21-configuração-smtpsettings).
-
-**Verificação:** Projeto `Infraestructure` compila sem erros.
+**Status:** [x] done
 
 ---
 
-## Task 4 — `EmailTemplates` (Infrastructure)
+### Task 2: Interface `IEmailSender` (Domain)
 
-**Objetivo:** Criar classe estática com templates HTML de e-mail.
+**Objective:** Definir o contrato para enfileiramento de e-mails.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Infraestructure/Email/EmailTemplates.cs` |
-| Dependências | Task 1 (EmailMessage) |
+**Requirements Covered:** FR-001
 
-**Conteúdo:** Conforme especificado em [`design.md §3.1`](./design.md#31-classe-estática-emailtemplates) — 6 métodos:
-- `BoasVindasComprador(string destinatario, string nome)`
-- `BoasVindasVendedor(string destinatario, string nomeFantasia, string plano)`
-- `ReservaConfirmada(string destinatario, string nomeEvento, DateTime dataEvento, int quantidadeItens, decimal valorTotal)`
-- `PagamentoConfirmado(string destinatario, string nomeEvento, decimal valorPago, string metodo, DateTime dataPagamento)`
-- `ReembolsoConfirmado(string destinatario, string nomeEvento, decimal valorReembolsado)`
-- `RedefinicaoSenha(string destinatario, string nome, string link)`
+**Design References:** [Component 2: IEmailSender](./design.md#component-2-iemailsender-interface--domain)
 
-**Verificação:** Projeto `Infraestructure` compila sem erros.
+**Actions:**
+1. Criar arquivo `Domain/Interface/IEmailSender.cs`.
+2. Namespace: `Domain.Interface`.
+3. Interface com único método: `ValueTask EnfileirarAsync(Domain.ValueObjects.EmailMessage email, CancellationToken ct)`.
+4. Adicionar `using Domain.ValueObjects;` para referenciar `EmailMessage`.
+5. Código exato conforme [design.md §Component 2](./design.md#component-2-iemailsender-interface--domain).
+
+**Validation:**
+- `dotnet build Domain/Domain.csproj` — compila sem erros.
+- Interface visível para outros projetos que referenciam `Domain`.
+
+**Status:** [x] done
 
 ---
 
-## Task 5 — Adicionar pacote NuGet MailKit (Infrastructure)
+### Task 3: `SmtpSettings` (Infrastructure)
 
-**Objetivo:** Instalar `MailKit` no projeto `Infraestructure`.
+**Objective:** Criar a classe POCO de configuração SMTP.
 
-| Campo | Valor |
-|-------|-------|
-| Comando | `dotnet add Infraestructure/Infraestructure.csproj package MailKit` |
-| Dependências | Nenhuma |
+**Requirements Covered:** FR-003
 
-**Verificação:**
+**Design References:** [Component 3: SmtpSettings](./design.md#component-3-smtpsettings-configuration-poco--infrastructure)
+
+**Actions:**
+1. Criar diretório `Infraestructure/Email/` se não existir.
+2. Criar arquivo `Infraestructure/Email/SmtpSettings.cs`.
+3. Namespace: `Infraestructure.Email`.
+4. Classe com 7 propriedades e defaults conforme design.
+5. Código exato conforme [design.md §Component 3](./design.md#component-3-smtpsettings-configuration-poco--infrastructure).
+
+**Validation:**
+- `dotnet build Infraestructure/Infraestructure.csproj` — compila sem erros.
+- `new SmtpSettings().Port == 587`.
+- `new SmtpSettings().EnableSsl == true`.
+- `new SmtpSettings().FromName == "SoldOut Tickets"`.
+
+**Status:** [x] done
+
+---
+
+### Task 4: Adicionar Pacote NuGet MailKit (Infrastructure)
+
+**Objective:** Instalar MailKit no projeto `Infraestructure`.
+
+**Requirements Covered:** FR-004 (dependency)
+
+**Design References:** [Component 4: SmtpEmailSender dependencies](./design.md#component-4-smtpemailsender-smtp-client--infrastructure)
+
+**Actions:**
+1. Executar: `dotnet add Infraestructure/Infraestructure.csproj package MailKit`
+2. Verificar que `<PackageReference Include="MailKit" ... />` foi adicionado ao `.csproj`.
+
+**Validation:**
 - `dotnet restore` conclui sem erros.
-- `Infraestructure.csproj` contém `<PackageReference Include="MailKit" ... />`.
+- `Infraestructure/Infraestructure.csproj` contém `PackageReference` para MailKit.
+
+**Status:** [x] done
 
 ---
 
-## Task 6 — `SmtpEmailSender` (Infrastructure)
+### Task 5: `EmailTemplates` (Infrastructure)
 
-**Objetivo:** Implementar envio real de e-mail via SMTP usando MailKit.
+**Objective:** Criar classe estática com 6 templates de e-mail.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Infraestructure/Email/SmtpEmailSender.cs` |
-| Dependências | Task 3 (SmtpSettings), Task 5 (MailKit) |
+**Requirements Covered:** FR-006
 
-**Conteúdo:** Conforme especificado em [`design.md §2.2`](./design.md#22-smtpemailsender-envio-real-via-mailkit).
+**Design References:** [Component 6: EmailTemplates](./design.md#component-6-emailtemplates-templates-estáticos--infrastructure)
 
-**Verificação:**
-- Projeto `Infraestructure` compila sem erros.
-- Classe tem propriedade `Configurado` que retorna `false` se `Host` vazio.
+**Actions:**
+1. Criar arquivo `Infraestructure/Email/EmailTemplates.cs`.
+2. Namespace: `Infraestructure.Email`.
+3. Classe `public static class EmailTemplates` com 6 métodos estáticos conforme design.
+4. Cada método:
+   - Aplica `System.Net.WebUtility.HtmlEncode()` nos valores dinâmicos inseridos no HTML.
+   - Constrói `string` HTML e `string` texto plano.
+   - Retorna `new Domain.ValueObjects.EmailMessage(destinatario, assunto, corpoHtml, corpoTexto)`.
+5. Adicionar `using Domain.ValueObjects;`.
+6. Código exato conforme [design.md §Component 6](./design.md#component-6-emailtemplates-templates-estáticos--infrastructure).
+
+**Validation:**
+- `dotnet build Infraestructure/Infraestructure.csproj` — compila sem erros.
+- `EmailTemplates.BoasVindasComprador("a@b.com", "João")` retorna `EmailMessage` com `Destinatario == "a@b.com"`, `Assunto` contendo "Bem-vindo", `CorpoHtml` contendo `<h1>`, `CorpoTexto` sem tags HTML.
+- Mesma verificação para os outros 5 métodos.
+
+**Status:** [x] done
 
 ---
 
-## Task 7 — `EmailBackgroundWorker` (Infrastructure)
+### Task 6: `SmtpEmailSender` (Infrastructure)
 
-**Objetivo:** Criar BackgroundService com Channel\<T\> que processa e-mails da fila.
+**Objective:** Implementar envio de e-mail via SMTP com MailKit.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Infraestructure/Email/EmailBackgroundWorker.cs` |
-| Dependências | Task 2 (IEmailSender), Task 6 (SmtpEmailSender) |
+**Requirements Covered:** FR-004
 
-**Conteúdo:** Conforme especificado em [`design.md §2.3`](./design.md#23-emailbackgroundworker-backgroundservice-com-channel).
+**Design References:** [Component 4: SmtpEmailSender](./design.md#component-4-smtpemailsender-smtp-client--infrastructure)
 
-**Pontos de atenção:**
-- Implementa `IEmailSender` (a interface do Domain) para que os services a injetem.
-- `Channel.CreateBounded<EmailMessage>(100)` com `FullMode = Wait`.
+**Actions:**
+1. Criar arquivo `Infraestructure/Email/SmtpEmailSender.cs`.
+2. Namespace: `Infraestructure.Email`.
+3. Construtor recebe `IOptions<SmtpSettings>` e `ILogger<SmtpEmailSender>`.
+4. Propriedade `Configurado`: `!string.IsNullOrWhiteSpace(_settings.Host) && !string.IsNullOrWhiteSpace(_settings.FromAddress)`.
+5. Método `EnviarAsync`: se não configurado → log warning + return; senão → criar MimeMessage, conectar SMTP, autenticar (se tiver username), enviar, desconectar.
+6. Adicionar usings: `MailKit.Net.Smtp`, `MailKit.Security`, `MimeKit`, `Microsoft.Extensions.Logging`, `Microsoft.Extensions.Options`, `Domain.ValueObjects`.
+7. Código exato conforme [design.md §Component 4](./design.md#component-4-smtpemailsender-smtp-client--infrastructure).
+
+**Validation:**
+- `dotnet build Infraestructure/Infraestructure.csproj` — compila sem erros.
+- `Configurado` retorna `false` quando `Host` vazio.
+- `Configurado` retorna `true` quando `Host` e `FromAddress` preenchidos.
+- `EnviarAsync` com SMTP não configurado → NÃO lança exceção, loga warning.
+
+**Status:** [x] done
+
+---
+
+### Task 7: `EmailBackgroundWorker` (Infrastructure)
+
+**Objective:** Criar BackgroundService com Channel que processa e-mails com retry.
+
+**Requirements Covered:** FR-005, NFR-001, NFR-002, NFR-006
+
+**Design References:** [Component 5: EmailBackgroundWorker](./design.md#component-5-emailbackgroundworker-background-service--fila--infrastructure)
+
+**Actions:**
+1. Criar arquivo `Infraestructure/Email/EmailBackgroundWorker.cs`.
+2. Namespace: `Infraestructure.Email`.
+3. Classe: `public class EmailBackgroundWorker : BackgroundService, Domain.Interface.IEmailSender`.
+4. Construtor: recebe `IServiceScopeFactory` e `ILogger<EmailBackgroundWorker>`, cria `Channel.CreateBounded<Domain.ValueObjects.EmailMessage>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait })`.
+5. `EnfileirarAsync`: `await _fila.Writer.WriteAsync(email, ct)`.
+6. `ExecuteAsync`: `await foreach (var email in _fila.Reader.ReadAllAsync(stoppingToken)) { await ProcessarComRetentativa(email, stoppingToken); }`.
+7. `ProcessarComRetentativa`: 3 tentativas com backoff 2s/4s/8s. A cada tentativa, cria scope, resolve `SmtpEmailSender`, chama `EnviarAsync`. Sucesso → log info. Falha final → log error.
+8. Adicionar usings: `System.Threading.Channels`, `Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.Hosting`, `Microsoft.Extensions.Logging`, `Domain.Interface`, `Domain.ValueObjects`.
+9. Código exato conforme [design.md §Component 5](./design.md#component-5-emailbackgroundworker-background-service--fila--infrastructure).
+
+**Validation:**
+- `dotnet build Infraestructure/Infraestructure.csproj` — compila sem erros.
+- A classe declara `: BackgroundService, IEmailSender`.
+- `EnfileirarAsync` escreve no Channel.
 - `ExecuteAsync` lê do Channel com `ReadAllAsync`.
-- Retentativa: 3 tentativas com backoff 2s, 4s, 8s.
-- Usa `IServiceScopeFactory` para criar scope por envio (o worker é singleton).
-- Não quebra se SMTP não configurado — delega para `SmtpEmailSender.Configurado`.
+- Retentativa: loop com 3 iterações, `Math.Pow(2, i + 1)` segundos.
 
-**Verificação:**
-- Projeto `Infraestructure` compila sem erros.
-- Worker sobe e fica aguardando mensagens no Channel.
+**Status:** [x] done
 
 ---
 
-## Task 8 — DTOs de Redefinição de Senha (Application)
+### Task 8: DTOs de Redefinição de Senha (Application)
 
-**Objetivo:** Criar os records de request para os novos endpoints.
+**Objective:** Criar records de request para os novos endpoints.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivos novos | `Application/DTOs/EsqueciSenhaDTO.cs` |
-|                | `Application/DTOs/RedefinirSenhaDTO.cs` |
-| Dependências | Nenhuma |
+**Requirements Covered:** FR-011, FR-012
 
-```csharp
-// Application/DTOs/EsqueciSenhaDTO.cs
-namespace Application.DTOs;
-public record EsqueciSenhaDTO(string Email);
+**Design References:** [Component 7: DTOs](./design.md#component-7-esquecisenhadto-e-redefinirsenhadto-dtos--application)
 
-// Application/DTOs/RedefinirSenhaDTO.cs
-namespace Application.DTOs;
-public record RedefinirSenhaDTO(string Token, string NovaSenha);
-```
+**Actions:**
+1. Criar arquivo `Application/DTOs/EsqueciSenhaDTO.cs`:
+   ```csharp
+   namespace Application.DTOs;
+   public record EsqueciSenhaDTO(string Email);
+   ```
+2. Criar arquivo `Application/DTOs/RedefinirSenhaDTO.cs`:
+   ```csharp
+   namespace Application.DTOs;
+   public record RedefinirSenhaDTO(string Token, string NovaSenha);
+   ```
 
-**Verificação:** Projeto `Application` compila sem erros.
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- Ambos os records são acessíveis no namespace `Application.DTOs`.
 
----
-
-## Task 9 — Exceção `TokenRedefinicaoInvalido` (Application)
-
-**Objetivo:** Criar exceção específica para token de redefinição inválido/expirado.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `Application/Exceptions/TokenRedefinicaoExceptions.cs` |
-| Dependências | Nenhuma |
-
-```csharp
-// Application/Exceptions/TokenRedefinicaoExceptions.cs
-namespace Application.Exceptions;
-
-public class TokenRedefinicaoInvalido : Exception
-{
-    public TokenRedefinicaoInvalido()
-        : base("Token expirado ou inválido.") { }
-}
-```
-
-**Verificação:** Projeto `Application` compila sem erros.
+**Status:** [x] done
 
 ---
 
-## Task 10 — Novos métodos em `ITokenService` (Application)
+### Task 9: Exceção `TokenRedefinicaoInvalido` (Application)
 
-**Objetivo:** Adicionar assinaturas para geração e validação de token de redefinição de senha.
+**Objective:** Criar exceção tipada para token de redefinição inválido.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Interfaces/ITokenService.cs` (editar) |
-| Dependências | Nenhuma |
+**Requirements Covered:** FR-012, FR-016
 
-**Adicionar ao final da interface (antes do `}`):**
+**Design References:** [Component 8: TokenRedefinicaoInvalido](./design.md#component-8-tokenredefinicaoinvalido-exception--application)
 
-```csharp
-/// <summary>
-/// Spec 180: Gera token JWT com 15 min de validade e claim purpose=password-reset.
-/// </summary>
-string GerarTokenRedefinicaoSenha(Domain.Entities.Usuario usuario);
+**Actions:**
+1. Criar arquivo `Application/Exceptions/TokenRedefinicaoExceptions.cs`:
+   ```csharp
+   namespace Application.Exceptions;
 
-/// <summary>
-/// Spec 180: Valida token JWT de redefinição. Retorna email se válido, null se inválido/expirado.
-/// </summary>
-string? ValidarTokenRedefinicaoSenha(string token);
-```
+   public class TokenRedefinicaoInvalido : Exception
+   {
+       public TokenRedefinicaoInvalido()
+           : base("Token expirado ou inválido.") { }
+   }
+   ```
 
-> **Cuidado:** Apenas ADICIONAR. Não alterar os métodos existentes (`GerarToken`).
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- `new TokenRedefinicaoInvalido().Message == "Token expirado ou inválido."`.
 
-**Verificação:** Projetos `Application` e `Domain` compilam sem erros.
-
----
-
-## Task 11 — Implementar novos métodos em `TokenService` (Application)
-
-**Objetivo:** Implementar `GerarTokenRedefinicaoSenha` e `ValidarTokenRedefinicaoSenha`.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Service/TokenService.cs` (editar) |
-| Dependências | Task 10 (interface) |
-
-**Conteúdo:** Conforme especificado em [`design.md §5.4`](./design.md#54-implementação-no-tokenservice).
-
-**`GerarTokenRedefinicaoSenha`:**
-- Mesma estrutura do `GerarToken` existente.
-- Diferenças:
-  - Claims: apenas `email`, `purpose=password-reset`, `jti`.
-  - **Sem** claims `cpf`, `perfilId`, `role` (não é token de autenticação).
-  - Expiração: `DateTime.UtcNow.AddMinutes(15)` (não 24h).
-
-**`ValidarTokenRedefinicaoSenha`:**
-- Usa `tokenHandler.ValidateToken()` com os mesmos `TokenValidationParameters` do `Program.cs`.
-- Após validação, verifica se claim `purpose == "password-reset"`.
-- Retorna `email` claim se tudo ok; `null` em qualquer falha (try/catch).
-
-**Verificação:**
-- Projeto `Application` compila sem erros.
-- Token gerado contém claim `purpose=password-reset`.
-- Token de login (sem `purpose`) é rejeitado por `ValidarTokenRedefinicaoSenha`.
+**Status:** [x] done
 
 ---
 
-## Task 12 — Atualizar `IUsuarioService` (Application)
+### Task 10: Atualizar `ITokenService` (Application Interface)
 
-**Objetivo:** Adicionar assinaturas dos novos métodos de redefinição de senha.
+**Objective:** Adicionar assinaturas de token de redefinição à interface existente.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Interfaces/IUsuarioService.cs` (editar) |
-| Dependências | Task 8 (DTOs), Task 9 (exceção) |
+**Requirements Covered:** FR-013, FR-014
 
-**Adicionar antes do `}` final:**
+**Design References:** [Component 9: Extensão de ITokenService](./design.md#component-9-extensão-de-itokenservice-interface--application)
 
-```csharp
-/// <summary>
-/// Spec 180: Gera token JWT de redefinição e enfileira e-mail com o link.
-/// </summary>
-Task SolicitarRedefinicaoSenha(string email, CancellationToken ct);
+**Actions:**
+1. **LER** o arquivo `Application/Interfaces/ITokenService.cs` para confirmar o conteúdo atual.
+2. **EDITAR:** Adicionar 2 novos métodos ANTES do `}` final da interface:
+   ```csharp
+   /// <summary>
+   /// Spec 180: Gera token JWT com 15 min de validade e claim purpose=password-reset.
+   /// NÃO inclui claims de autenticação (role, cpf, perfilId).
+   /// </summary>
+   string GerarTokenRedefinicaoSenha(Domain.Entities.Usuario usuario);
 
-/// <summary>
-/// Spec 180: Valida token JWT de redefinição e atualiza a senha com BCrypt.
-/// </summary>
-Task RedefinirSenha(string token, string novaSenha, CancellationToken ct);
-```
+   /// <summary>
+   /// Spec 180: Valida token JWT de redefinição.
+   /// Retorna email se válido, null se inválido/expirado/purpose errado.
+   /// NUNCA lança exceção.
+   /// </summary>
+   string? ValidarTokenRedefinicaoSenha(string token);
+   ```
+3. **NÃO alterar** o método existente `GerarToken`.
 
-**Verificação:** Projeto `Application` compila sem erros.
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- `TokenService` reporta erro de compilação (não implementa os novos métodos) — isso é esperado e será resolvido na Task 11.
 
----
-
-## Task 13 — Atualizar `UsuarioService` (Application)
-
-**Objetivo:** Injetar `IEmailSender`, integrar e-mails de boas-vindas, e implementar redefinição de senha.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Service/UsuarioService.cs` (editar) |
-| Dependências | Task 2 (IEmailSender), Task 4 (EmailTemplates), Task 11 (TokenService), Task 12 (interface) |
-
-**Mudanças no construtor:**
-- Adicionar parâmetros: `Domain.Interface.IEmailSender emailSender`, `IConfiguration configuration`.
-- Atribuir a campos privados `_emailSender` e `_configuration`.
-
-**Mudanças em `CadastrarComprador`:**
-- Após `_repository.CadastrarUsuario(novocomprador);` (linha ~35), adicionar ao final do método:
-```csharp
-// Spec 180: Enfileirar e-mail de boas-vindas (fire-and-forget)
-var email = Infraestructure.Email.EmailTemplates.BoasVindasComprador(dto.Email, dto.Nome);
-await _emailSender.EnfileirarAsync(email, ct);
-```
-
-**Mudanças em `CadastrarVendedor`:**
-- Após `_repository.CadastrarVendedor(vendedor);` (linha ~68), adicionar antes do return:
-```csharp
-// Spec 180: Enfileirar e-mail de boas-vindas
-var email = Infraestructure.Email.EmailTemplates.BoasVindasVendedor(
-    vendedor.Email, vendedor.NomeFantasia!, "Gratuito");
-await _emailSender.EnfileirarAsync(email, ct);
-```
-
-**Novos métodos (adicionar ao final da classe, antes do `}`):**
-- `SolicitarRedefinicaoSenha` e `RedefinirSenha` conforme [`design.md §5.2`](./design.md#52-implementação-no-usuarioservice).
-
-**Adicionar using:**
-```csharp
-using Infraestructure.Email;
-```
-
-**Verificação:**
-- Projeto `Application` compila sem erros.
-- `CadastrarComprador` enfileira e-mail após persistência.
-- `CadastrarVendedor` enfileira e-mail após persistência.
-- `SolicitarRedefinicaoSenha` com e-mail inexistente → não enfileira e-mail, não lança exceção.
-- `RedefinirSenha` com token inválido → lança `TokenRedefinicaoInvalido`.
+**Status:** [x] done
 
 ---
 
-## Task 14 — Atualizar `ReservaService` (Application)
+### Task 11: Implementar `TokenService` (Application Service)
 
-**Objetivo:** Injetar `IEmailSender` e `IEventoRepository`, enfileirar e-mail de confirmação de reserva.
+**Objective:** Implementar `GerarTokenRedefinicaoSenha` e `ValidarTokenRedefinicaoSenha`.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Service/ReservaService.cs` (editar) |
-| Dependências | Task 2 (IEmailSender), Task 4 (EmailTemplates) |
+**Requirements Covered:** FR-013, FR-014
 
-**Mudanças no construtor:**
-- Adicionar parâmetro: `Domain.Interface.IEmailSender emailSender`.
-- Atribuir a campo privado `_emailSender`.
+**Design References:** [Component 10: Extensão de TokenService](./design.md#component-10-extensão-de-tokenservice-implementation--application)
 
-**Mudanças em `FazerReserva`:**
-- Após `await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);` (linha ~88), adicionar antes do `return`:
-```csharp
-// Spec 180: Enfileirar e-mail de confirmação de reserva
-var nomeEvento = evento.Nome;
-var email = EmailTemplates.ReservaConfirmada(
-    usuarioCpf, // será substituído pelo e-mail do usuário logado — buscar com _repositoryUsuario
-    nomeEvento,
-    evento.DataEvento,
-    itens.Count,
-    novaReserva.ValorFinalPago);
-await _emailSender.EnfileirarAsync(email, ct);
-```
+**Actions:**
+1. **LER** o arquivo `Application/Service/TokenService.cs` para entender a estrutura atual (construtor, `GerarToken`, mapeamento de PerfilId para role).
+2. **EDITAR:** Adicionar 2 novos métodos ao final da classe (antes do `}`).
+3. `GerarTokenRedefinicaoSenha(Usuario usuario)`:
+   - Usar `JwtSecurityTokenHandler` (mesmo do `GerarToken`).
+   - Ler `Jwt:Key` de `_configuration`.
+   - Criar `ClaimsIdentity` com claims: `email`, `purpose=password-reset`, `jti`.
+   - **NÃO** incluir claims `cpf`, `perfilId`, `role`.
+   - `Expires = DateTime.UtcNow.AddMinutes(15)` (não 24h).
+   - Mesmo `Issuer`, `Audience`, `SigningCredentials` do `GerarToken`.
+4. `ValidarTokenRedefinicaoSenha(string token)`:
+   - Usar `tokenHandler.ValidateToken` com mesmos `TokenValidationParameters` do `Program.cs`.
+   - Após validação, verificar claim `purpose == "password-reset"`.
+   - Se sucesso → retornar claim `email`.
+   - Qualquer falha → catch → retornar `null`.
+5. Adicionar usings se necessário: `System.Security.Claims`, `System.IdentityModel.Tokens.Jwt`, `Microsoft.IdentityModel.Tokens`.
+6. Código exato conforme [design.md §Component 10](./design.md#component-10-extensão-de-tokenservice-implementation--application).
 
-> **Importante:** Buscar o e-mail do usuário via `_repositoryUsuario.BuscarCpf(usuarioCpf, ct)` antes de montar o e-mail. Se não encontrar, usar `usuarioCpf` como fallback (não quebrar o fluxo).
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- Token gerado contém claim `purpose` com valor `"password-reset"`.
+- Token gerado NÃO contém claim `role`.
+- Token gerado expira em 15 minutos (verificar `exp` claim).
+- `ValidarTokenRedefinicaoSenha` com token de login (`GerarToken`) → retorna `null`.
+- `ValidarTokenRedefinicaoSenha` com token expirado → retorna `null`.
 
-**Adicionar using:**
-```csharp
-using Infraestructure.Email;
-```
-
-**Verificação:**
-- Projeto `Application` compila sem erros.
-- Criar reserva → e-mail de confirmação enfileirado com dados corretos do evento.
+**Status:** [x] done
 
 ---
 
-## Task 15 — Atualizar `PagamentoService` (Application)
+### Task 12: Atualizar `IUsuarioService` (Application Interface)
 
-**Objetivo:** Injetar `IEmailSender` e enfileirar e-mail de confirmação de pagamento.
+**Objective:** Adicionar assinaturas de redefinição de senha.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Application/Service/PagamentoService.cs` (editar) |
-| Dependências | Task 2 (IEmailSender), Task 4 (EmailTemplates) |
+**Requirements Covered:** FR-015, FR-016
 
-**Mudanças no construtor:**
-- Adicionar parâmetro: `Domain.Interface.IEmailSender emailSender`.
-- Atribuir a campo privado `_emailSender`.
+**Design References:** [Component 11: Extensão de IUsuarioService](./design.md#component-11-extensão-de-iusuarioservice-interface--application)
 
-**Mudanças em `ConfirmarCheckout`:**
-- Após `await _pagamentoRepo.CriarComTransacao(pagamento, reserva, evento, ct);` (linha ~53), adicionar antes do `return`:
-```csharp
-// Spec 180: Enfileirar e-mail de confirmação de pagamento
-// Buscar e-mail do usuário
-var usuario = await _reservaRepo.BuscarUsuarioPorReserva(reservaId, ct);
-var destinatario = usuario?.Email ?? reserva.UsuarioCpf;
-var email = EmailTemplates.PagamentoConfirmado(
-    destinatario,
-    evento.Nome,
-    pagamento.ValorPago,
-    metodo,
-    pagamento.DataPagamento);
-await _emailSender.EnfileirarAsync(email, ct);
-```
+**Actions:**
+1. **LER** o arquivo `Application/Interfaces/IUsuarioService.cs` para confirmar conteúdo atual.
+2. **EDITAR:** Adicionar 2 novos métodos ANTES do `}` final:
+   ```csharp
+   /// <summary>
+   /// Spec 180: Busca usuário por email, gera token JWT de redefinição,
+   /// enfileira e-mail com link. Se email não existir ou usuário inativo,
+   /// retorna sem fazer nada (não vaza informação).
+   /// </summary>
+   Task SolicitarRedefinicaoSenha(string email, CancellationToken ct);
 
-> **Nota:** Se `IReservaRepository` não tiver `BuscarUsuarioPorReserva`, usar `IUsuarioRepository` adicional no construtor. Se não quiser adicionar dependência extra, usar `reserva.UsuarioCpf` como fallback — o SPF da `Reserva` tem `UsuarioCpf`.
+   /// <summary>
+   /// Spec 180: Valida token JWT de redefinição, valida nova senha,
+   /// aplica BCrypt e atualiza no banco.
+   /// Lança TokenRedefinicaoInvalido se token inválido/expirado.
+   /// Lança exceção de validação se senha fraca.
+   /// </summary>
+   Task RedefinirSenha(string token, string novaSenha, CancellationToken ct);
+   ```
 
-**Adicionar using:**
-```csharp
-using Infraestructure.Email;
-```
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila com erro no `UsuarioService` (não implementa novos métodos) — esperado, será resolvido na Task 13.
 
-**Verificação:**
-- Projeto `Application` compila sem erros.
-- Confirmar pagamento → e-mail de confirmação enfileirado.
+**Status:** [x] done
 
 ---
 
-## Task 16 — Atualizar `UsuarioController` (API)
+### Task 13: Atualizar `UsuarioService` (Application Service)
 
-**Objetivo:** Adicionar os dois novos endpoints de redefinição de senha.
+**Objective:** Adicionar DI de `IEmailSender` e `IConfiguration`, integrar e-mails de boas-vindas, implementar redefinição de senha.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Api/Controllers/UsuarioController.cs` (editar) |
-| Dependências | Task 13 (UsuarioService atualizado) |
+**Requirements Covered:** FR-007, FR-008, FR-015, FR-016
 
-**Novos métodos (adicionar antes do `}` final da classe):**
+**Design References:** [Component 12: Extensão de UsuarioService](./design.md#component-12-extensão-de-usuarioservice-implementation--application)
 
-```csharp
-/// <summary>
-/// Spec 180: Solicitar redefinição de senha. Sempre retorna 200 OK.
-/// </summary>
-[HttpPost("esqueci-senha")]
-public async Task<IActionResult> EsqueciSenha([FromBody] EsqueciSenhaDTO dto, CancellationToken ct)
-{
-    await _service.SolicitarRedefinicaoSenha(dto.Email, ct);
-    return Ok(new { message = "Se o e-mail estiver cadastrado, um link de redefinição será enviado." });
-}
+**Actions:**
+1. **LER** o arquivo `Application/Service/UsuarioService.cs` para confirmar a localização exata de:
+   - Construtor
+   - `CadastrarComprador` (linha onde `_repository.CadastrarUsuario` é chamado)
+   - `CadastrarVendedor` (linha onde `_repository.CadastrarVendedor` é chamado)
+   - Final da classe (antes do `}`)
+2. **EDITAR — Construtor:**
+   - Adicionar 2 novos parâmetros: `Domain.Interface.IEmailSender emailSender`, `IConfiguration configuration`.
+   - Atribuir a campos privados `_emailSender` e `_configuration`.
+3. **EDITAR — `CadastrarComprador`:**
+   - Após `_repository.CadastrarUsuario(novocomprador);`, adicionar:
+     ```csharp
+     // Spec 180: Enfileirar e-mail de boas-vindas (fire-and-forget)
+     var email = Infraestructure.Email.EmailTemplates.BoasVindasComprador(dto.Email, dto.Nome);
+     await _emailSender.EnfileirarAsync(email, ct);
+     ```
+4. **EDITAR — `CadastrarVendedor`:**
+   - Após `_repository.CadastrarVendedor(vendedor);`, adicionar (antes do `return`):
+     ```csharp
+     // Spec 180: Enfileirar e-mail de boas-vindas
+     var email = Infraestructure.Email.EmailTemplates.BoasVindasVendedor(
+         vendedor.Email, vendedor.NomeFantasia!, "Gratuito");
+     await _emailSender.EnfileirarAsync(email, ct);
+     ```
+5. **EDITAR — Adicionar 2 novos métodos ao final da classe:**
+   - `SolicitarRedefinicaoSenha(string email, CancellationToken ct)` — busca por email, se null/inativo retorna, gera token, constrói link, enfileira e-mail.
+   - `RedefinirSenha(string token, string novaSenha, CancellationToken ct)` — valida token, busca usuário, valida senha bruta, hasheia com BCrypt, atualiza.
+6. **EDITAR — Adicionar using no topo:**
+   ```csharp
+   using Infraestructure.Email;
+   using Application.Exceptions;  // para TokenRedefinicaoInvalido
+   using Domain.Interface;        // para IEmailSender
+   ```
+7. Código exato conforme [design.md §Component 12](./design.md#component-12-extensão-de-usuarioservice-implementation--application).
 
-/// <summary>
-/// Spec 180: Redefinir senha com token JWT.
-/// </summary>
-[HttpPost("redefinir-senha")]
-public async Task<IActionResult> RedefinirSenha([FromBody] RedefinirSenhaDTO dto, CancellationToken ct)
-{
-    try
-    {
-        await _service.RedefinirSenha(dto.Token, dto.NovaSenha, ct);
-        return Ok(new { message = "Senha redefinida com sucesso." });
-    }
-    catch (TokenRedefinicaoInvalido ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-    catch (UsuarioNotFound)
-    {
-        return BadRequest(new { message = "Token expirado ou inválido." });
-    }
-}
-```
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- `CadastrarComprador`: `EnfileirarAsync` é chamado APÓS `CadastrarUsuario`.
+- `CadastrarVendedor`: `EnfileirarAsync` é chamado APÓS `CadastrarVendedor`.
+- `SolicitarRedefinicaoSenha`: com email inexistente → não enfileira, não lança exceção.
+- `RedefinirSenha`: com token inválido → lança `TokenRedefinicaoInvalido`.
 
-**Adicionar using:**
-```csharp
-using Application.Exceptions;
-```
+**Status:** [x] done
 
-**Verificação:**
-- Projeto `Api` compila sem erros.
+---
+
+### Task 14: Atualizar `ReservaService` (Application Service)
+
+**Objective:** Injetar `IEmailSender` e enfileirar e-mail de confirmação de reserva.
+
+**Requirements Covered:** FR-009
+
+**Design References:** [Component 13: Extensão de ReservaService](./design.md#component-13-extensão-de-reservaservice-application)
+
+**Actions:**
+1. **LER** o arquivo `Application/Service/ReservaService.cs` para confirmar:
+   - Construtor (5 parâmetros atuais)
+   - `FazerReserva` — localização de `_repositoryReserva.CadastrarReservaComItens` e `return novaReserva.Id`
+2. **EDITAR — Construtor:**
+   - Adicionar 6º parâmetro: `Domain.Interface.IEmailSender emailSender`.
+   - Atribuir a `_emailSender`.
+3. **EDITAR — `FazerReserva`:**
+   - Após `await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);`, adicionar ANTES do `return novaReserva.Id;`:
+     ```csharp
+     // Spec 180: Enfileirar e-mail de confirmação de reserva
+     var usuario = await _repositoryUsuario.BuscarCpf(usuarioCpf, ct);
+     var destinatario = usuario?.Email ?? usuarioCpf;
+     var nomeEvento = evento.Nome;
+     var email = Infraestructure.Email.EmailTemplates.ReservaConfirmada(
+         destinatario, nomeEvento, evento.DataEvento, itens.Count, novaReserva.ValorFinalPago);
+     await _emailSender.EnfileirarAsync(email, ct);
+     ```
+4. **EDITAR — Adicionar using no topo:**
+   ```csharp
+   using Infraestructure.Email;
+   using Domain.Interface;
+   ```
+
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- `FazerReserva`: e-mail enfileirado após persistência com dados corretos do evento.
+- `usuario?.Email ?? usuarioCpf`: fallback funciona se `BuscarCpf` retornar null.
+
+**Status:** [x] done
+
+---
+
+### Task 15: Atualizar `PagamentoService` (Application Service)
+
+**Objective:** Injetar `IEmailSender` e `IUsuarioRepository`, enfileirar e-mail de confirmação de pagamento.
+
+**Requirements Covered:** FR-010
+
+**Design References:** [Component 14: Extensão de PagamentoService](./design.md#component-14-extensão-de-pagamentoservice-application)
+
+**Actions:**
+1. **LER** o arquivo `Application/Service/PagamentoService.cs` para confirmar:
+   - Construtor (3 parâmetros atuais: `IPagamentoRepository`, `IReservaRepository`, `IEventoRepository`)
+   - `ConfirmarCheckout` — localização de `_pagamentoRepo.CriarComTransacao` e `return`
+2. **EDITAR — Construtor:**
+   - Adicionar 4º parâmetro: `Domain.Interface.IEmailSender emailSender`.
+   - Adicionar 5º parâmetro: `IUsuarioRepository usuarioRepo`.
+   - Atribuir a `_emailSender` e `_usuarioRepo`.
+3. **EDITAR — `ConfirmarCheckout`:**
+   - Após `await _pagamentoRepo.CriarComTransacao(pagamento, reserva, evento, ct);`, adicionar ANTES do `return`:
+     ```csharp
+     // Spec 180: Enfileirar e-mail de confirmação de pagamento
+     var comprador = await _usuarioRepo.BuscarCpf(reserva.UsuarioCpf, ct);
+     var destinatario = comprador?.Email ?? reserva.UsuarioCpf;
+     var email = Infraestructure.Email.EmailTemplates.PagamentoConfirmado(
+         destinatario, evento.Nome, pagamento.ValorPago, metodo, pagamento.DataPagamento);
+     await _emailSender.EnfileirarAsync(email, ct);
+     ```
+4. **EDITAR — Adicionar using no topo:**
+   ```csharp
+   using Infraestructure.Email;
+   using Domain.Interface;
+   ```
+
+**Validation:**
+- `dotnet build Application/Application.csproj` — compila sem erros.
+- `ConfirmarCheckout`: e-mail enfileirado após persistência com dados corretos.
+- `comprador?.Email ?? reserva.UsuarioCpf`: fallback funciona se `BuscarCpf` retornar null.
+
+**Status:** [x] done
+
+---
+
+### Task 16: Atualizar `UsuarioController` (API)
+
+**Objective:** Adicionar endpoints `esqueci-senha` e `redefinir-senha`.
+
+**Requirements Covered:** FR-011, FR-012
+
+**Design References:** [Component 15: Extensão de UsuarioController](./design.md#component-15-extensão-de-usuariocontroller-api)
+
+**Actions:**
+1. **LER** o arquivo `Api/Controllers/UsuarioController.cs` para confirmar a estrutura da classe.
+2. **EDITAR — Adicionar using:**
+   ```csharp
+   using Application.Exceptions;  // para TokenRedefinicaoInvalido
+   ```
+3. **EDITAR — Adicionar 2 novos métodos ANTES do `}` final da classe:**
+   - `EsqueciSenha`: `[HttpPost("esqueci-senha")]`, recebe `[FromBody] EsqueciSenhaDTO dto`, chama `_service.SolicitarRedefinicaoSenha`, retorna `200 OK` com mensagem genérica.
+   - `RedefinirSenha`: `[HttpPost("redefinir-senha")]`, recebe `[FromBody] RedefinirSenhaDTO dto`, chama `_service.RedefinirSenha`. Try/catch:
+     - `TokenRedefinicaoInvalido` → `400 BadRequest` com `ex.Message`.
+     - `Domain.Exceptions.SenhaInvalida` → `400 BadRequest` com `ex.Message`.
+     - `Domain.Exceptions.Senha8digitos` → `400 BadRequest` com `ex.Message`.
+     - `Domain.Exceptions.SenhaVazia` → `400 BadRequest` com `ex.Message`.
+4. Código exato conforme [design.md §Component 15](./design.md#component-15-extensão-de-usuariocontroller-api).
+
+**Validation:**
+- `dotnet build Api/Api.csproj` — compila sem erros.
 - Swagger exibe `POST /api/usuario/esqueci-senha` e `POST /api/usuario/redefinir-senha`.
-- `esqueci-senha` com e-mail inexistente → `200 OK`.
-- `redefinir-senha` com token inválido → `400 Bad Request`.
+- Ambos sem `[Authorize]` (públicos).
+- `EsqueciSenha` sempre retorna `200 OK`.
+- `RedefinirSenha` com token inválido → `400 Bad Request` com "Token expirado ou inválido."
+- `RedefinirSenha` com senha fraca (< 8 caracteres) → `400 Bad Request` com mensagem de validação.
+- `RedefinirSenha` com senha vazia → `400 Bad Request` com mensagem de validação.
+
+**Status:** [x] done
 
 ---
 
-## Task 17 — Adicionar seção `Smtp` ao `appsettings.json` (API)
+### Task 17: Adicionar Configurações ao `appsettings.json` (API)
 
-**Objetivo:** Adicionar a configuração SMTP ao arquivo de configuração.
+**Objective:** Adicionar seções `Smtp` e `App` ao arquivo de configuração.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Api/appsettings.json` (editar) |
-| Dependências | Task 3 (SmtpSettings) |
+**Requirements Covered:** FR-003, FR-015
 
-**Adicionar nova seção após `"AllowedHosts"`:**
+**Design References:** [Component 3 config](./design.md#component-3-smtpsettings-configuration-poco--infrastructure), [Component 12 baseUrl](./design.md#component-12-extensão-de-usuarioservice-implementation--application)
 
-```json
-"Smtp": {
-    "Host": "",
-    "Port": 587,
-    "Username": "",
-    "Password": "",
-    "FromName": "SoldOut Tickets",
-    "FromAddress": "",
-    "EnableSsl": true
-}
-```
+**Actions:**
+1. **LER** o arquivo `Api/appsettings.json` para confirmar o conteúdo atual.
+2. **EDITAR — Adicionar seção `"Smtp"`** (após `"AllowedHosts"` ou no final do JSON):
+   ```json
+   "Smtp": {
+       "Host": "",
+       "Port": 587,
+       "Username": "",
+       "Password": "",
+       "FromName": "SoldOut Tickets",
+       "FromAddress": "",
+       "EnableSsl": true
+   },
+   "App": {
+       "BaseUrl": "https://localhost:5001"
+   }
+   ```
+3. Garantir que o JSON é válido (vírgulas corretas).
 
-> **Nota:** Em desenvolvimento, os campos ficam vazios. O worker opera em modo no-op. Em produção, preencher via `user-secrets` ou variáveis de ambiente.
+**Validation:**
+- `dotnet build Api/Api.csproj` — compila sem erros.
+- API sobe sem erros (SMTP não configurado → modo no-op).
+- `_configuration["App:BaseUrl"]` retorna `"https://localhost:5001"`.
 
-**Verificação:** API sobe sem erros (SMTP não configurado → modo no-op).
-
----
-
-## Task 18 — Registrar DI no `Program.cs` (API)
-
-**Objetivo:** Registrar as novas dependências no contêiner de injeção.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Api/Program.cs` (editar) |
-| Dependências | Task 6 (SmtpEmailSender), Task 7 (EmailBackgroundWorker) |
-
-**Linhas a adicionar (após os registros existentes de `AddScoped`):**
-
-```csharp
-// Spec 180: Configuração SMTP
-builder.Services.Configure<Infraestructure.Email.SmtpSettings>(
-    builder.Configuration.GetSection("Smtp"));
-
-// Spec 180: Serviço de envio de e-mail (scoped — um por request)
-builder.Services.AddScoped<Infraestructure.Email.SmtpEmailSender>();
-
-// Spec 180: Background worker de e-mail (singleton — mesma instância é a fila)
-builder.Services.AddSingleton<Infraestructure.Email.EmailBackgroundWorker>();
-builder.Services.AddSingleton<Domain.Interface.IEmailSender>(
-    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
-builder.Services.AddHostedService(
-    sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
-```
-
-**Adicionar using:**
-```csharp
-using Infraestructure.Email;
-```
-
-> **Explicação:** `EmailBackgroundWorker` é registrado como singleton e também como `IHostedService`. A interface `IEmailSender` resolve para a mesma instância, garantindo que producers e consumer compartilhem o mesmo Channel.
-
-**Verificação:**
-- API sobe sem erros de resolução de dependência.
-- Worker inicia e fica aguardando mensagens no Channel (verificar logs: "EmailBackgroundWorker iniciado").
+**Status:** [x] done
 
 ---
 
-## Task 19 — Adicionar `App:BaseUrl` ao `appsettings.json` (API)
+### Task 18: Registrar DI no `Program.cs` (API)
 
-**Objetivo:** Adicionar URL base para compor link de redefinição de senha.
+**Objective:** Registrar novas dependências no container de injeção.
 
-| Campo | Valor |
-|-------|-------|
-| Arquivo | `Api/appsettings.json` (editar) |
-| Dependências | Task 13 (UsuarioService usa `App:BaseUrl`) |
+**Requirements Covered:** FR-017
 
-**Adicionar após `"AllowedHosts"`:**
+**Design References:** [Component 16: Registro de DI](./design.md#component-16-registro-de-di-em-programcs-api)
 
-```json
-"App": {
-    "BaseUrl": "https://localhost:5001"
-}
-```
+**Actions:**
+1. **LER** o arquivo `Api/Program.cs` para confirmar:
+   - Localização dos `builder.Services.AddScoped<...>` existentes
+   - Se `using Domain.Interface;` já existe
+2. **EDITAR — Adicionar using (se não existir):**
+   ```csharp
+   using Infraestructure.Email;
+   ```
+3. **EDITAR — Adicionar 5 linhas de registro** após os `AddScoped` existentes (antes do `AddAutoMapper` ou `AddAuthentication`):
+   ```csharp
+   // Spec 180: Configuração SMTP
+   builder.Services.Configure<Infraestructure.Email.SmtpSettings>(
+       builder.Configuration.GetSection("Smtp"));
 
-**Verificação:** Configuração acessível via `_configuration["App:BaseUrl"]`.
+   // Spec 180: Serviço de envio de e-mail (scoped)
+   builder.Services.AddScoped<Infraestructure.Email.SmtpEmailSender>();
 
----
+   // Spec 180: Background worker de e-mail (singleton — mesma instância = mesmo Channel)
+   builder.Services.AddSingleton<Infraestructure.Email.EmailBackgroundWorker>();
+   builder.Services.AddSingleton<Domain.Interface.IEmailSender>(
+       sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
+   builder.Services.AddHostedService(
+       sp => sp.GetRequiredService<Infraestructure.Email.EmailBackgroundWorker>());
+   ```
 
-## Task 20 — Testes Automatizados
+**Validation:**
+- `dotnet build Api/Api.csproj` — compila sem erros.
+- API inicia sem erros de resolução de dependência.
+- Worker inicia e loga (verificar console output).
 
-**Objetivo:** Garantir cobertura de testes para o fluxo de e-mail e redefinição de senha.
-
-| Campo | Valor |
-|-------|-------|
-| Arquivo novo | `tests/EmailTests.cs` |
-| Dependências | Tasks 1-19 |
-
-**Testes a implementar:**
-
-| # | Teste | Cenário |
-|---|-------|---------|
-| T1 | `EmailMessage_Valido` | Criar com destinatário e assunto → sucesso |
-| T2 | `EmailMessage_SemDestinatario_LancaExcecao` | `new EmailMessage("", "A", "", "")` → `ArgumentException` |
-| T3 | `EmailMessage_SemAssunto_LancaExcecao` | `new EmailMessage("a@b.com", "", "", "")` → `ArgumentException` |
-| T4 | `SmtpSettings_DefaultValues` | `new SmtpSettings()` → `Port = 587`, `EnableSsl = true` |
-| T5 | `EsqueciSenha_EmailExiste_EnviaEmail` | Buscar email existente → token gerado, e-mail enfileirado |
-| T6 | `EsqueciSenha_EmailNaoExiste_NaoEnviaEmail` | Buscar email inexistente → retorna sem enfileirar, sem exceção |
-| T7 | `EsqueciSenha_ContaInativa_NaoEnviaEmail` | Usuário com `Ativo = false` → não enfileira e-mail |
-| T8 | `RedefinirSenha_TokenValido_Sucesso` | Token válido + senha forte → senha atualizada |
-| T9 | `RedefinirSenha_TokenExpirado_400` | Token com `exp` no passado → `TokenRedefinicaoInvalido` |
-| T10 | `RedefinirSenha_TokenAutenticacao_400` | Token sem claim `purpose=password-reset` → `TokenRedefinicaoInvalido` |
-| T11 | `RedefinirSenha_SenhaFraca_400` | Token válido + senha com 5 caracteres → exceção de validação |
-| T12 | `CadastrarComprador_EnfileiraBoasVindas` | Cadastro bem-sucedido → `EnfileirarAsync` chamado 1 vez |
-| T13 | `CadastrarVendedor_EnfileiraBoasVindas` | Cadastro bem-sucedido → `EnfileirarAsync` chamado 1 vez |
-| T14 | `FazerReserva_EnfileiraConfirmacao` | Reserva criada → `EnfileirarAsync` chamado 1 vez |
-| T15 | `ConfirmarCheckout_EnfileiraPagamento` | Pagamento confirmado → `EnfileirarAsync` chamado 1 vez |
-
-**Estrutura dos testes (xUnit + Moq):**
-
-```csharp
-[Fact]
-public async Task EsqueciSenha_EmailExiste_EnviaEmail()
-{
-    // Arrange
-    var usuario = Usuario.CriarComprador("52988531009", "João", "joao@teste.com", "hash123");
-    _usuarioRepoMock.Setup(r => r.BuscarEmail("joao@teste.com", It.IsAny<CancellationToken>()))
-        .ReturnsAsync(usuario);
-    _tokenServiceMock.Setup(t => t.GerarTokenRedefinicaoSenha(usuario))
-        .Returns("fake-jwt-token");
-
-    // Act
-    await _service.SolicitarRedefinicaoSenha("joao@teste.com", CancellationToken.None);
-
-    // Assert
-    _emailSenderMock.Verify(e => e.EnfileirarAsync(
-        It.Is<EmailMessage>(m => m.Destinatario == "joao@teste.com"),
-        It.IsAny<CancellationToken>()), Times.Once);
-}
-
-[Fact]
-public async Task EsqueciSenha_EmailNaoExiste_NaoEnviaEmail()
-{
-    // Arrange
-    _usuarioRepoMock.Setup(r => r.BuscarEmail("x@y.com", It.IsAny<CancellationToken>()))
-        .ReturnsAsync((Usuario?)null);
-
-    // Act
-    await _service.SolicitarRedefinicaoSenha("x@y.com", CancellationToken.None);
-
-    // Assert
-    _emailSenderMock.Verify(e => e.EnfileirarAsync(
-        It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()), Times.Never);
-}
-```
-
-**Verificação:**
-- `dotnet test` passa com todos os 15 testes verdes.
-- Cobertura do fluxo de e-mail e redefinição de senha ≥ 80%.
+**Status:** [x] done
 
 ---
 
-## Resumo de Tarefas
+### Task 19: Testes Automatizados
 
-| # | Camada | Arquivo(s) | Ação |
-|---|--------|-----------|------|
-| 1 | Domain | `ValueObjects/EmailMessage.cs` | **Criar** |
-| 2 | Domain | `Interface/IEmailSender.cs` | **Criar** |
-| 3 | Infraestructure | `Email/SmtpSettings.cs` | **Criar** |
-| 4 | Infraestructure | `Email/EmailTemplates.cs` | **Criar** |
-| 5 | Infraestructure | `Infraestructure.csproj` | **Editar** (NuGet MailKit) |
-| 6 | Infraestructure | `Email/SmtpEmailSender.cs` | **Criar** |
-| 7 | Infraestructure | `Email/EmailBackgroundWorker.cs` | **Criar** |
-| 8 | Application | `DTOs/EsqueciSenhaDTO.cs`, `RedefinirSenhaDTO.cs` | **Criar** |
-| 9 | Application | `Exceptions/TokenRedefinicaoExceptions.cs` | **Criar** |
-| 10 | Application | `Interfaces/ITokenService.cs` | **Editar** (+2 métodos) |
-| 11 | Application | `Service/TokenService.cs` | **Editar** (+2 implementações) |
-| 12 | Application | `Interfaces/IUsuarioService.cs` | **Editar** (+2 métodos) |
-| 13 | Application | `Service/UsuarioService.cs` | **Editar** (DI + boas-vindas + redefinição) |
-| 14 | Application | `Service/ReservaService.cs` | **Editar** (DI + confirmação reserva) |
-| 15 | Application | `Service/PagamentoService.cs` | **Editar** (DI + confirmação pagamento) |
-| 16 | Api | `Controllers/UsuarioController.cs` | **Editar** (+2 endpoints) |
-| 17 | Api | `appsettings.json` | **Editar** (seção Smtp) |
-| 18 | Api | `Program.cs` | **Editar** (DI registrations) |
-| 19 | Api | `appsettings.json` | **Editar** (App:BaseUrl) |
-| 20 | tests | `EmailTests.cs` | **Criar** |
+**Objective:** Garantir cobertura de testes para os fluxos de e-mail e redefinição de senha.
+
+**Requirements Covered:** Todos (validação de integridade)
+
+**Design References:** [Testing Strategy](./design.md#testing-strategy)
+
+**Actions:**
+1. Criar arquivo `tests/EmailTests.cs` (usar diretório de testes existente).
+2. Configurar mocks: `Mock<IUsuarioRepository>`, `Mock<ITokenService>`, `Mock<IEmailSender>`, `Mock<IConfiguration>`, `Mock<IMapper>`.
+3. Implementar 23 testes listados na [Testing Strategy](./design.md#testing-strategy).
+4. Cada teste segue o padrão Arrange-Act-Assert.
+5. Usar `xUnit` (já configurado no projeto).
+
+**Testes obrigatórios:**
+- T1-T4: `EmailMessage` (validação)
+- T5: `SmtpSettings` (defaults)
+- T6-T7: `SmtpEmailSender` (Configurado)
+- T8-T10: `EsqueciSenha` (existente, inexistente, inativo)
+- T11-T12: Token claims (purpose, sem role)
+- T13-T18: `RedefinirSenha` (válido, expirado, auth token, purpose errado, senha fraca, inativo)
+- T19-T21: Cadastros (comprador/vendedor enfileiram; falha não enfileira)
+- T22: `FazerReserva` enfileira
+- T23: `ConfirmarCheckout` enfileira
+
+**Validation:**
+- `dotnet test` passa com todos os 23 testes verdes.
+- Nenhum teste quebra compilação existente.
+- Cobertura ≥ 80% para novos métodos.
+
+**Status:** [x] done
 
 ---
 
-## Dependências entre Tasks
+## Summary
+
+| # | Camada | Arquivo(s) | Ação | FR |
+|---|--------|-----------|------|-----|
+| 1 | Domain | `ValueObjects/EmailMessage.cs` | **Criar** | FR-002 |
+| 2 | Domain | `Interface/IEmailSender.cs` | **Criar** | FR-001 |
+| 3 | Infrastructure | `Email/SmtpSettings.cs` | **Criar** | FR-003 |
+| 4 | Infrastructure | `Infraestructure.csproj` | **Editar** (NuGet) | FR-004 |
+| 5 | Infrastructure | `Email/EmailTemplates.cs` | **Criar** | FR-006 |
+| 6 | Infrastructure | `Email/SmtpEmailSender.cs` | **Criar** | FR-004 |
+| 7 | Infrastructure | `Email/EmailBackgroundWorker.cs` | **Criar** | FR-005 |
+| 8 | Application | `DTOs/EsqueciSenhaDTO.cs`, `DTOs/RedefinirSenhaDTO.cs` | **Criar** | FR-011, FR-012 |
+| 9 | Application | `Exceptions/TokenRedefinicaoExceptions.cs` | **Criar** | FR-016 |
+| 10 | Application | `Interfaces/ITokenService.cs` | **Editar** (+2) | FR-013, FR-014 |
+| 11 | Application | `Service/TokenService.cs` | **Editar** (+2) | FR-013, FR-014 |
+| 12 | Application | `Interfaces/IUsuarioService.cs` | **Editar** (+2) | FR-015, FR-016 |
+| 13 | Application | `Service/UsuarioService.cs` | **Editar** (DI+boas-vindas+redef) | FR-007, FR-008, FR-015, FR-016 |
+| 14 | Application | `Service/ReservaService.cs` | **Editar** (DI+email) | FR-009 |
+| 15 | Application | `Service/PagamentoService.cs` | **Editar** (DI+email) | FR-010 |
+| 16 | Api | `Controllers/UsuarioController.cs` | **Editar** (+2) | FR-011, FR-012 |
+| 17 | Api | `appsettings.json` | **Editar** (Smtp+App) | FR-003, FR-015 |
+| 18 | Api | `Program.cs` | **Editar** (DI) | FR-017 |
+| 19 | tests | `EmailTests.cs` | **Criar** | Todos |
+
+---
+
+## Dependency Graph
 
 ```
 Task 1 (EmailMessage)
@@ -663,7 +674,7 @@ Task 1 (EmailMessage)
   │     └→ Task 7 (EmailBackgroundWorker) ──┐
   │           └→ Task 18 (DI Program.cs)     │
   │                                          │
-  └→ Task 4 (EmailTemplates) ────────────────┤
+  └→ Task 5 (EmailTemplates) ────────────────┤
         └→ Task 13 (UsuarioService) ─────────┤
         └→ Task 14 (ReservaService) ─────────┤
         └→ Task 15 (PagamentoService) ───────┤
@@ -672,7 +683,7 @@ Task 3 (SmtpSettings)                        │
   └→ Task 6 (SmtpEmailSender) ───────────────┤
         └→ Task 7 (worker) ──────────────────┤
                                              │
-Task 5 (MailKit NuGet)                       │
+Task 4 (MailKit NuGet)                       │
   └→ Task 6 (SmtpEmailSender)                │
                                              │
 Task 8 (DTOs)                                │
@@ -682,29 +693,14 @@ Task 8 (DTOs)                                │
                                              │
 Task 9 (exceção)                             │
   └→ Task 13 (UsuarioService)                │
+      └→ Task 16 (UsuarioController)         │
                                              │
 Task 10 (ITokenService)                      │
   └→ Task 11 (TokenService)                  │
         └→ Task 13 (UsuarioService)          │
                                              │
-Task 17 (appsettings Smtp) ──────────────────┤
+Task 17 (appsettings) ───────────────────────┤
   └→ Task 18 (DI)                            │
                                              │
-Task 19 (appsettings BaseUrl) ───────────────┤
-  └→ Task 13 (UsuarioService)                │
-                                             │
-Tasks 1-19 ──→ Task 20 (Testes)             │
+Tasks 1-18 ──→ Task 19 (Testes)             │
 ```
-
----
-
-## Estimativa de Esforço
-
-| Bloco | Tasks | Esforço |
-|-------|-------|---------|
-| Domain | 1, 2 | 30min |
-| Infrastructure | 3, 4, 5, 6, 7 | 2h |
-| Application | 8, 9, 10, 11, 12, 13, 14, 15 | 2h30 |
-| API | 16, 17, 18, 19 | 1h |
-| Tests | 20 | 1h30 |
-| **Total** | **20 tasks** | **~7h30** |

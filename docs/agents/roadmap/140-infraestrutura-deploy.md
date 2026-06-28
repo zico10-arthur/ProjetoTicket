@@ -1,5 +1,6 @@
-# 140 — Infraestrutura e Deploy
+# 140 — Infraestrutura e Deploy ✅
 
+> **Status:** `audited`
 > **Origem:** `sprints.md` — infraestrutura compartilhada
 >
 > **Problema:** [`visao.md#2`](../../visao.md#2-problema) — Criar e divulgar eventos com sistema disponível, escalável e de fácil configuração por qualquer desenvolvedor do time.
@@ -17,7 +18,7 @@
 
 ---
 
-## 140.2 Docker Compose
+## 140.2 Docker Compose (implementado)
 
 ```yaml
 version: '3.8'
@@ -33,39 +34,104 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "ProjetoTicket@2026!" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   api:
     build:
-      context: ./Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Api/Dockerfile
     ports:
       - "5007:5007"
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ProjetoTicketDB;User=sa;Password=ProjetoTicket@2026!;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ProjetoTicketDB;User=sa;Password=ProjetoTicket@2026!;TrustServerCertificate=True;Max Pool Size=100;"
       Jwt__Key: "chave-desenvolvimento-local-nao-usar-em-producao"
+      Jwt__Issuer: "ProjetoTicket"
+      Jwt__Audience: "ProjetoTicket"
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:5007/swagger/index.html || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+      dockerfile: Web/Dockerfile
+    ports:
+      - "5057:5057"
+    environment:
+      ApiBaseUrl: "http://api:5007"
+    depends_on:
+      - api
 
 volumes:
   sqlserver_data:
 ```
 
+> **Nota:** O serviço `web` (Blazor Server) e os health checks foram adicionados durante a implementação. O dashboard Hangfire (spec 190) fica em `/hangfire` na API.
+
 ---
 
-## 140.3 Dockerfile
+## 140.3 Dockerfiles (implementados)
+
+### API (`Api/Dockerfile`)
 
 ```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
 
+# Copiar arquivos de projeto e restaurar dependências
+COPY Api/Api.csproj Api/
+COPY Application/Application.csproj Application/
+COPY Domain/Domain.csproj Domain/
+COPY Infraestructure/Infraestructure.csproj Infraestructure/
+
+RUN dotnet restore Api/Api.csproj
+
+# Copiar todo o código fonte
+COPY . .
+
+# Publicar a API
+RUN dotnet publish Api/Api.csproj -c Release -o /app
+
+# Imagem final
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app .
 EXPOSE 5007
 ENTRYPOINT ["dotnet", "Api.dll"]
+```
+
+### Web (`Web/Dockerfile`)
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY Web/Web.csproj Web/
+COPY Application/Application.csproj Application/
+COPY Domain/Domain.csproj Domain/
+
+RUN dotnet restore Web/Web.csproj
+
+COPY . .
+
+RUN dotnet publish Web/Web.csproj -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 5057
+ENTRYPOINT ["dotnet", "Web.dll"]
 ```
 
 ---
@@ -126,14 +192,20 @@ Infraestructure/DataBase/Scripts/
 
 ---
 
-## 140.6 Comandos
+## 140.6 Comandos (implementados)
 
 ```bash
 # Subir ambiente completo
 docker-compose up -d
 
+# Subir reconstruindo imagens (após mudanças no código)
+docker-compose up -d --build
+
 # Ver logs da API
 docker-compose logs -f api
+
+# Ver status
+docker-compose ps
 
 # Parar
 docker-compose down
@@ -142,5 +214,8 @@ docker-compose down
 docker-compose down -v && docker-compose up -d
 
 # Swagger
-open http://localhost:5007/swagger
+http://localhost:5007/swagger
+
+# Hangfire Dashboard (Admin)
+http://localhost:5007/hangfire
 ```

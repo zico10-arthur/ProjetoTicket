@@ -26,14 +26,14 @@
 | 160 | Cupons de Desconto | ✅ `audited` | **Emitir ingressos** — AdminId via JWT, não rota | [`spec-160/`](./roadmap/spec-160/) |
 | 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
 | 150 | Resiliência e Tratamento de Erros | ✅ `audited` | **Emitir ingressos** — sistema profissional | [`spec-150/`](./roadmap/spec-150/) |
-| 180 | Serviço de E-mail + Redef. de Senha | ❌ `pendente` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
+| 180 | Serviço de E-mail + Redef. de Senha | ✅ `audited` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
 | 200 | Guid Id PK de Usuarios (substituir Cpf) | ✅ `audited` | **Autonomia** — vendedor sem CPF, Guid como PK | [`spec-200/`](./roadmap/spec-200/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — comprador reembolsado | [`spec-40/`](./roadmap/spec-40/) |
+| 40 | ST-05 Cancelamento de Reserva c/ Reembolso | ✅ `audited` | **Processar cancelamentos** — comprador reembolsado | [`spec-40/`](./roadmap/spec-40/) |
 | 50 | ST-06 Cancelamento de Evento c/ Reembolso | ❌ `pendente` | **Processar cancelamentos** — evento cancelado | [`spec-50/`](./roadmap/spec-50/) |
 | 110 | ST-12 Cancelamento — Visão Unificada | ❌ `pendente` | **Processar cancelamentos** — qualquer perfil | [`spec-110/`](./roadmap/spec-110/) |
 
@@ -55,8 +55,8 @@
 
 | # | Spec | Status | Problema ([visao.md §2](../visao.md#2-problema)) | Arquivo |
 |---|------|--------|-------------------------------------------------|---------|
-| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
-| 190 | Substituir BackgroundService por Hangfire | ❌ `pendente` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
+| 140 | Infraestrutura e Deploy (Docker) | ✅ `audited` | **Criar eventos** — sistema disponível | [`140-infraestrutura-deploy.md`](./roadmap/140-infraestrutura-deploy.md) |
+| 190 | Substituir BackgroundService por Hangfire | ✅ `audited` | **Gerenciar vagas** — confiabilidade na liberação de assentos | [`spec-190/`](./roadmap/spec-190/) |
 
 ---
 
@@ -76,10 +76,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 5 | 120, 130, 150, 160, 200 |
+| ✅ `audited` | 9 | 120, 130, 150, 160, 200, 140, 190, 180, 40 |
 | ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ✅ `verified` | 0 | — |
-| ❌ `pendente` | 6 | ST-05, ST-06, ST-12, 140, 180, 190 |
+| ❌ `pendente` | 2 | ST-06 (50), ST-12 (110) |
 
 ---
 
@@ -99,7 +98,7 @@
 | ST-01 | `UsuarioController`: `[HttpPost("cadastrar-vendedor")]` público, sem `[Authorize]` | ✅ `implementada` |
 | ST-03 | `Evento.cs`: campo `TipoEvento Tipo`, método `GerarPalestra()` | ✅ `implementada` |
 | ST-04 | `ItemReserva.cs` + `Reserva.Itens` (List&lt;ItemReserva&gt;) ativo | ✅ `implementada` |
-| ST-05 | `DELETE /api/reserva/{id}` não existe — spec completa em [`spec-40/`](./roadmap/spec-40/) | ❌ `pendente` |
+| ST-05 | `DELETE /api/reserva/{id}` + `CancelarReserva` + transação atômica + e-mail reembolso | ✅ `audited` |
 | ST-06 | `DELETE /api/evento/{id}` existe mas sem lógica de reembolso — spec completa em [`spec-50/`](./roadmap/spec-50/) | ❌ `pendente` |
 | ST-07 | `ReservaController`: `[Authorize]` sem restrição de role — todos podem | ✅ `implementada` |
 | ST-08 | `UsuarioService.Login()`: BCrypt.Verify + Ativo + LoginResponseDTO | ✅ `implementada` |
@@ -109,12 +108,12 @@
 | ST-12 | Sem endpoint de cancelamento pelo próprio usuário — spec completa em [`spec-110/`](./roadmap/spec-110/) | ❌ `pendente` |
 | 120 | BCrypt ✅, RateLimit ✅, Jwt:Key em user-secrets ✅ | ✅ `audited` |
 | 130 | `EventoRepository`: filtra por `VendedorCpf` — `ReservaRepository`: `VendedorCpf` adicionado, endpoint `minhas-vendas` implementado | ✅ `audited` |
-| 140 | `DatabaseMigration.cs` + 11 scripts DbUp — sem Dockerfile | ❌ `pendente` |
+| 140 | `Api/Dockerfile` + `Web/Dockerfile` + `docker-compose.yml` com SQL Server, health checks e instruções no README — build + testes passando | ✅ `audited` |
 | 150 | `GlobalExceptionHandlerMiddleware` sanitizado, `[Authorize]` no IngressoController, DTOs com data annotations + Trim, 8 testes passando | ✅ `audited` |
 | 160 | CupomController: AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs | ✅ `audited` |
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
-| 180 | Spec criada com 3 arquivos — sem código ainda (infra SMTP + MailKit pendente) | ❌ `pendente` |
-| 190 | `LiberacaoAssentosWorker.cs` existe com `PeriodicTimer` — spec completa em [`spec-190/`](./roadmap/spec-190/) | ❌ `pendente` |
+| 180 | Spec auditada — build ✅ 0 erros, 8 arquivos criados, 8 editados, todos FRs verificados | ✅ `audited` |
+| 190 | `LiberacaoAssentosJob.cs` com Hangfire recurring job, `LiberacaoAssentosWorker.cs` removido, dashboard `/hangfire` restrito a Admin — build + 112/114 testes passando | ✅ `audited` |
 | 200 | Migration Script0013, entities (Usuario/Reserva/Evento) com Guid, repositories/services/controllers atualizados, JWT com claim userId | ✅ `audited` |
 
 ---

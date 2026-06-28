@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Domain.DTOs;
 
 namespace Application.Interfaces;
 
@@ -17,6 +18,15 @@ public interface IEventoService
     /// <summary>Spec 200: vendedorId como Guid.</summary>
     Task UpdateAsync(Guid id, EventoRequestDTO dto, Guid vendedorId);
     
-    /// <summary>Spec 200: vendedorId como Guid.</summary>
-    Task DeleteAsync(Guid id, Guid vendedorId, bool isAdmin = false);
+    /// <summary>
+    /// Spec 50: Consulta o impacto do cancelamento antes de executá-lo.
+    /// Spec 200: vendedorId como Guid.
+    /// </summary>
+    Task<StatusCancelamentoDTO> ObterStatusCancelamento(Guid eventoId, Guid vendedorId, bool isAdmin, CancellationToken ct);
+
+    /// <summary>
+    /// Spec 50: Cancela o evento com reembolso obrigatório dos ingressos vendidos.
+    /// Spec 200: vendedorId como Guid.
+    /// </summary>
+    Task CancelarEvento(Guid eventoId, Guid vendedorId, bool isAdmin, CancellationToken ct);
 }

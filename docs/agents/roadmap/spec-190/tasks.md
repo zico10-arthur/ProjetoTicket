@@ -1,12 +1,13 @@
-# Spec 190 — Tasks: Substituir BackgroundService por Hangfire
+# Spec 190 — Tasks: Substituir BackgroundService por Hangfire ✅
 
 > **Requirements:** [`requirements.md`](./requirements.md)
 > **Design:** [`design.md`](./design.md)
 > **Ordem:** Cada task depende das anteriores. Seguir a sequência numérica.
+> **Status:** Todas as tasks concluídas. Spec `audited`.
 
 ---
 
-## Task 1 — Adicionar pacotes NuGet do Hangfire
+## ✅ Task 1 — Adicionar pacotes NuGet do Hangfire
 
 **Objetivo:** Adicionar as dependências `Hangfire`, `Hangfire.SqlServer` e `Hangfire.AspNetCore` ao projeto `Api`.
 
@@ -30,7 +31,7 @@ dotnet add package Hangfire.AspNetCore
 
 ---
 
-## Task 2 — Criar filtro de autorização do dashboard Hangfire
+## ✅ Task 2 — Criar filtro de autorização do dashboard Hangfire
 
 **Objetivo:** Criar classe `HangfireAdminAuthorizationFilter` que restringe o dashboard `/hangfire` a usuários com role `Admin`.
 
@@ -62,7 +63,7 @@ public class HangfireAdminAuthorizationFilter : IDashboardAuthorizationFilter
 
 ---
 
-## Task 3 — Criar classe `LiberacaoAssentosJob`
+## ✅ Task 3 — Criar classe `LiberacaoAssentosJob`
 
 **Objetivo:** Criar a classe que contém a lógica de liberação, substituindo o `LiberacaoAssentosWorker`.
 
@@ -135,7 +136,7 @@ public class LiberacaoAssentosJob
 
 ---
 
-## Task 4 — Configurar Hangfire no `Program.cs`
+## ✅ Task 4 — Configurar Hangfire no `Program.cs`
 
 **Objetivo:** Registrar Hangfire, remover o `BackgroundService` antigo, configurar recurring job e dashboard.
 
@@ -210,7 +211,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 ---
 
-## Task 5 — Remover `LiberacaoAssentosWorker.cs`
+## ✅ Task 5 — Remover `LiberacaoAssentosWorker.cs`
 
 **Objetivo:** Deletar o arquivo do worker antigo.
 
@@ -228,7 +229,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 ---
 
-## Task 6 — Testar o job recorrente
+## ✅ Task 6 — Testar o job recorrente
 
 **Objetivo:** Verificar que o recurring job executa corretamente e libera assentos expirados.
 
@@ -254,7 +255,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 ---
 
-## Task 7 — Atualizar `docs/visao.md` e `docs/agents/roadmap.md`
+## ✅ Task 7 — Atualizar `docs/visao.md` e `docs/agents/roadmap.md`
 
 **Objetivo:** Atualizar documentação do projeto refletindo a migração.
 

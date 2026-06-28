@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Interface;
 using Domain.Validators;
 using Domain.DTOs;
+using Infraestructure.Email;
 
 namespace Application.Service;
 
@@ -15,19 +16,22 @@ public class ReservaService : IReservaService
     private readonly IEventoRepository _repositoryEvento;
     private readonly ICupomRepository _repositoryCupom;
     private readonly IIngressoRepository _repositoryIngresso;
+    private readonly Domain.Interface.IEmailSender _emailSender;
 
     public ReservaService(
         IReservaRepository repositoryReserva, 
         IUsuarioRepository repositoryUsuario, 
         IEventoRepository repositoryEvento,
         ICupomRepository repositoryCupom,
-        IIngressoRepository repositoryIngresso)
+        IIngressoRepository repositoryIngresso,
+        Domain.Interface.IEmailSender emailSender)
     {
         _repositoryUsuario = repositoryUsuario;
         _repositoryReserva = repositoryReserva;
         _repositoryEvento = repositoryEvento;
         _repositoryCupom = repositoryCupom;
         _repositoryIngresso = repositoryIngresso;
+        _emailSender = emailSender;
     }
 
     /// <summary>
@@ -90,6 +94,16 @@ public class ReservaService : IReservaService
 
         await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
 
+        // Spec 180: Enfileirar e-mail de confirmação de reserva
+        var usuario = await _repositoryUsuario.BuscarPorId(usuarioId, ct);
+        var destinatario = usuario?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var emailReserva = EmailTemplates.ReservaConfirmada(
+                destinatario, evento.Nome, evento.DataEvento, itens.Count, novaReserva.ValorFinalPago);
+            await _emailSender.EnfileirarAsync(emailReserva, ct);
+        }
+
         return novaReserva.Id;
     }
 
@@ -108,6 +122,50 @@ public class ReservaService : IReservaService
         Guid vendedorId, CancellationToken ct)
     {
         return await _repositoryReserva.ListarReservasDetalhadasPorVendedorId(vendedorId, ct);
+    }
+
+    /// <summary>
+    /// Spec 40: Cancela reserva própria com reembolso.
+    /// Spec 200: usuarioId como Guid.
+    /// </summary>
+    public async Task CancelarReserva(Guid reservaId, Guid usuarioId, CancellationToken ct)
+    {
+        // 1. Buscar reserva
+        var reserva = await _repositoryReserva.BuscarPorId(reservaId, ct);
+        if (reserva == null)
+            throw new Domain.Exceptions.DomainException("Reserva não encontrada.");
+
+        // 2. Verificar propriedade (Spec 200: UsuarioId em vez de UsuarioCpf)
+        if (reserva.UsuarioId != usuarioId)
+            throw new UnauthorizedAccessException("Esta reserva não pertence a você.");
+
+        // 3. Verificar se já foi reembolsada
+        if (reserva.Reembolsada)
+            throw new Domain.Exceptions.DomainException("Reserva já foi cancelada.");
+
+        // 4. Buscar evento para validação de data e para o e-mail
+        var evento = await _repositoryEvento.GetByIdAsync(reserva.EventoId);
+        if (evento == null)
+            throw new Domain.Exceptions.DomainException("Evento não encontrado.");
+
+        // 5. Verificar se o evento já começou
+        if (evento.DataEvento <= DateTime.UtcNow)
+            throw new Domain.Exceptions.DomainException("Não é possível cancelar. O evento já começou.");
+
+        // 6. Executar transação atômica (4 UPDATEs)
+        await _repositoryReserva.CancelarComTransacao(reservaId, ct);
+
+        // 7. Enfileirar e-mail de reembolso (fire-and-forget)
+        var usuario = await _repositoryUsuario.BuscarPorId(usuarioId, ct);
+        var destinatario = usuario?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var email = EmailTemplates.ReembolsoConfirmado(
+                destinatario,
+                evento.Nome,
+                reserva.ValorFinalPago);
+            await _emailSender.EnfileirarAsync(email, ct);
+        }
     }
 
 }

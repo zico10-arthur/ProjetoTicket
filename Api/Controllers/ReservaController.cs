@@ -89,4 +89,39 @@ public class ReservaController : ControllerBase
         var vendas = await _service.ListarVendasDoVendedor(userId, ct);
         return Ok(vendas);
     }
+
+    /// <summary>
+    /// Spec 40: Cancelar reserva própria. Qualquer perfil autenticado pode cancelar
+    /// suas próprias reservas antes do início do evento.
+    /// Spec 200: userId (Guid) extraído do JWT.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize]
+    public async Task<IActionResult> CancelarReserva(Guid id, CancellationToken ct)
+    {
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized(new { message = "Não foi possível identificar o usuário." });
+
+        try
+        {
+            await _service.CancelarReserva(id, userId, ct);
+            return Ok(new { message = "Reserva cancelada com sucesso. Reembolso registrado." });
+        }
+        catch (Domain.Exceptions.DomainException ex)
+        {
+            return ex.Message switch
+            {
+                "Reserva não encontrada." => NotFound(new { message = ex.Message }),
+                "Reserva já foi cancelada." => Conflict(new { message = ex.Message }),
+                _ => BadRequest(new { message = ex.Message })
+            };
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+    }
 }

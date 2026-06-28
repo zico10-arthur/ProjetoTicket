@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interface;
+using Infraestructure.Email;
 
 namespace Application.Service;
 
@@ -11,15 +12,21 @@ public class PagamentoService : IPagamentoService
     private readonly IPagamentoRepository _pagamentoRepo;
     private readonly IReservaRepository _reservaRepo;
     private readonly IEventoRepository _eventoRepo;
+    private readonly Domain.Interface.IEmailSender _emailSender;
+    private readonly IUsuarioRepository _usuarioRepo;
 
     public PagamentoService(
         IPagamentoRepository pagamentoRepo,
         IReservaRepository reservaRepo,
-        IEventoRepository eventoRepo)
+        IEventoRepository eventoRepo,
+        Domain.Interface.IEmailSender emailSender,
+        IUsuarioRepository usuarioRepo)
     {
         _pagamentoRepo = pagamentoRepo;
         _reservaRepo = reservaRepo;
         _eventoRepo = eventoRepo;
+        _emailSender = emailSender;
+        _usuarioRepo = usuarioRepo;
     }
 
     /// <summary>
@@ -54,6 +61,16 @@ public class PagamentoService : IPagamentoService
 
         // 6. Transação atômica
         await _pagamentoRepo.CriarComTransacao(pagamento, reserva, evento, ct);
+
+        // Spec 180: Enfileirar e-mail de confirmação de pagamento
+        var comprador = await _usuarioRepo.BuscarPorId(reserva.UsuarioId, ct);
+        var destinatario = comprador?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var emailPagamento = EmailTemplates.PagamentoConfirmado(
+                destinatario, evento.Nome, pagamento.ValorPago, metodo, pagamento.DataPagamento);
+            await _emailSender.EnfileirarAsync(emailPagamento, ct);
+        }
 
         return new CheckoutResponseDTO(
             pagamento.Id,

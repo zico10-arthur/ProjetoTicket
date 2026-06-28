@@ -10,4 +10,7 @@ public class ReservaDetalhadaDTO
     public string? CupomUtilizado { get; set; }
     public decimal ValorFinalPago { get; set; }
     public bool Pago { get; set; }
+    public bool Reembolsada { get; set; }
+    public List<ItemReservaResponseDTO> Itens { get; set; } = new();
+    public bool PodeCancelar { get; set; }
 }

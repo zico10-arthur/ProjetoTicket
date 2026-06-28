@@ -8,27 +8,28 @@
 
 ## Visão Geral
 
-> 9 specs já implementadas. **9 specs pendentes.** Apenas o que falta fazer.
+> 11 specs implementadas/auditadas. **3 specs pendentes, 1 spec criada (180).** Apenas o que falta fazer.
 
 | Sprint | Duração | Specs | Foco |
 |--------|---------|-------|------|
 | **Sprint 1** | 1 semana | 120, 160, 130, 150, 180 | 🔴 Segurança e correções críticas |
 | **Sprint 2** | 2 semanas | ST-05, ST-06, ST-12 | 🟠 Cancelamento e reembolso |
-| **Sprint 3** | 1 semana | 140 | 🟢 Infraestrutura e deploy |
-| **Total** | **4 semanas** | **9 specs** | **v2.0 completo** |
+| **Sprint 3** | 1 semana | 140, 190 | 🟢 Infraestrutura e deploy |
+| **Total** | **4 semanas** | **10 specs** | **v2.0 completo** |
 
 ---
 
 ## Sprint 1 — Segurança e Correções Críticas (1 semana)
 
-> **5 specs:** bugs de segurança e infraestrutura que precisam ser corrigidos antes de qualquer feature nova.
+> **5 specs:** 4 auditadas (120, 130, 150, 160). Resta apenas spec 180 (E-mail Transacional).
 
 ---
 
-### 120 — Segurança (BCrypt, JWT, rate limit) 🔴
+### 120 — Segurança (BCrypt, JWT, rate limit) ✅
 
-> **Spec:** [`120-seguranca-autenticacao.md`](./agents/roadmap/120-seguranca-autenticacao.md)
+> **Spec:** [`spec-120/`](./agents/roadmap/spec-120/)
 > **Problema:** `Jwt:Key` exposta em `appsettings.json` — qualquer um com acesso ao repositório forja tokens de Admin.
+> **Status:** `audited` — BCrypt funcional, RateLimit implementado, Jwt:Key em user-secrets ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -42,10 +43,11 @@
 
 ---
 
-### 160 — Cupons: AdminId via JWT (não rota) 🔴
+### 160 — Cupons: AdminId via JWT (não rota) ✅
 
-> **Spec:** [`160-cupons.md`](./agents/roadmap/160-cupons.md)
+> **Spec:** [`spec-160/`](./agents/roadmap/spec-160/)
 > **Problema:** `CupomController` recebe `AdminId` como parâmetro de rota. Qualquer usuário logado pode passar um GUID e se passar por Admin.
+> **Status:** `audited` — AdminId extraído do JWT (claim perfilId), removido de rota/body/DTOs ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -59,10 +61,11 @@
 
 ---
 
-### 130 — Isolamento Multi-Tenant (VendedorId) 🔴
+### 130 — Isolamento Multi-Tenant (VendedorId) ✅
 
-> **Spec:** [`130-isolamento-multi-tenant.md`](./agents/roadmap/130-isolamento-multi-tenant.md)
+> **Spec:** [`spec-130/`](./agents/roadmap/spec-130/)
 > **Problema:** `ReservaRepository` não filtra por `VendedorCpf`. Um vendedor vê reservas de eventos de outros vendedores.
+> **Status:** `audited` — EventoRepository filtra por VendedorCpf, ReservaRepository com VendedorCpf, endpoint minhas-vendas ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -77,10 +80,11 @@
 
 ---
 
-### 150 — Resiliência e Tratamento de Erros 🟡
+### 150 — Resiliência e Tratamento de Erros ✅
 
-> **Spec:** [`150-resiliencia-erros.md`](./agents/roadmap/150-resiliencia-erros.md)
+> **Spec:** [`spec-150/`](./agents/roadmap/spec-150/)
 > **Problema:** `GlobalExceptionHandlerMiddleware` expõe `ex.Message` diretamente — stack traces e informações internas vazam em produção.
+> **Status:** `audited` — Middleware sanitizado, [Authorize] no IngressoController, DTOs com data annotations + Trim ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -98,6 +102,7 @@
 
 > **Spec:** [`spec-180/`](./agents/roadmap/spec-180/)
 > **Problema:** O sistema não envia nenhum e-mail transacional (boas-vindas, confirmação de reserva, pagamento, reembolso) e não tem fluxo de "esqueci minha senha" — usuário depende do Admin para recuperar acesso.
+> **Status:** `verified` ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -117,14 +122,14 @@
 
 ### Resumo Sprint 1
 
-| Spec | Carga |
-|------|-------|
-| 120 — Segurança | ~4h |
-| 160 — Cupons | ~7h |
-| 130 — Isolamento | ~9h |
-| 150 — Resiliência | ~4.5h |
-| 180 — E-mail Transacional | ~10h |
-| **Total Sprint 1** | **~34.5h** |
+| Spec | Carga | Status |
+|------|-------|--------|
+| 120 — Segurança | ~4h | ✅ `audited` |
+| 160 — Cupons | ~7h | ✅ `audited` |
+| 130 — Isolamento | ~9h | ✅ `audited` |
+| 150 — Resiliência | ~4.5h | ✅ `audited` |
+| 180 — E-mail Transacional | ~10h | ✅ `verified` |
+| **Total Sprint 1** | **~34.5h** | **4/5 concluídas** |
 
 ---
 
@@ -136,8 +141,9 @@
 
 ### ST-05 — Cancelamento de Reserva com Reembolso 🟠
 
-> **Spec:** [`40-st05-cancelamento-reserva.md`](./agents/roadmap/40-st05-cancelamento-reserva.md)
+> **Spec:** [`spec-40/`](./agents/roadmap/spec-40/)
 > **Problema:** Comprador não consegue cancelar reserva nem receber reembolso. Funcionalidade ausente.
+> **Status:** `pendente` ❌
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -158,8 +164,9 @@
 
 ### ST-06 — Cancelamento de Evento com Reembolso Obrigatório 🟠
 
-> **Spec:** [`50-st06-cancelamento-evento.md`](./agents/roadmap/50-st06-cancelamento-evento.md)
+> **Spec:** [`spec-50/`](./agents/roadmap/spec-50/)
 > **Problema:** `DELETE /api/evento/{id}` existe mas **não processa reembolso**. Vendedor cancela evento e compradores perdem o dinheiro.
+> **Status:** `pendente` ❌
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -177,8 +184,9 @@
 
 ### ST-12 — Cancelamento de Reserva — Visão Unificada 🟠
 
-> **Spec:** [`110-st12-cancelamento-unificado.md`](./agents/roadmap/110-st12-cancelamento-unificado.md)
+> **Spec:** [`spec-110/`](./agents/roadmap/spec-110/)
 > **Problema:** Apenas Comprador cancela reserva. Admin e Vendedor também precisam poder cancelar as próprias.
+> **Status:** `pendente` ❌
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -194,25 +202,26 @@
 
 ### Resumo Sprint 2
 
-| Spec | Carga |
-|------|-------|
-| ST-05 — Cancelamento Reserva | ~17h |
-| ST-06 — Cancelamento Evento | ~14.5h |
-| ST-12 — Cancelamento Unificado | ~6.5h |
-| **Total Sprint 2** | **~38h** |
+| Spec | Carga | Status |
+|------|-------|--------|
+| ST-05 — Cancelamento Reserva | ~17h | ❌ `pendente` |
+| ST-06 — Cancelamento Evento | ~14.5h | ❌ `pendente` |
+| ST-12 — Cancelamento Unificado | ~6.5h | ❌ `pendente` |
+| **Total Sprint 2** | **~38h** | **0/3 concluídas** |
 
 ---
 
-## Sprint 3 — Infraestrutura e Deploy (1 semana)
+## Sprint 3 — Infraestrutura e Deploy (1 semana) ✅
 
-> **1 spec:** containerização para deploy em produção.
+> **2 specs:** containerização para deploy em produção + job recorrente confiável. **100% concluída.**
 
 ---
 
-### 140 — Infraestrutura e Deploy (Docker) 🟢
+### 140 — Infraestrutura e Deploy (Docker) ✅
 
 > **Spec:** [`140-infraestrutura-deploy.md`](./agents/roadmap/140-infraestrutura-deploy.md)
 > **Problema:** Sistema só roda via `dotnet run`. Sem containerização para produção.
+> **Status:** `audited` — Dockerfiles multi-stage + docker-compose com health checks + README atualizado ✅
 
 | # | Tarefa | Arquivos | h |
 |---|--------|----------|----|
@@ -227,14 +236,44 @@
 
 ---
 
+### 190 — Substituir BackgroundService por Hangfire ✅
+
+> **Spec:** [`spec-190/`](./agents/roadmap/spec-190/)
+> **Problema:** `LiberacaoAssentosWorker` com `PeriodicTimer` — polling ineficiente, sem persistência ou dashboard de monitoramento.
+> **Status:** `audited` — Hangfire recurring job + dashboard /hangfire Admin + worker antigo removido ✅
+
+| # | Tarefa | Arquivos | h |
+|---|--------|----------|----|
+| 190.1 | Adicionar pacotes NuGet (Hangfire, Hangfire.SqlServer, Hangfire.AspNetCore) | `Api/Api.csproj` | 0.1 |
+| 190.2 | Criar `HangfireAdminAuthorizationFilter` (dashboard restrito a Admin) | `Api/Middlewares/HangfireAdminAuthorizationFilter.cs` | 0.2 |
+| 190.3 | Criar `LiberacaoAssentosJob` com `[DisableConcurrentExecution]` | `Api/BackgroundTasks/LiberacaoAssentosJob.cs` | 0.3 |
+| 190.4 | Configurar Hangfire no `Program.cs` + remover `AddHostedService<LiberacaoAssentosWorker>()` | `Api/Program.cs` | 1 |
+| 190.5 | Deletar `LiberacaoAssentosWorker.cs` | `Api/BackgroundTasks/LiberacaoAssentosWorker.cs` | 0.1 |
+| 190.6 | Testar job recorrente + dashboard | — | 0.5 |
+| 190.7 | Atualizar docs (`visao.md`, `roadmap.md`) | `docs/` | 0.5 |
+
+**Subtotal:** ~2.7h
+
+---
+
+### Resumo Sprint 3
+
+| Spec | Carga | Status |
+|------|-------|--------|
+| 140 — Infraestrutura e Deploy | ~7.5h | ✅ `audited` |
+| 190 — Hangfire | ~2.7h | ✅ `audited` |
+| **Total Sprint 3** | **~10.2h** | **2/2 concluídas** |
+
+---
+
 ## Resumo Geral
 
-| Sprint | Specs | Carga |
-|--------|-------|-------|
-| Sprint 1 — Segurança | 120, 160, 130, 150, 180 | ~34.5h |
-| Sprint 2 — Transações | ST-05, ST-06, ST-12 | ~38h |
-| Sprint 3 — Infra | 140 | ~7.5h |
-| **Total** | **9 specs** | **~80h** |
+| Sprint | Specs | Carga | Concluído |
+|--------|-------|-------|-----------|
+| Sprint 1 — Segurança | 120, 160, 130, 150, 180 | ~34.5h | 4/5 (80%) |
+| Sprint 2 — Transações | ST-05, ST-06, ST-12 | ~38h | 0/3 (0%) |
+| Sprint 3 — Infra | 140, 190 | ~10.2h | 2/2 (100%) |
+| **Total** | **10 specs** | **~82.7h** | **6/10 (60%)** |
 
 ---
 
@@ -255,7 +294,7 @@
                           ST-12 (Unificado)
                                  │
                                  ▼
-                          140 (Docker)
+                       140 (Docker) + 190 (Hangfire)
 ```
 
 ---
@@ -264,17 +303,20 @@
 
 | # | Spec | Status | Sprint |
 |---|------|--------|--------|
-| 120 | Segurança (BCrypt, JWT, rate limit) | ❌ `pendente` | 1 |
-| 160 | Cupons — AdminId via JWT | ❌ `pendente` | 1 |
-| 130 | Isolamento Multi-Tenant | ❌ `pendente` | 1 |
-| 150 | Resiliência e Tratamento de Erros | ❌ `pendente` | 1 |
-| 180 | Serviço de E-mail Transacional + Redef. de Senha | ❌ `pendente` | 1 |
+| 120 | Segurança (BCrypt, JWT, rate limit) | ✅ `audited` | 1 |
+| 160 | Cupons — AdminId via JWT | ✅ `audited` | 1 |
+| 130 | Isolamento Multi-Tenant | ✅ `audited` | 1 |
+| 150 | Resiliência e Tratamento de Erros | ✅ `audited` | 1 |
+| 180 | Serviço de E-mail Transacional + Redef. de Senha | ✅ `verified` | 1 |
 | ST-05 | Cancelamento de Reserva c/ Reembolso | ❌ `pendente` | 2 |
 | ST-06 | Cancelamento de Evento c/ Reembolso | ❌ `pendente` | 2 |
 | ST-12 | Cancelamento — Visão Unificada | ❌ `pendente` | 2 |
-| 140 | Infraestrutura e Deploy (Docker) | ❌ `pendente` | 3 |
+| 140 | Infraestrutura e Deploy (Docker) | ✅ `audited` | 3 |
+| 190 | Substituir BackgroundService por Hangfire | ✅ `audited` | 3 |
 
 ---
 
 > **Nota:** 9 specs já estão ✅ implementadas (ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170).
+> 6 specs auditadas (120, 130, 150, 160, 140, 190).
+> Sprint 3 (Infraestrutura) **100% concluída**.
 > ST-02 (Painel do Vendedor) é frontend puro e está fora do escopo backend.
