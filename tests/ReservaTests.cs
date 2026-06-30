@@ -16,6 +16,7 @@ namespace SoldOutTickets.Tests;
 public class ReservaTests
 {
     private static readonly Guid PerfilComprador = Guid.Parse("C3C3C3C3-C3C3-C3C3-C3C3-C3C3C3C3C3C3");
+    private static readonly Guid UsuarioId = Guid.Parse("A1A1A1A1-A1A1-A1A1-A1A1-A1A1A1A1A1A1");
     private const string CpfValido = "52998224725";
     private const string CpfValido2 = "12345678909";
     private const string CpfValido3 = "98765432100";
@@ -467,16 +468,16 @@ public class ReservaTests
     public async Task Spec110_T1_ListarMinhasReservas_Comprador_VeApenasSuas()
     {
         SetupService();
-        var cpf = "11122233344";
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Workshop",
             DataEvento = DateTime.UtcNow.AddDays(10), Reembolsada = false
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.Single(result);
         Assert.Equal(dto.Id, result.First().Id);
@@ -486,16 +487,16 @@ public class ReservaTests
     public async Task Spec110_T2_ListarMinhasReservas_Vendedor_VeApenasSuas()
     {
         SetupService();
-        var cpf = "99988877766";
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Peça Teatro",
             DataEvento = DateTime.UtcNow.AddDays(5), Reembolsada = false
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.Single(result);
         Assert.Equal("Peça Teatro", result.First().NomeEvento);
@@ -505,11 +506,11 @@ public class ReservaTests
     public async Task Spec110_T3_ListarMinhasReservas_Admin_VeApenasSuas()
     {
         SetupService();
-        var cpf = "00011122233";
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        var usuarioId = Guid.NewGuid();
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<ReservaDetalhadaDTO>());
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -518,7 +519,7 @@ public class ReservaTests
     public async Task Spec110_T4_ListarMinhasReservas_ComItensReembolsados()
     {
         SetupService();
-        var cpf = CpfValido;
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Evento Cancelado",
@@ -529,10 +530,10 @@ public class ReservaTests
                 new() { Id = Guid.NewGuid(), CpfParticipante = "22222222222", PrecoUnitario = 50, Reembolsado = true }
             }
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
         var reserva = result.First();
 
         Assert.True(reserva.Reembolsada);
@@ -544,16 +545,16 @@ public class ReservaTests
     public async Task Spec110_T5_PodeCancelar_EventoFuturo_NaoReembolsada()
     {
         SetupService();
-        var cpf = CpfValido;
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Evento Futuro",
             DataEvento = DateTime.UtcNow.AddDays(30), Reembolsada = false
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.True(result.First().PodeCancelar);
     }
@@ -562,16 +563,16 @@ public class ReservaTests
     public async Task Spec110_T6_PodeCancelar_JaReembolsada()
     {
         SetupService();
-        var cpf = CpfValido;
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Evento Reembolsado",
             DataEvento = DateTime.UtcNow.AddDays(30), Reembolsada = true
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.False(result.First().PodeCancelar);
     }
@@ -580,16 +581,16 @@ public class ReservaTests
     public async Task Spec110_T7_PodeCancelar_EventoPassado()
     {
         SetupService();
-        var cpf = CpfValido;
+        var usuarioId = Guid.NewGuid();
         var dto = new ReservaDetalhadaDTO
         {
             Id = Guid.NewGuid(), NomeEvento = "Evento Passado",
             DataEvento = DateTime.UtcNow.AddDays(-1), Reembolsada = false
         };
-        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorCpf(cpf, It.IsAny<CancellationToken>()))
+        _reservaRepoMock.Setup(r => r.ListarReservasDetalhadasPorUsuarioId(usuarioId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { dto });
 
-        var result = await _service.ListarMinhasReservas(cpf, CancellationToken.None);
+        var result = await _service.ListarMinhasReservas(usuarioId, CancellationToken.None);
 
         Assert.False(result.First().PodeCancelar);
     }

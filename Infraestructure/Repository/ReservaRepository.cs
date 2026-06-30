@@ -146,26 +146,46 @@ public class ReservaRepository : IReservaRepository
     {
         using var connection = _factory.CreateConnection();
 
+        var reservaDict = new Dictionary<Guid, ReservaDetalhadaDTO>();
+
         const string sql = @"
-            SELECT 
+            SELECT
                 r.Id,
                 e.Nome AS NomeEvento,
                 e.DataEvento,
-                STRING_AGG(i.Posicao, ', ') AS PosicaoIngresso,
-                STRING_AGG(i.Setor, ', ') AS SetorIngresso,
                 r.CupomUtilizado,
                 r.ValorFinalPago,
-                r.Pago
-            FROM Reservas r
-            INNER JOIN Eventos e ON r.EventoId = e.Id
-            INNER JOIN ItensReserva ir ON ir.ReservaId = r.Id
-            INNER JOIN Ingressos i ON ir.IngressoId = i.Id
+                r.Pago,
+                r.Reembolsada,
+                1 AS SplitHere,
+                ir.Id,
+                ir.CpfParticipante,
+                ir.IngressoId,
+                ir.PrecoUnitario,
+                ir.Reembolsado
+            FROM dbo.Reservas r
+            INNER JOIN dbo.Eventos e ON r.EventoId = e.Id
+            INNER JOIN dbo.ItensReserva ir ON ir.ReservaId = r.Id
             WHERE r.UsuarioId = @UsuarioId
-            GROUP BY r.Id, e.Nome, e.DataEvento, r.CupomUtilizado, r.ValorFinalPago, r.Pago";
+            ORDER BY r.Id DESC, ir.CpfParticipante";
 
-        return await connection.QueryAsync<ReservaDetalhadaDTO>(
-            new CommandDefinition(sql, new { UsuarioId = usuarioId }, cancellationToken: ct)
+        await connection.QueryAsync<ReservaDetalhadaDTO, ItemReservaResponseDTO, ReservaDetalhadaDTO>(
+            new CommandDefinition(sql, new { UsuarioId = usuarioId }, cancellationToken: ct),
+            (reserva, item) =>
+            {
+                if (!reservaDict.TryGetValue(reserva.Id, out var existing))
+                {
+                    existing = reserva;
+                    existing.Itens = new List<ItemReservaResponseDTO>();
+                    reservaDict[reserva.Id] = existing;
+                }
+                existing.Itens.Add(item);
+                return existing;
+            },
+            splitOn: "SplitHere"
         );
+
+        return reservaDict.Values;
     }
 
     /// <summary>

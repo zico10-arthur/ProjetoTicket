@@ -109,10 +109,18 @@ public class ReservaService : IReservaService
 
     /// <summary>
     /// Spec 200: usuarioId (Guid).
+    /// Spec 110: Calcula flag PodeCancelar em memória.
     /// </summary>
     public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(Guid usuarioId, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarReservasDetalhadasPorUsuarioId(usuarioId, ct);
+        var reservas = await _repositoryReserva.ListarReservasDetalhadasPorUsuarioId(usuarioId, ct);
+
+        foreach (var reserva in reservas)
+        {
+            reserva.PodeCancelar = !reserva.Reembolsada && reserva.DataEvento > DateTime.UtcNow;
+        }
+
+        return reservas;
     }
 
     /// <summary>
