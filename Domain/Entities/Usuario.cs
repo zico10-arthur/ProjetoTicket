@@ -5,6 +5,11 @@ namespace Domain.Entities;
 
 public class Usuario
 {
+    /// <summary>
+    /// Spec 200: Guid Id como PK, substitui Cpf como identificador único.
+    /// </summary>
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
     public string Cpf {get; private set;} = string.Empty;
 
     public string Nome{get; private set;} = string.Empty;
@@ -28,9 +33,12 @@ public class Usuario
     public Usuario() {}
 
 
-    public Usuario(string cpf, string nome, string email, Guid perfilid, string senha)
+    /// <summary>
+    /// Spec 200: Construtor principal com Guid Id.
+    /// </summary>
+    public Usuario(Guid id, string cpf, string nome, string email, Guid perfilid, string senha)
     {
-        
+        Id = id;
         Cpf = cpf;
         Nome = nome;
         Email = email;
@@ -42,7 +50,7 @@ public class Usuario
 {
     cpf = (cpf ?? string.Empty).Replace(".", "").Replace("-", "").Trim();
 
-    Usuario usuario = new Usuario(cpf, nome, email, perfilid, senha);
+    Usuario usuario = new Usuario(Guid.NewGuid(), cpf, nome, email, perfilid, senha);
 
     usuario.ValidarNome(nome);
     usuario.ValidarCpf(cpf);
@@ -72,7 +80,8 @@ public class Usuario
 
         var usuario = new Usuario
         {
-            Cpf = cnpjLimpo,
+            Id = Guid.NewGuid(),
+            Cpf = string.Empty,
             Nome = razaoSocial.Trim(),
             Email = email,
             PerfilId = Guid.Parse("B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2"),
@@ -103,6 +112,7 @@ public class Usuario
 
         var usuario = new Usuario
         {
+            Id = Guid.NewGuid(),
             Cpf = cpf,
             Nome = nome.Trim(),
             Email = email,

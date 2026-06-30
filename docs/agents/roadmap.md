@@ -27,6 +27,7 @@
 | 130 | Isolamento Multi-Tenant (VendedorId) | ✅ `audited` | **Autonomia** — privacidade entre vendedores | [`spec-130/`](./roadmap/spec-130/) |
 | 150 | Resiliência e Tratamento de Erros | ✅ `audited` | **Emitir ingressos** — sistema profissional | [`spec-150/`](./roadmap/spec-150/) |
 | 180 | Serviço de E-mail + Redef. de Senha | ✅ `audited` | **Autonomia** — confirmações por e-mail e recuperação de senha | [`spec-180/`](./roadmap/spec-180/) |
+| 200 | Guid Id PK de Usuarios (substituir Cpf) | ✅ `audited` | **Autonomia** — vendedor sem CPF, Guid como PK | [`spec-200/`](./roadmap/spec-200/) |
 
 ### 🟠 Sprint 2 — Cancelamento e Reembolso
 
@@ -67,7 +68,7 @@
 | **Gerenciar inscrições e vagas** sem planilhas | 30, 190 | 2 |
 | **Emitir e validar ingressos** profissionalmente | 80, 150, 160 | 3 |
 | **Processar cancelamentos e reembolsos** | 40, 50, 110 | 3 |
-| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130, 180 | 7 |
+| **Ter autonomia** (cadastrar e vender sem Admin) | 10, 60, 70, 90, 120, 130, 180, 200 | 8 |
 
 ---
 
@@ -75,9 +76,9 @@
 
 | Status | Quantidade | Specs |
 |--------|-----------|-------|
-| ✅ `audited` | 8 | 120, 130, 150, 160, 140, 190, 180, ST-05 |
-| ✅ `implemented` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
-| ❌ `pendente` | 2 | ST-06, ST-12 |
+| ✅ `audited` | 9 | 120, 130, 150, 160, 200, 140, 190, 180, 40 |
+| ✅ `implementada` | 9 | ST-01, ST-03, ST-04, ST-07, ST-08, ST-09, ST-10, ST-11, 170 |
+| ❌ `pendente` | 2 | ST-06 (50), ST-12 (110) |
 
 ---
 
@@ -113,6 +114,7 @@
 | 170 | `PagamentoController` + `PagamentoService` + `PagamentoRepository` + `Script0011` | ✅ `implementada` |
 | 180 | Spec auditada — build ✅ 0 erros, 8 arquivos criados, 8 editados, todos FRs verificados | ✅ `audited` |
 | 190 | `LiberacaoAssentosJob.cs` com Hangfire recurring job, `LiberacaoAssentosWorker.cs` removido, dashboard `/hangfire` restrito a Admin — build + 112/114 testes passando | ✅ `audited` |
+| 200 | Migration Script0013, entities (Usuario/Reserva/Evento) com Guid, repositories/services/controllers atualizados, JWT com claim userId | ✅ `audited` |
 
 ---
 

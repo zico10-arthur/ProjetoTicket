@@ -6,14 +6,19 @@ namespace Application.Interfaces;
 
 public interface IReservaService
 {
-    Task<Guid> FazerReserva(string UsuarioCpf, ReservarDTO dto, CancellationToken ct);
-    Task<IEnumerable<Reserva>> ListarReservasPorCpf(string cpf, CancellationToken ct);
-    Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct);
-    Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(string vendedorCpf, CancellationToken ct);
+    /// <summary>Spec 200: usuarioId como Guid.</summary>
+    Task<Guid> FazerReserva(Guid usuarioId, ReservarDTO dto, CancellationToken ct);
+    
+    /// <summary>Spec 200: usuarioId como Guid.</summary>
+    Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(Guid usuarioId, CancellationToken ct);
+    
+    /// <summary>Spec 200: vendedorId como Guid.</summary>
+    Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(Guid vendedorId, CancellationToken ct);
 
     /// <summary>
     /// Spec 40: Cancela uma reserva própria. Valida propriedade, data do evento,
     /// e reembolso prévio. Executa transação atômica e enfileira e-mail de reembolso.
+    /// Spec 200: usuarioId como Guid.
     /// </summary>
-    Task CancelarReserva(Guid reservaId, string usuarioCpf, CancellationToken ct);
+    Task CancelarReserva(Guid reservaId, Guid usuarioId, CancellationToken ct);
 }

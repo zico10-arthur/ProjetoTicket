@@ -29,17 +29,27 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarCpf(string cpf, CancellationToken ct);
 
-    Task RemoverUsuario(Usuario usuario, CancellationToken ct);
+    /// <summary>
+    /// Spec 200: Busca usuário por Id (Guid PK).
+    /// </summary>
+    Task<Usuario?> BuscarPorId(Guid id, CancellationToken ct);
 
-    Task AtualizarSenha(string cpf, string novaSenha, CancellationToken ct);
+    /// <summary>
+    /// Spec 200: Remove usuário por Id.
+    /// </summary>
+    Task RemoverUsuario(Guid id, CancellationToken ct);
+
+    /// <summary>
+    /// Spec 200: Atualiza senha por Id.
+    /// </summary>
+    Task AtualizarSenha(Guid id, string novaSenha, CancellationToken ct);
 
     Task<IEnumerable<Usuario>> ListarTodos(CancellationToken ct);
 
     Task<IEnumerable<Usuario>> ListarTodosAsync(CancellationToken ct);
 
-    Task AtualizarNomeAsync(Usuario usuario, CancellationToken ct);
+    Task AtualizarNomeAsync(Guid id, string novoNome, CancellationToken ct);
 
-     Task AtualizarEmailAsync(Usuario usuario, CancellationToken ct);
-
+    Task AtualizarEmailAsync(Guid id, string novoEmail, CancellationToken ct);
 
 }

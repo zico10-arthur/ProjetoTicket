@@ -11,4 +11,6 @@ public class ReservaDetalhadaDTO
     public decimal ValorFinalPago { get; set; }
     public bool Pago { get; set; }
     public bool Reembolsada { get; set; }
+    public List<ItemReservaResponseDTO> Itens { get; set; } = new();
+    public bool PodeCancelar { get; set; }
 }

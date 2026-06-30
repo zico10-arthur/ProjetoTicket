@@ -83,10 +83,10 @@ public class UsuarioService : IUsuarioService
             vendedor.Email, vendedor.NomeFantasia!, "Gratuito");
         await _emailSender.EnfileirarAsync(emailBoasVindas, ct);
 
-        // 7. Retornar resposta
+        // 7. Retornar resposta (Spec 200: inclui Id)
         return new VendedorCadastradoDTO
         {
-            Cpf = vendedor.Cpf,
+            Id = vendedor.Id,
             Nome = vendedor.Nome,
             NomeFantasia = vendedor.NomeFantasia,
             Email = vendedor.Email,
@@ -98,6 +98,7 @@ public class UsuarioService : IUsuarioService
     /// <summary>
     /// ST-08: Login unificado — BCrypt.Verify + verificação de Ativo + LoginResponseDTO.
     /// Spec 120: SaltParseException catch, mensagem uniforme, resposta 401 padronizada.
+    /// Spec 200: UsuarioLoginDTO inclui Id.
     /// </summary>
     public async Task<LoginResponseDTO> Login(LoginDTO dto, CancellationToken ct)
     {
@@ -134,6 +135,7 @@ public class UsuarioService : IUsuarioService
             Token = token,
             Usuario = new UsuarioLoginDTO
             {
+                Id = logado.Id,
                 Cpf = logado.Cpf,
                 Nome = logado.Nome,
                 Email = logado.Email,
@@ -142,27 +144,32 @@ public class UsuarioService : IUsuarioService
         };
     }
 
-    
-    public async Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Busca usuário por Id (Guid).
+    /// </summary>
+    public async Task<UsuarioSaidaDTO> UsuarioEspecifico(Guid id, CancellationToken ct)
     {
-        Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        Usuario? usuario = await _repository.BuscarPorId(id, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
         UsuarioSaidaDTO dto = _mapper.Map<UsuarioSaidaDTO>(usuario);
         return dto;
     }
 
-    public async Task RemoverUsuario(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: Remove usuário por Id.
+    /// </summary>
+    public async Task RemoverUsuario(Guid id, CancellationToken ct)
     {
-        Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        Usuario? usuario = await _repository.BuscarPorId(id, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
-       await _repository.RemoverUsuario(usuario, ct);
+        await _repository.RemoverUsuario(id, ct);
     }
 
-    public async Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct)
+    public async Task AlterarSenha(AlterarSenhaDTO dto, Guid id, CancellationToken ct)
     {
-         Usuario? usuario = await _repository.BuscarCpf(cpf, ct);
+        Usuario? usuario = await _repository.BuscarPorId(id, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
         // ST-08: Validar e hashear a nova senha com BCrypt
@@ -170,33 +177,29 @@ public class UsuarioService : IUsuarioService
         string senhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
 
         usuario.AlterarSenha(senhaHash);
-        await _repository.AtualizarSenha(cpf, senhaHash, ct);
+        await _repository.AtualizarSenha(id, senhaHash, ct);
     }
 
-    public async Task AlterarEmailAsync(string cpfBruto, AlterarEmailDTO dto, CancellationToken ct)
+    public async Task AlterarEmailAsync(Guid id, AlterarEmailDTO dto, CancellationToken ct)
     {
-        var cpfLimpo = cpfBruto.Replace(".","").Replace("-","").Trim();
-
-        var usuario = await _repository.BuscarCpf(cpfLimpo,ct);
+        var usuario = await _repository.BuscarPorId(id, ct);
         if (usuario == null) throw new UsuarioNotFound();
 
         usuario.AlterarEmail(dto.NovoEmail);
 
-        await _repository.AtualizarEmailAsync(usuario, ct);
+        await _repository.AtualizarEmailAsync(id, usuario.Email, ct);
     }
-    
-    public async Task AlterarNomeAsync(string cpf, AlterarNomeDTO dto, CancellationToken ct)
+
+    public async Task AlterarNomeAsync(Guid id, AlterarNomeDTO dto, CancellationToken ct)
     {
-        var cpfLimpo = cpf.Replace(".","").Replace("-","").Trim();
+        var usuario = await _repository.BuscarPorId(id, ct);
 
-        var usuario = await _repository.BuscarCpf(cpfLimpo,ct);
-
-        if(usuario == null)
+        if (usuario == null)
             throw new UsuarioNotFound();
 
         usuario.AlterarNome(dto.NovoNome);
 
-        await _repository.AtualizarNomeAsync(usuario,ct);
+        await _repository.AtualizarNomeAsync(id, usuario.Nome, ct);
     }
 
     public async Task<IEnumerable<UsuarioResponseDTO>> ListarUsuariosAsync(CancellationToken ct)
@@ -205,10 +208,11 @@ public class UsuarioService : IUsuarioService
 
         return usuarios.Select(u => new UsuarioResponseDTO
         {
+            Id = u.Id,
             Cpf = u.Cpf,
             Nome = u.Nome,
             Email = u.Email,
-            Perfil = u.Perfil != null ? u.Perfil.Nome: "Sem Perfil"
+            Perfil = u.Perfil != null ? u.Perfil.Nome : "Sem Perfil"
         });
     }
 
@@ -239,6 +243,7 @@ public class UsuarioService : IUsuarioService
     /// aplica BCrypt e atualiza no banco.
     /// Lança TokenRedefinicaoInvalido se token inválido/expirado.
     /// Lança exceção de validação se senha fraca.
+    /// Spec 200: Atualiza por Id (Guid).
     /// </summary>
     public async Task RedefinirSenha(string token, string novaSenha, CancellationToken ct)
     {
@@ -255,9 +260,9 @@ public class UsuarioService : IUsuarioService
         // 3. Validar senha bruta (lança exceção se inválida)
         Usuario.ValidarSenhaBruta(novaSenha);
 
-        // 4. Hashear e persistir
+        // 4. Hashear e persistir (Spec 200: AtualizarSenha por Id)
         string senhaHash = BCrypt.Net.BCrypt.HashPassword(novaSenha);
         usuario.AlterarSenha(senhaHash);
-        await _repository.AtualizarSenha(usuario.Cpf, senhaHash, ct);
+        await _repository.AtualizarSenha(usuario.Id, senhaHash, ct);
     }
 }

@@ -13,7 +13,8 @@ public class EventoResponseDTO
 
     public decimal PrecoPadrao {get; set;}
 
-    public string VendedorCpf { get; set; } = string.Empty;
+    /// <summary>Spec 200: VendedorId (Guid?) em vez de VendedorCpf.</summary>
+    public Guid? VendedorId { get; set; }
 
     public int Tipo { get; set; }
 

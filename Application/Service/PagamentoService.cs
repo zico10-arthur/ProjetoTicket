@@ -29,16 +29,19 @@ public class PagamentoService : IPagamentoService
         _usuarioRepo = usuarioRepo;
     }
 
+    /// <summary>
+    /// Spec 200: usuarioId (Guid) em vez de usuarioCpf.
+    /// </summary>
     public async Task<CheckoutResponseDTO> ConfirmarCheckout(
-        Guid reservaId, string usuarioCpf, string metodo, CancellationToken ct)
+        Guid reservaId, Guid usuarioId, string metodo, CancellationToken ct)
     {
         // 1. Buscar reserva
         var reserva = await _reservaRepo.BuscarPorId(reservaId, ct);
         if (reserva == null)
             throw new DomainException("Reserva não encontrada.");
 
-        // 2. Verificar propriedade
-        if (reserva.UsuarioCpf != usuarioCpf)
+        // 2. Verificar propriedade (Spec 200: UsuarioId em vez de UsuarioCpf)
+        if (reserva.UsuarioId != usuarioId)
             throw new UnauthorizedAccessException("Esta reserva não pertence ao usuário logado.");
 
         // 3. Verificar se já foi paga
@@ -60,11 +63,14 @@ public class PagamentoService : IPagamentoService
         await _pagamentoRepo.CriarComTransacao(pagamento, reserva, evento, ct);
 
         // Spec 180: Enfileirar e-mail de confirmação de pagamento
-        var comprador = await _usuarioRepo.BuscarCpf(reserva.UsuarioCpf, ct);
-        var destinatario = comprador?.Email ?? reserva.UsuarioCpf;
-        var emailPagamento = EmailTemplates.PagamentoConfirmado(
-            destinatario, evento.Nome, pagamento.ValorPago, metodo, pagamento.DataPagamento);
-        await _emailSender.EnfileirarAsync(emailPagamento, ct);
+        var comprador = await _usuarioRepo.BuscarPorId(reserva.UsuarioId, ct);
+        var destinatario = comprador?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var emailPagamento = EmailTemplates.PagamentoConfirmado(
+                destinatario, evento.Nome, pagamento.ValorPago, metodo, pagamento.DataPagamento);
+            await _emailSender.EnfileirarAsync(emailPagamento, ct);
+        }
 
         return new CheckoutResponseDTO(
             pagamento.Id,
@@ -76,6 +82,9 @@ public class PagamentoService : IPagamentoService
         );
     }
 
+    /// <summary>
+    /// Spec 200: Reserva.UsuarioId em vez de UsuarioCpf.
+    /// </summary>
     public async Task<IEnumerable<PagamentoAdminDTO>> ListarTodosAdmin(CancellationToken ct)
     {
         var pagamentos = await _pagamentoRepo.ListarTodosAdmin(ct);
@@ -83,7 +92,7 @@ public class PagamentoService : IPagamentoService
         return pagamentos.Select(p => new PagamentoAdminDTO(
             p.Id,
             p.ReservaId,
-            p.Reserva?.UsuarioCpf ?? "",
+            p.Reserva?.UsuarioId.ToString() ?? "",
             p.Reserva?.EventoId.ToString() ?? "",
             p.ValorPago,
             p.Status.ToString(),

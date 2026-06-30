@@ -29,5 +29,5 @@ public class EventoRequestDTO
     [MaxLength(200)]
     public string? Local { get; set; }
 
-    public string VendedorCpf { get; set; } = string.Empty;
+    // Spec 200: VendedorCpf removido — vendedor é identificado pelo JWT (userId).
 }

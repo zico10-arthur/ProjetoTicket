@@ -12,7 +12,8 @@ public class Evento
 
     public decimal PrecoPadrao {get; private set;}
 
-    public string VendedorCpf {get; private set;} = string.Empty;
+    /// <summary>Spec 200: Guid FK para vendedor (nullable).</summary>
+    public Guid? VendedorId {get; private set;}
 
     public TipoEvento Tipo { get; private set; }
 
@@ -31,14 +32,14 @@ public class Evento
         
     }
 
-    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao, string vendedorCpf,
+    public Evento(string nome, int capacidadetotal, DateTime dataevento, decimal precopadrao, Guid? vendedorId,
         TipoEvento tipo = TipoEvento.Teatro, string? descricao = null, string? local = null)
     {
         Nome = nome;
         CapacidadeTotal = capacidadetotal;
         DataEvento = dataevento;
         PrecoPadrao = precopadrao;
-        VendedorCpf = vendedorCpf;
+        VendedorId = vendedorId;
         Tipo = tipo;
         Descricao = descricao;
         Local = local;

@@ -17,18 +17,22 @@ public class PagamentoController : ControllerBase
         _service = service;
     }
 
+    /// <summary>
+    /// Spec 200: Extrai userId (Guid) do JWT em vez de cpf.
+    /// </summary>
     [HttpPost("checkout/{reservaId:guid}")]
     [Authorize]
     public async Task<IActionResult> Checkout(Guid reservaId, [FromBody] CheckoutRequestDTO dto, CancellationToken ct)
     {
-        var cpf = User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
+        var userIdStr = User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value
+                        ?? User.Claims.FirstOrDefault(c => c.Type == "cpf")?.Value;
 
-        if (string.IsNullOrEmpty(cpf))
-            return Unauthorized(new { message = "CPF não encontrado no token." });
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized(new { message = "Usuário não identificado no token." });
 
         try
         {
-            var result = await _service.ConfirmarCheckout(reservaId, cpf, dto.Metodo, ct);
+            var result = await _service.ConfirmarCheckout(reservaId, userId, dto.Metodo, ct);
             return Ok(result);
         }
         catch (DomainException ex)

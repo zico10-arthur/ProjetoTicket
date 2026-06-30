@@ -46,8 +46,6 @@ public class PagamentoRepository : IPagamentoRepository
                 new { ReservaId = reserva.Id }, transacao, cancellationToken: ct));
 
             // 3. Atualizar status dos ingressos para Vendido (Status=2)
-            //    Para eventos tipo Palestra, ItensReserva.IngressoId pode ser NULL,
-            //    então o sub-SELECT não retorna linhas — seguro.
             const string sqlIngressos = @"
                 UPDATE Ingressos SET Status = 2
                 WHERE Id IN (SELECT IngressoId FROM ItensReserva WHERE ReservaId = @ReservaId)";
@@ -64,12 +62,15 @@ public class PagamentoRepository : IPagamentoRepository
         }
     }
 
+    /// <summary>
+    /// Spec 200: SELECT r.UsuarioId em vez de r.UsuarioCpf.
+    /// </summary>
     public async Task<List<Pagamento>> ListarTodosAdmin(CancellationToken ct)
     {
         using var connection = _factory.CreateConnection();
 
         const string sql = @"
-            SELECT p.*, r.UsuarioCpf, r.EventoId
+            SELECT p.*, r.UsuarioId, r.EventoId
             FROM Pagamentos p
             INNER JOIN Reservas r ON p.ReservaId = r.Id
             ORDER BY p.DataPagamento DESC";
@@ -81,7 +82,7 @@ public class PagamentoRepository : IPagamentoRepository
                 typeof(Pagamento).GetProperty("Reserva")?.SetValue(pagamento, reserva);
                 return pagamento;
             },
-            splitOn: "UsuarioCpf"
+            splitOn: "UsuarioId"
         );
 
         return pagamentos.ToList();

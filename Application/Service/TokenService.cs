@@ -17,6 +17,9 @@ public class TokenService : ITokenService
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Spec 200: JWT inclui claim userId (Guid). Claim cpf mantido para retrocompatibilidade.
+    /// </summary>
     public string GerarToken(Usuario usuario)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -37,7 +40,8 @@ public class TokenService : ITokenService
 
         var claimsIdentity = new ClaimsIdentity(new[]
         {
-            new Claim("cpf", usuario.Cpf),
+            new Claim("userId", usuario.Id.ToString()),
+            new Claim("cpf", usuario.Cpf ?? ""),
             new Claim("perfilId", usuario.PerfilId.ToString()),
             new Claim("email", usuario.Email),
             new Claim("role", role),

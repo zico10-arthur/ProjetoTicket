@@ -16,18 +16,23 @@ public interface IUsuarioService
     /// </summary>
     Task<LoginResponseDTO> Login(LoginDTO dto, CancellationToken ct);
 
-    Task<UsuarioSaidaDTO> UsuarioEspecifico(string cpf, CancellationToken ct);
+    /// <summary>
+    /// Spec 200: Busca usuário por Id (Guid).
+    /// </summary>
+    Task<UsuarioSaidaDTO> UsuarioEspecifico(Guid id, CancellationToken ct);
 
-    Task RemoverUsuario(string cpf, CancellationToken ct);
+    /// <summary>
+    /// Spec 200: Remove usuário por Id.
+    /// </summary>
+    Task RemoverUsuario(Guid id, CancellationToken ct);
 
-    Task AlterarSenha( AlterarSenhaDTO dto, string cpf, CancellationToken ct);
+    Task AlterarSenha(AlterarSenhaDTO dto, Guid id, CancellationToken ct);
 
-    Task AlterarEmailAsync(string cpf, AlterarEmailDTO dto ,CancellationToken ct);
+    Task AlterarEmailAsync(Guid id, AlterarEmailDTO dto, CancellationToken ct);
 
-    Task AlterarNomeAsync(string cpf, AlterarNomeDTO dto, CancellationToken ct);
+    Task AlterarNomeAsync(Guid id, AlterarNomeDTO dto, CancellationToken ct);
 
     Task<IEnumerable<UsuarioResponseDTO>> ListarUsuariosAsync(CancellationToken ct);
-
 
     /// <summary>
     /// Spec 180: Busca usuário por email, gera token JWT de redefinição,

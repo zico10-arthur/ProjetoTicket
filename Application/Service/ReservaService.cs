@@ -34,7 +34,10 @@ public class ReservaService : IReservaService
         _emailSender = emailSender;
     }
 
-    public async Task<Guid> FazerReserva(string usuarioCpf, ReservarDTO dto, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: usuarioId (Guid) em vez de usuarioCpf.
+    /// </summary>
+    public async Task<Guid> FazerReserva(Guid usuarioId, ReservarDTO dto, CancellationToken ct)
     {
         // ST-04.4: Validar itens (1 a 4)
         if (dto.Itens == null || dto.Itens.Count == 0)
@@ -86,47 +89,54 @@ public class ReservaService : IReservaService
                 throw new CpfJaReservadoNoEvento(item.CpfParticipante);
         }
 
-        // ST-04.7: Criar reserva com cupom sobre valor total
-        Reserva novaReserva = Reserva.Criar(usuarioCpf, dto.EventoId, itens, cupom, evento.VendedorCpf);
+        // ST-04.7: Criar reserva com cupom sobre valor total (Spec 200: usuarioId + vendedorId)
+        Reserva novaReserva = Reserva.Criar(usuarioId, dto.EventoId, itens, cupom, evento.VendedorId);
 
         await _repositoryReserva.CadastrarReservaComItens(novaReserva, ct);
 
         // Spec 180: Enfileirar e-mail de confirmação de reserva
-        var usuario = await _repositoryUsuario.BuscarCpf(usuarioCpf, ct);
-        var destinatario = usuario?.Email ?? usuarioCpf;
-        var nomeEvento = evento.Nome;
-        var emailReserva = EmailTemplates.ReservaConfirmada(
-            destinatario, nomeEvento, evento.DataEvento, itens.Count, novaReserva.ValorFinalPago);
-        await _emailSender.EnfileirarAsync(emailReserva, ct);
+        var usuario = await _repositoryUsuario.BuscarPorId(usuarioId, ct);
+        var destinatario = usuario?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var emailReserva = EmailTemplates.ReservaConfirmada(
+                destinatario, evento.Nome, evento.DataEvento, itens.Count, novaReserva.ValorFinalPago);
+            await _emailSender.EnfileirarAsync(emailReserva, ct);
+        }
 
         return novaReserva.Id;
     }
 
-    public async Task<IEnumerable<Reserva>> ListarReservasPorCpf(string cpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 200: usuarioId (Guid).
+    /// </summary>
+    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(Guid usuarioId, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarPorCpf(cpf, ct);
+        return await _repositoryReserva.ListarReservasDetalhadasPorUsuarioId(usuarioId, ct);
     }
 
-    public async Task<IEnumerable<ReservaDetalhadaDTO>> ListarMinhasReservas(string cpf, CancellationToken ct)
-    {
-        return await _repositoryReserva.ListarReservasDetalhadasPorCpf(cpf, ct);
-    }
-
+    /// <summary>
+    /// Spec 200: vendedorId (Guid).
+    /// </summary>
     public async Task<IEnumerable<ReservaVendedorDTO>> ListarVendasDoVendedor(
-        string vendedorCpf, CancellationToken ct)
+        Guid vendedorId, CancellationToken ct)
     {
-        return await _repositoryReserva.ListarReservasDetalhadasPorVendedor(vendedorCpf, ct);
+        return await _repositoryReserva.ListarReservasDetalhadasPorVendedorId(vendedorId, ct);
     }
 
-    public async Task CancelarReserva(Guid reservaId, string usuarioCpf, CancellationToken ct)
+    /// <summary>
+    /// Spec 40: Cancela reserva própria com reembolso.
+    /// Spec 200: usuarioId como Guid.
+    /// </summary>
+    public async Task CancelarReserva(Guid reservaId, Guid usuarioId, CancellationToken ct)
     {
         // 1. Buscar reserva
         var reserva = await _repositoryReserva.BuscarPorId(reservaId, ct);
         if (reserva == null)
             throw new Domain.Exceptions.DomainException("Reserva não encontrada.");
 
-        // 2. Verificar propriedade (apenas o dono cancela)
-        if (reserva.UsuarioCpf != usuarioCpf)
+        // 2. Verificar propriedade (Spec 200: UsuarioId em vez de UsuarioCpf)
+        if (reserva.UsuarioId != usuarioId)
             throw new UnauthorizedAccessException("Esta reserva não pertence a você.");
 
         // 3. Verificar se já foi reembolsada
@@ -146,13 +156,16 @@ public class ReservaService : IReservaService
         await _repositoryReserva.CancelarComTransacao(reservaId, ct);
 
         // 7. Enfileirar e-mail de reembolso (fire-and-forget)
-        var usuario = await _repositoryUsuario.BuscarCpf(usuarioCpf, ct);
-        var destinatario = usuario?.Email ?? usuarioCpf;
-        var email = EmailTemplates.ReembolsoConfirmado(
-            destinatario,
-            evento.Nome,
-            reserva.ValorFinalPago);
-        await _emailSender.EnfileirarAsync(email, ct);
+        var usuario = await _repositoryUsuario.BuscarPorId(usuarioId, ct);
+        var destinatario = usuario?.Email ?? "";
+        if (!string.IsNullOrEmpty(destinatario))
+        {
+            var email = EmailTemplates.ReembolsoConfirmado(
+                destinatario,
+                evento.Nome,
+                reserva.ValorFinalPago);
+            await _emailSender.EnfileirarAsync(email, ct);
+        }
     }
 
 }

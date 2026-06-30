@@ -8,9 +8,11 @@ public class Reserva
     private const int LimiteMaximoItens = 4;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
-    public string UsuarioCpf { get; private set; }
+    /// <summary>Spec 200: Guid FK para Usuarios.</summary>
+    public Guid UsuarioId { get; private set; }
     public Guid EventoId { get; private set; }
-    public string VendedorCpf { get; private set; } = string.Empty;
+    /// <summary>Spec 200: Guid FK para vendedor (nullable).</summary>
+    public Guid? VendedorId { get; private set; }
     public string? CupomUtilizado { get; private set; }
     public decimal ValorFinalPago { get; private set; }
     public bool Pago { get; private set; }
@@ -21,9 +23,9 @@ public class Reserva
 
     protected Reserva() { }
 
-    private Reserva(string usuarioCpf, Guid eventoId, string? cupomUtilizado, decimal valorFinalPago)
+    private Reserva(Guid usuarioId, Guid eventoId, string? cupomUtilizado, decimal valorFinalPago)
     {
-        UsuarioCpf = usuarioCpf;
+        UsuarioId = usuarioId;
         EventoId = eventoId;
         CupomUtilizado = cupomUtilizado;
         ValorFinalPago = valorFinalPago;
@@ -43,8 +45,9 @@ public class Reserva
 
     /// <summary>
     /// Cria uma reserva com 1 a 4 itens. Valida CPFs, duplicatas, e aplica cupom sobre o valor total.
+    /// Spec 200: usuarioId (Guid), vendedorId (Guid?).
     /// </summary>
-    public static Reserva Criar(string usuarioCpf, Guid eventoId, List<ItemReserva> itens, Cupom? cupom = null, string vendedorCpf = "")
+    public static Reserva Criar(Guid usuarioId, Guid eventoId, List<ItemReserva> itens, Cupom? cupom = null, Guid? vendedorId = null)
     {
         ValidarItens(itens);
 
@@ -63,10 +66,10 @@ public class Reserva
             codigoCupom = cupom.Codigo;
         }
 
-        return new Reserva(usuarioCpf, eventoId, codigoCupom, valorFinal)
+        return new Reserva(usuarioId, eventoId, codigoCupom, valorFinal)
         {
             Itens = itens,
-            VendedorCpf = vendedorCpf
+            VendedorId = vendedorId
         };
     }
 
