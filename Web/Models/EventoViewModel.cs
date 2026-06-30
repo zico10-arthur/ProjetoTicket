@@ -7,4 +7,13 @@ public class EventoViewModel
     public DateTime DataEvento { get; set; }
     public int CapacidadeTotal { get; set; }
     public decimal PrecoPadrao { get; set; }
+    public int Tipo { get; set; }
+    public bool Gratuito { get; set; }
+    public bool Cancelado { get; set; }
+    public string? Descricao { get; set; }
+    public string? Local { get; set; }
+
+    public string TipoLabel => Tipo == 1 ? "Palestra" : "Teatro";
+
+    public bool IsGratuito => Gratuito || PrecoPadrao == 0;
 }

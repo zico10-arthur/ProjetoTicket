@@ -1,0 +1,11 @@
+@page "/evento/{EventoId}/assentos"
+@inject NavigationManager NavManager
+
+@code {
+    [Parameter] public string EventoId { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        NavManager.NavigateTo($"/comprar/{EventoId}/ingressos", replace: true);
+    }
+}

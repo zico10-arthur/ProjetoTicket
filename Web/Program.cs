@@ -2,6 +2,7 @@ using MudBlazor.Services;
 using Web.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Web.Auth;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,17 +13,19 @@ builder.Services.AddRazorComponents()
 // 2. Adiciona os serviços do MudBlazor (Essencial para o Snackbar e Dialogs)
 builder.Services.AddMudServices();
 
-// 3. Configura o HttpClient para falar com a API
-builder.Services.AddScoped(sp => 
+// 3. Configura o HttpClient para falar com a API (401 → logout + /login)
+builder.Services.AddScoped<AuthHttpMessageHandler>();
+builder.Services.AddScoped(sp =>
 {
-    var handler = new HttpClientHandler();
-    // Drible do SSL para desenvolvimento local
-    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+    var authHandler = sp.GetRequiredService<AuthHttpMessageHandler>();
+    authHandler.InnerHandler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    };
 
-    return new HttpClient(handler) 
-    { 
-        // Verifique se sua API está na 5000 (http) ou 7200 (https)
-        BaseAddress = new Uri("http://localhost:5007/") 
+    return new HttpClient(authHandler)
+    {
+        BaseAddress = new Uri("http://localhost:5007/")
     };
 });
 
@@ -33,6 +36,7 @@ builder.Services.AddAuthorizationCore(options =>
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<PurchaseStateService>();
 
 builder.Services.AddCors(options =>
 {

@@ -1,0 +1,7 @@
+.seat-item {
+    min-width: 36px;
+}
+
+.seat-item--occupied {
+    color: var(--mud-palette-text-disabled);
+}

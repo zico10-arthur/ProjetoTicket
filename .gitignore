@@ -1,18 +1,98 @@
-# Build
-**/bin/
-**/obj/
+# =============================================================================
+# Build & publish (.NET)
+# =============================================================================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Rr]elease/
+[Dd]ebug/
+[Pp]ublish/
+[Aa]rtifacts/
+[Bb]uild/
+.builds
+project.lock.json
+project.fragment.lock.json
 
-# User settings
-*.user
-*.suo
+# Test & coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+coverage/
+coverage*.json
+coverage*.xml
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+.nuget/
+
+# =============================================================================
+# IDE & editors
+# =============================================================================
 .vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+*.sln.iml
 
-# Logs
-*.log
+# Cursor / AI tooling (local only)
+.cursor/
+*.plan.md
 
-# DSCODE (AI assistant tooling)
-DSCODE/
+# =============================================================================
+# OS
+# =============================================================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
 
-# Secrets
+# =============================================================================
+# Secrets & environment (never commit)
+# =============================================================================
 appsettings.*.json
+!appsettings.json
 secrets.json
+*.env
+*.env.*
+!.env.example
+**/user-secrets.json
+
+# =============================================================================
+# Docker / local runtime (optional local overrides)
+# =============================================================================
+docker-compose.override.yml
+.docker/
+
+# =============================================================================
+# Database dumps & local data
+# =============================================================================
+*.mdf
+*.ldf
+*.ndf
+*.bak
+
+# =============================================================================
+# Misc
+# =============================================================================
+*.swp
+*~
+*.tmp
+*.temp

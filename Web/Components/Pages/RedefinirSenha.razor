@@ -1,0 +1,33 @@
+@page "/redefinir-senha"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudCard Elevation="2" Class="pa-8">
+        <MudText Typo="Typo.h5" Class="mb-4">Redefinir senha</MudText>
+        <MudTextField @bind-Value="_novaSenha" Label="Nova senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Redefinir">
+            Salvar nova senha
+        </MudButton>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [SupplyParameterFromQuery(Name = "token")]
+    public string? Token { get; set; }
+
+    private string _novaSenha = "";
+
+    private async Task Redefinir()
+    {
+        var response = await Http.PostAsJsonAsync("api/usuario/redefinir-senha", new { token = Token, novaSenha = _novaSenha });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Senha alterada com sucesso!", Severity.Success);
+            NavManager.NavigateTo("/login");
+        }
+        else
+            Snackbar.Add("Token inválido ou expirado.", Severity.Error);
+    }
+}

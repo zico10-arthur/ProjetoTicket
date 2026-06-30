@@ -10,10 +10,26 @@
             <MudText Typo="Typo.h5" Class="mb-6">Criar Novo Evento</MudText>
 
             <MudTextField @bind-Value="dto.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" />
+            <MudSelect T="int" @bind-Value="dto.Tipo" Label="Tipo" Variant="Variant.Outlined" Class="mb-4">
+                <MudSelectItem Value="0">Teatro</MudSelectItem>
+                <MudSelectItem Value="1">Palestra</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="dto.Local" Label="Local" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField @bind-Value="dto.Descricao" Label="Descrição" Variant="Variant.Outlined" Class="mb-4" Lines="3" />
             <MudTextField @bind-Value="dto.CapacidadeTotal" Label="Capacidade Total" Variant="Variant.Outlined" Class="mb-4" InputType="InputType.Number" />
             <MudDatePicker @bind-Date="dataEvento" Label="Data do Evento" Variant="Variant.Outlined" Class="mb-4" />
             <MudTimePicker @bind-Time="horaEvento" Label="Horário do Evento" Variant="Variant.Outlined" Class="mb-4" AmPm="false" />
-            <MudNumericField T="decimal" @bind-Value="dto.PrecoPadrao" Label="Preço (R$)" Variant="Variant.Outlined" Class="mb-6" Format="F2" Min="0.01m" />
+
+            <MudSwitch @bind-Value="_gratuito" Label="Evento gratuito" Color="Color.Secondary" Class="mb-4" />
+
+            @if (!_gratuito)
+            {
+                <MudNumericField T="decimal" @bind-Value="dto.PrecoPadrao" Label="Preço (R$)" Variant="Variant.Outlined" Class="mb-6" Format="F2" Min="0m" />
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info" Class="mb-6">Ingressos gratuitos — preço será R$ 0,00.</MudAlert>
+            }
 
             <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Criar">
                 Criar Evento
@@ -32,6 +48,7 @@
     private EventoRequestDTO dto = new();
     private DateTime? dataEvento;
     private TimeSpan? horaEvento;
+    private bool _gratuito;
 
     private async Task Criar()
     {
@@ -42,6 +59,7 @@
         }
 
         dto.DataEvento = dataEvento.Value.Date + (horaEvento ?? TimeSpan.Zero);
+        dto.PrecoPadrao = _gratuito ? 0 : dto.PrecoPadrao;
 
         var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
         Http.DefaultRequestHeaders.Authorization =

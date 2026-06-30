@@ -1,59 +1,99 @@
 @inject NavigationManager NavManager
-@inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
+@using Web.Helpers
 
-<MudCard Elevation="3" Class="event-card" @onclick="ToggleCard">
-    <MudCardContent>
-        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-3">
-            <b>@Evento.Nome</b>
-        </MudText>
-        
-        <div class="d-flex align-center mb-3">
-            <MudIcon Icon="@Icons.Material.Filled.DateRange" Color="Color.Primary" Class="mr-3" />
-            <MudText><b>Data</b></MudText>
-            <MudSpacer />
-            <MudText>@Evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
+<MudCard Elevation="3" Class="event-card h-100">
+    <div class="event-card__image-wrap">
+        <img src="@_coverUrl"
+             alt="@Evento.Nome"
+             class="event-card__image"
+             loading="lazy" />
+        <div class="event-card__overlay"></div>
+
+        <div class="event-card__chips">
+            @* Apenas a categoria — o preço já está no canto direito da imagem *@
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Filled"
+                     Style="@($"background: {(_tipoChipBg)}; color: #fff;")">
+                @Evento.TipoLabel
+            </MudChip>
         </div>
 
-        <div class="d-flex align-center mb-3">
-            <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Class="mr-3" />
-            <MudText><b>Capacidade</b></MudText>
-            <MudSpacer />
-            <MudText>@Evento.CapacidadeTotal pessoas</MudText>
+        <div class="event-card__price-tag @(Evento.IsGratuito ? "event-card__price-tag--free" : "")">
+            @(Evento.IsGratuito ? "Grátis" : Evento.PrecoPadrao.ToString("C"))
         </div>
 
-        <div class="d-flex align-center">
-            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Primary" Class="mr-3" />
-            <MudText><b>Preço</b></MudText>
-            <MudSpacer />
-            <MudText Color="Color.Primary">
-                <b>@Evento.PrecoPadrao.ToString("C")</b>
+        <div class="event-card__title-overlay">@Evento.Nome</div>
+    </div>
+
+    <MudCardContent Class="pt-3 pb-2">
+        @if (!string.IsNullOrWhiteSpace(Evento.Local))
+        {
+            <div class="d-flex align-center mb-2">
+                @* Ícone em teal, texto em cinza escuro para melhor contraste *@
+                <MudIcon Icon="@Icons.Material.Filled.Place"
+                         Size="Size.Small"
+                         Color="Color.Secondary"
+                         Class="mr-1 flex-shrink-0" />
+                <MudText Typo="Typo.body2"
+                         Style="color: #334155; line-height: 1.3;">
+                    @Evento.Local
+                </MudText>
+            </div>
+        }
+
+        <div class="d-flex align-center justify-space-between">
+            <div class="d-flex align-center">
+                @* Ícone em roxo, data em preto *@
+                <MudIcon Icon="@Icons.Material.Filled.DateRange"
+                         Size="Size.Small"
+                         Color="Color.Primary"
+                         Class="mr-1 flex-shrink-0" />
+                <MudText Typo="Typo.body2">
+                    <b>@Evento.DataEvento.ToString("dd/MM/yyyy")</b>
+                    · @Evento.DataEvento.ToString("HH:mm")
+                </MudText>
+            </div>
+            @* Capacidade em cinza escuro, não mais teal *@
+            <MudText Typo="Typo.caption" Style="color: #64748B;">
+                @Evento.CapacidadeTotal lugares
             </MudText>
         </div>
     </MudCardContent>
-    
-    <MudCollapse Expanded="isExpanded">
-        <div class="pa-4 pt-0" @onclick:stopPropagation="true">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="IrParaCompra">
-                Comprar Ingresso
-            </MudButton>
-        </div>
-    </MudCollapse>
+
+    <MudCardActions Class="pa-4 pt-0">
+        <MudButton Variant="Variant.Filled"
+                   Class="event-card__cta"
+                   FullWidth="true"
+                   OnClick="IrParaCompra"
+                   EndIcon="@Icons.Material.Filled.ArrowForward">
+            @(Evento.IsGratuito ? "Reservar vaga" : "Comprar ingresso")
+        </MudButton>
+    </MudCardActions>
 </MudCard>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public EventoViewModel Evento { get; set; } = null!;
 
-    private bool isExpanded;
+    [Parameter]
+    public bool ModoDemo { get; set; }
 
-    private void ToggleCard()
+    private string _coverUrl = "";
+    private string _tipoChipBg => Evento.Tipo == 1 ? "#0D9488" : "#7C3AED";
+
+    protected override void OnParametersSet()
     {
-        isExpanded = !isExpanded;
+        _coverUrl = EventCoverHelper.GetCoverUrl(Evento.Tipo, Evento.Id);
     }
 
     private async Task IrParaCompra()
     {
+        if (ModoDemo)
+        {
+            NavManager.NavigateTo("/demo/assentos");
+            return;
+        }
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (!authState.User.Identity?.IsAuthenticated ?? true)
             NavManager.NavigateTo($"/login?returnUrl=/comprar/{Evento.Id}/ingressos");

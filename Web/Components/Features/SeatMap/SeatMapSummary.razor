@@ -1,0 +1,53 @@
+@namespace Web.Components.Features.SeatMap
+
+<MudPaper Elevation="8" Class="checkout-panel pa-4 d-flex flex-column gap-3">
+    <div>
+        <MudText Typo="Typo.overline" Color="Color.Secondary">Resumo</MudText>
+        <MudText Typo="Typo.h6">
+            @SelectedCount Assento@(SelectedCount == 1 ? "" : "s") Selecionado@(SelectedCount == 1 ? "" : "s")
+        </MudText>
+        @if (SelectedCount > 0)
+        {
+            <MudText Typo="Typo.body2" Color="Color.Primary" Class="mt-1">
+                Total: <b>@SelectedTotal.ToString("C")</b>
+            </MudText>
+            <MudStack Spacing="1" Class="mt-2">
+                @foreach (var label in SelectedLabels)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Secondary">@label</MudChip>
+                }
+            </MudStack>
+        }
+        else
+        {
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-1">
+                Selecione até @MaxSeats assentos no mapa
+            </MudText>
+        }
+    </div>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Size="Size.Large"
+               FullWidth="true"
+               Disabled="@(SelectedCount == 0 || CheckoutInProgress)"
+               OnClick="HandleCheckout"
+               Class="checkout-panel__cta py-3">
+        @if (CheckoutInProgress)
+        {
+            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+        }
+        Avançar para Checkout
+    </MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public int SelectedCount { get; set; }
+    [Parameter] public int MaxSeats { get; set; } = SeatModel.MaxSelection;
+    [Parameter] public decimal SelectedTotal { get; set; }
+    [Parameter] public IEnumerable<string> SelectedLabels { get; set; } = [];
+    [Parameter] public bool CheckoutInProgress { get; set; }
+    [Parameter] public EventCallback OnCheckout { get; set; }
+
+    private async Task HandleCheckout() => await OnCheckout.InvokeAsync();
+}

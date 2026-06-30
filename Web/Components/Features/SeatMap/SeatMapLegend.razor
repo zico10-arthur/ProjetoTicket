@@ -1,0 +1,48 @@
+@namespace Web.Components.Features.SeatMap
+
+<div class="seat-map-legend d-flex flex-wrap gap-4 mb-4 align-center">
+    <div class="d-flex align-center gap-2">
+        <span class="seat-map-legend-dot seat-map-legend-dot--geral"></span>
+        <MudText Typo="Typo.caption">Geral</MudText>
+    </div>
+    <div class="d-flex align-center gap-2">
+        <span class="seat-map-legend-dot seat-map-legend-dot--vip"></span>
+        <MudText Typo="Typo.caption">VIP</MudText>
+    </div>
+    <div class="d-flex align-center gap-2">
+        <span class="seat-map-legend-dot seat-map-legend-dot--selected"></span>
+        <MudText Typo="Typo.caption">Selecionado</MudText>
+    </div>
+    <div class="d-flex align-center gap-2">
+        <span class="seat-map-legend-dot seat-map-legend-dot--occupied"></span>
+        <MudText Typo="Typo.caption">Ocupado</MudText>
+    </div>
+    @if (ShowSectorFilter)
+    {
+        <MudSpacer />
+        <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+            <MudButton Color="@(_filter == "Todos" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("Todos")'>Todos</MudButton>
+            <MudButton Color="@(_filter == "VIP" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("VIP")'>VIP</MudButton>
+            <MudButton Color="@(_filter == "Geral" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("Geral")'>Geral</MudButton>
+        </MudButtonGroup>
+    }
+</div>
+
+@code {
+    [Parameter] public bool ShowSectorFilter { get; set; } = true;
+    [Parameter] public string Filter { get; set; } = "Todos";
+    [Parameter] public EventCallback<string> FilterChanged { get; set; }
+
+    private string _filter = "Todos";
+
+    protected override void OnParametersSet()
+    {
+        _filter = Filter;
+    }
+
+    private async Task SetFilter(string value)
+    {
+        _filter = value;
+        await FilterChanged.InvokeAsync(value);
+    }
+}

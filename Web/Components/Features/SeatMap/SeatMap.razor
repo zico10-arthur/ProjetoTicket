@@ -1,0 +1,111 @@
+@namespace Web.Components.Features.SeatMap
+@inject ISnackbar Snackbar
+
+<div class="seat-map-root">
+    <MudPaper Elevation="0" Class="pa-4 mb-2">
+        <MudText Typo="Typo.h5" Class="mb-1">@Title</MudText>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@Subtitle</MudText>
+        }
+    </MudPaper>
+
+    <SeatMapLegend ShowSectorFilter="@ShowSectorFilter"
+                   Filter="@_sectorFilter"
+                   FilterChanged="OnSectorFilterChanged" />
+
+    <SeatMapControls SelectedCount="@SelectedCount"
+                     OnZoomIn="ZoomIn"
+                     OnZoomOut="ZoomOut"
+                     OnReset="ResetView" />
+
+    <MudPaper Elevation="2" Class="pa-2 mb-4 seat-map-paper">
+        <SeatMapCanvas @ref="_canvas"
+                       Seats="Seats"
+                       SectorFilter="@_sectorFilter"
+                       OnToggle="ToggleSeatSelection" />
+    </MudPaper>
+
+    <SeatMapSummary SelectedCount="@SelectedCount"
+                    SelectedTotal="@SelectedTotal"
+                    SelectedLabels="@GetSelectedLabels()"
+                    CheckoutInProgress="@CheckoutInProgress"
+                    OnCheckout="HandleCheckout" />
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Escolha seus assentos";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public List<SeatModel> Seats { get; set; } = QuintaAuditorioSeatData.CreateDemoLayout();
+    [Parameter] public bool ShowSectorFilter { get; set; } = true;
+    [Parameter] public EventCallback<IReadOnlyList<SeatModel>> OnCheckout { get; set; }
+
+    private SeatMapCanvas? _canvas;
+    private bool CheckoutInProgress;
+    private string _sectorFilter = "Todos";
+
+    private int SelectedCount => Seats.Count(s => s.Status == SeatStatus.Selected);
+
+    private decimal SelectedTotal => Seats
+        .Where(s => s.Status == SeatStatus.Selected)
+        .Sum(s => s.Price);
+
+    private void ToggleSeatSelection(int id)
+    {
+        var seat = Seats.FirstOrDefault(s => s.Id == id);
+        if (seat is null || seat.Status == SeatStatus.Occupied)
+            return;
+
+        if (seat.Status != SeatStatus.Selected && SelectedCount >= SeatModel.MaxSelection)
+        {
+            Snackbar.Add($"Limite máximo de {SeatModel.MaxSelection} participantes por reserva.", Severity.Warning);
+            return;
+        }
+
+        seat.Status = seat.Status == SeatStatus.Selected
+            ? SeatStatus.Available
+            : SeatStatus.Selected;
+
+        StateHasChanged();
+    }
+
+    private IEnumerable<string> GetSelectedLabels() =>
+        Seats.Where(s => s.Status == SeatStatus.Selected)
+            .Select(s => $"{s.DisplayLabel} · {s.Setor} · {s.Price:C}");
+
+    private async Task HandleCheckout()
+    {
+        if (SelectedCount == 0) return;
+
+        CheckoutInProgress = true;
+        try
+        {
+            var selected = Seats.Where(s => s.Status == SeatStatus.Selected).ToList();
+            await OnCheckout.InvokeAsync(selected);
+        }
+        finally
+        {
+            CheckoutInProgress = false;
+        }
+    }
+
+    private void OnSectorFilterChanged(string value)
+    {
+        _sectorFilter = value;
+    }
+
+    private async Task ZoomIn()
+    {
+        if (_canvas is not null) await _canvas.ZoomInAsync();
+    }
+
+    private async Task ZoomOut()
+    {
+        if (_canvas is not null) await _canvas.ZoomOutAsync();
+    }
+
+    private async Task ResetView()
+    {
+        if (_canvas is not null) await _canvas.ResetViewAsync();
+    }
+}

@@ -1,4 +1,5 @@
 @page "/login"
+@layout EmptyLayout
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
@@ -6,24 +7,55 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @using System.Text.Json
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudCard Elevation="3" Class="pa-8 rounded-lg">
-        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Entrar no Sistema</MudText>
-        
-        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" />
-        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-6" />
+<div class="plateia-auth-split">
+    <div class="plateia-auth-brand">
+        <div class="plateia-auth-brand__mesh"></div>
+        <div style="position: relative; z-index: 1;">
+            <img src="brand/logo.png" alt="Plateia" class="plateia-logo plateia-logo--login mb-6" style="filter: brightness(1.1);" />
+            <MudText Typo="Typo.h4" Class="mb-3" Style="font-weight: 800;">
+                Bem-vindo de volta
+            </MudText>
+            <MudText Typo="Typo.body1" Style="opacity: 0.88; max-width: 360px;">
+                Acesse sua conta para comprar ingressos, gerenciar reservas ou publicar eventos na Plateia.
+            </MudText>
+            <MudStack Row="true" Spacing="2" Class="mt-6 flex-wrap">
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Mapa de assentos</MudChip>
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Até 4 participantes</MudChip>
+                <MudChip T="string" Style="background: rgba(255,255,255,0.15); color: #fff;">Cupons</MudChip>
+            </MudStack>
+        </div>
+    </div>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin">
-            Fazer Login
+    <div class="plateia-auth-form">
+        <MudText Typo="Typo.h5" Class="mb-6" Style="font-weight: 700;">Entrar na Plateia</MudText>
+
+        <MudTextField @bind-Value="dto.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" />
+        <MudTextField @bind-Value="dto.Senha" Label="Senha" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-2"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" />
+
+        <MudLink Href="/esqueci-senha" Class="mb-6 d-block">Esqueci minha senha</MudLink>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large" OnClick="RealizarLogin"
+                   Style="background: linear-gradient(135deg, var(--plateia-primary), var(--plateia-primary-light));">
+            Fazer login
         </MudButton>
 
-        <div class="mt-6 text-center">
-            <MudLink Href="/cadastro" Color="Color.Info">
-                Ainda não possui uma conta? Clique e cadastre-se!
-            </MudLink>
-        </div>
-    </MudCard>
-</MudContainer>
+        <MudDivider Class="my-6" />
+
+        <MudStack Spacing="2" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Ainda não tem conta?</MudText>
+            <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/cadastro" Size="Size.Small">
+                    Comprador
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Class="plateia-cta-accent" Href="/cadastro-vendedor" Size="Size.Small">
+                    Vendedor
+                </MudButton>
+            </MudStack>
+        </MudStack>
+    </div>
+</div>
 
 @code {
     public class LoginDTO { public string Email { get; set; } = ""; public string Senha { get; set; } = ""; }
@@ -37,25 +69,41 @@
         try
         {
             var response = await Http.PostAsJsonAsync("api/Usuario/login", dto);
-            
-            if (response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var doc = JsonDocument.Parse(json);
-                var token = doc.RootElement.GetProperty("token").GetString()!;
-                
-                await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-                ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
-                
-                Snackbar.Add("Login bem sucedido!", Severity.Success);
-                NavManager.NavigateTo(ReturnUrl ?? "/");
+                Snackbar.Add("E-mail ou senha inválidos.", Severity.Warning);
+                return;
             }
-            else
+
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = JsonDocument.Parse(json);
+            var token = doc.RootElement.GetProperty("token").GetString()!;
+
+            await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+            ((CustomAuthStateProvider)AuthStateProvider).MarcarUsuarioComoLogado(token);
+
+            var perfil = doc.RootElement.TryGetProperty("usuario", out var usuarioEl)
+                && usuarioEl.TryGetProperty("perfil", out var perfilEl)
+                    ? perfilEl.GetString() ?? ""
+                    : "";
+
+            Snackbar.Add("Login realizado com sucesso!", Severity.Success);
+
+            if (!string.IsNullOrEmpty(ReturnUrl))
             {
-                Snackbar.Add("Você ainda não está cadastrado!! Cadastre-se no link logo abaixo desta caixa de Login!", Severity.Warning);
+                NavManager.NavigateTo(ReturnUrl);
+                return;
             }
+
+            NavManager.NavigateTo(perfil switch
+            {
+                "Vendedor" => "/eventos/meus",
+                "Admin" => "/admin/eventos",
+                _ => "/"
+            });
         }
-        catch (Exception)
+        catch
         {
             Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
         }
