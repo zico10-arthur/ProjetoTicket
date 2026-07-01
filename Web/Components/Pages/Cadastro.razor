@@ -38,7 +38,9 @@
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var doc = System.Text.Json.JsonDocument.Parse(json);
-                var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro no cadastro.";
+                var mensagem = doc.RootElement.TryGetProperty("message", out var msg)
+                    ? msg.GetString() ?? "Erro no cadastro."
+                    : "Erro no cadastro.";
                 Snackbar.Add(mensagem, Severity.Error);
             }
         }

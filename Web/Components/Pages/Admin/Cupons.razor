@@ -156,7 +156,9 @@
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var doc = System.Text.Json.JsonDocument.Parse(json);
-                var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao excluir cupom.";
+                var mensagem = doc.RootElement.TryGetProperty("message", out var msg)
+                    ? msg.GetString() ?? "Erro ao excluir cupom."
+                    : "Erro ao excluir cupom.";
                 Snackbar.Add(mensagem, Severity.Error);
             }
         }

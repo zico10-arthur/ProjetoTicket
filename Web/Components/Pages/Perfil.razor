@@ -24,10 +24,10 @@
                 Meu Perfil
             </MudText>
 
-            <MudTextField Value="usuario.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
-            <MudTextField Value="usuario.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
-            <MudTextField Value="usuario.Cpf" Label="CPF" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
-            <MudTextField Value="usuario.Perfil" Label="Perfil" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="@usuario.Nome" Label="Nome" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="@usuario.Email" Label="E-mail" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="@usuario.Cpf" Label="CPF" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
+            <MudTextField Value="@usuario.Perfil" Label="Perfil" Variant="Variant.Outlined" Class="mb-4" ReadOnly="true" />
         </MudCard>
 
         <AuthorizeView Roles="Vendedor">

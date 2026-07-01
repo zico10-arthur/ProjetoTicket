@@ -90,9 +90,10 @@
 
             Snackbar.Add("Login realizado com sucesso!", Severity.Success);
 
-            if (!string.IsNullOrEmpty(ReturnUrl))
+            var returnUrl = ReturnUrl;
+            if (IsSafeLocalReturnUrl(returnUrl))
             {
-                NavManager.NavigateTo(ReturnUrl);
+                NavManager.NavigateTo(returnUrl!);
                 return;
             }
 
@@ -107,5 +108,15 @@
         {
             Snackbar.Add("Erro ao conectar com o servidor.", Severity.Error);
         }
+    }
+
+    private static bool IsSafeLocalReturnUrl(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return false;
+
+        return returnUrl.StartsWith("/", StringComparison.Ordinal)
+            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
+            && !returnUrl.Contains("://", StringComparison.Ordinal);
     }
 }

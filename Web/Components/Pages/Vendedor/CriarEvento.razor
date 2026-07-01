@@ -79,7 +79,9 @@
         {
             var json = await response.Content.ReadAsStringAsync();
             var doc = System.Text.Json.JsonDocument.Parse(json);
-            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao criar evento.";
+            var mensagem = doc.RootElement.TryGetProperty("message", out var msg)
+                ? msg.GetString() ?? "Erro ao criar evento."
+                : "Erro ao criar evento.";
             Snackbar.Add(mensagem, Severity.Error);
         }
     }

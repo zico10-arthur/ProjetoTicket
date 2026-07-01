@@ -22,10 +22,7 @@ builder.Services.AddScoped<AuthHttpMessageHandler>();
 builder.Services.AddScoped(sp =>
 {
     var authHandler = sp.GetRequiredService<AuthHttpMessageHandler>();
-    authHandler.InnerHandler = new HttpClientHandler
-    {
-        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-    };
+    authHandler.InnerHandler = new HttpClientHandler();
 
     return new HttpClient(authHandler)
     {

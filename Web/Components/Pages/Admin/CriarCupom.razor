@@ -61,7 +61,9 @@
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var doc = System.Text.Json.JsonDocument.Parse(json);
-                var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao cadastrar cupom.";
+                var mensagem = doc.RootElement.TryGetProperty("message", out var msg)
+                    ? msg.GetString() ?? "Erro ao cadastrar cupom."
+                    : "Erro ao cadastrar cupom.";
                 Snackbar.Add(mensagem, Severity.Error);
             }
         }
