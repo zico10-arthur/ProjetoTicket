@@ -22,8 +22,13 @@ public class SegurancaTests
     [Fact]
     public void CadastrarUsuario_SenhaHasheada()
     {
+        // Arrange
+        // (constante SenhaCorreta)
+
+        // Act
         var hash = BCrypt.Net.BCrypt.HashPassword(SenhaCorreta);
 
+        // Assert
         Assert.StartsWith("$2a$11$", hash);
         Assert.True(hash.Length >= 60);
     }
@@ -34,8 +39,13 @@ public class SegurancaTests
     [Fact]
     public void CadastrarUsuario_SenhaNaoIgualOriginal()
     {
+        // Arrange
+        // (constante SenhaCorreta)
+
+        // Act
         var hash = BCrypt.Net.BCrypt.HashPassword(SenhaCorreta);
 
+        // Assert
         Assert.NotEqual(SenhaCorreta, hash);
         Assert.DoesNotContain(SenhaCorreta, hash);
     }
@@ -90,10 +100,11 @@ public class SegurancaTests
 
         var service = new UsuarioService(mockRepo.Object, mockMapper.Object, mockTokenService.Object);
 
-        // Act & Assert
+        // Act
         var ex = await Assert.ThrowsAsync<LoginErro>(() =>
             service.Login(new LoginDTO { Email = "teste@email.com", Senha = "SenhaErrada" }, CancellationToken.None));
 
+        // Assert
         Assert.Equal("Email ou senha inválidos.", ex.Message);
     }
 
@@ -113,10 +124,11 @@ public class SegurancaTests
 
         var service = new UsuarioService(mockRepo.Object, mockMapper.Object, mockTokenService.Object);
 
-        // Act & Assert
+        // Act
         var ex = await Assert.ThrowsAsync<LoginErro>(() =>
             service.Login(new LoginDTO { Email = "inexistente@email.com", Senha = "qualquer" }, CancellationToken.None));
 
+        // Assert
         Assert.Equal("Email ou senha inválidos.", ex.Message);
     }
 
@@ -127,15 +139,8 @@ public class SegurancaTests
     public async Task Login_UsuarioInativo_LancaExcecao()
     {
         // Arrange
-        var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaCorreta);
-        var usuario = new Usuario("52998224725", "Teste", "teste@email.com", CompradorPerfilId, senhaHash);
-        // Usuario criado via construtor tem Ativo=true por padrão
-        // Precisamos simular um usuário inativo — o repositório retorna o que quisermos
-        // O UsuarioService.Login verifica logado.Ativo — usamos reflexão ou mock para controlar
-
         var mockRepo = new Mock<IUsuarioRepository>();
         // Retorna null na primeira chamada (email não encontrado)
-        // Truque: vamos usar um callback para simular inatividade no próprio repositório
         mockRepo.Setup(r => r.BuscarEmail("inativo@email.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Usuario?)null); // Retorna null → LoginErro (mesma mensagem)
 
@@ -144,10 +149,11 @@ public class SegurancaTests
 
         var service = new UsuarioService(mockRepo.Object, mockMapper.Object, mockTokenService.Object);
 
-        // Act & Assert — email inexistente e inativo retornam a MESMA mensagem
+        // Act
         var ex = await Assert.ThrowsAsync<LoginErro>(() =>
             service.Login(new LoginDTO { Email = "inativo@email.com", Senha = SenhaCorreta }, CancellationToken.None));
 
+        // Assert
         Assert.Equal("Email ou senha inválidos.", ex.Message);
     }
 
@@ -169,10 +175,11 @@ public class SegurancaTests
 
         var service = new UsuarioService(mockRepo.Object, mockMapper.Object, mockTokenService.Object);
 
-        // Act & Assert — BCrypt.Verify com hash inválido lança SaltParseException → LoginErro
+        // Act
         var ex = await Assert.ThrowsAsync<LoginErro>(() =>
             service.Login(new LoginDTO { Email = "teste@email.com", Senha = "qualquer" }, CancellationToken.None));
 
+        // Assert
         Assert.Equal("Email ou senha inválidos.", ex.Message);
     }
 
@@ -180,9 +187,15 @@ public class SegurancaTests
     /// Testa que o hash BCrypt usa work factor 11.
     /// </summary>
     [Fact]
-    public void BCrypt_WorkFactor11()
+    public void BCrypt_HashPassword_DeveUsarWorkFactor11()
     {
+        // Arrange
+        // (senha inline)
+
+        // Act
         var hash = BCrypt.Net.BCrypt.HashPassword("qualquer");
+
+        // Assert
         Assert.StartsWith("$2a$11$", hash);
     }
 }

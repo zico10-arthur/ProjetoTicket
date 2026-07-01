@@ -209,10 +209,13 @@ public class ResilicienciaTests
     [Fact]
     public void DTO_Trim_NomeComEspacos()
     {
-        // Arrange & Act
+        // Arrange
+        var nomeComEspacos = "  João  ";
+
+        // Act
         var dto = new CadastrarUsuarioDTO
         {
-            Nome = "  João  ",
+            Nome = nomeComEspacos,
             Email = "teste@email.com",
             Cpf = "52998224725",
             Senha = "Teste@123"
@@ -228,10 +231,13 @@ public class ResilicienciaTests
     [Fact]
     public void DTO_Trim_EmailComEspacos()
     {
-        // Arrange & Act
+        // Arrange
+        var emailComEspacos = "  TESTE@EMAIL.COM  ";
+
+        // Act
         var dto = new LoginDTO
         {
-            Email = "  TESTE@EMAIL.COM  ",
+            Email = emailComEspacos,
             Senha = "Teste@123"
         };
 

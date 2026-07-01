@@ -15,9 +15,19 @@ public class EventoTests
     [Fact]
     public void CriarEvento_ComTipoPalestra_DeveAtribuirTipoCorreto()
     {
-        var evento = new Evento("Workshop .NET", 50, DateTime.UtcNow.AddDays(10), 0, CpfVendedor,
-            TipoEvento.Palestra, "Workshop prático", "Auditório Central");
+        // Arrange
+        var nome = "Workshop .NET";
+        var capacidade = 50;
+        var data = DateTime.UtcNow.AddDays(10);
+        var preco = 0;
+        var tipo = TipoEvento.Palestra;
+        var descricao = "Workshop prático";
+        var local = "Auditório Central";
 
+        // Act
+        var evento = new Evento(nome, capacidade, data, preco, CpfVendedor, tipo, descricao, local);
+
+        // Assert
         Assert.Equal(TipoEvento.Palestra, evento.Tipo);
         Assert.Equal("Workshop prático", evento.Descricao);
         Assert.Equal("Auditório Central", evento.Local);
@@ -27,17 +37,32 @@ public class EventoTests
     [Fact]
     public void CriarEvento_ComTipoTeatro_DeveAtribuirTipoCorreto()
     {
-        var evento = new Evento("Peça Hamlet", 100, DateTime.UtcNow.AddDays(20), 80m, CpfVendedor,
-            TipoEvento.Teatro, "Peça clássica", "Teatro Municipal");
+        // Arrange
+        var nome = "Peça Hamlet";
+        var capacidade = 100;
+        var data = DateTime.UtcNow.AddDays(20);
+        var preco = 80m;
+        var tipo = TipoEvento.Teatro;
+        var descricao = "Peça clássica";
+        var local = "Teatro Municipal";
 
+        // Act
+        var evento = new Evento(nome, capacidade, data, preco, CpfVendedor, tipo, descricao, local);
+
+        // Assert
         Assert.Equal(TipoEvento.Teatro, evento.Tipo);
     }
 
     [Fact]
     public void CriarEvento_ComTipoPadrao_DeveSerTeatro()
     {
-        var evento = new Evento("Evento Padrão", 50, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
+        // Arrange
+        var nome = "Evento Padrão";
 
+        // Act
+        var evento = new Evento(nome, 50, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
+
+        // Assert
         Assert.Equal(TipoEvento.Teatro, evento.Tipo);
     }
 
@@ -46,30 +71,43 @@ public class EventoTests
     [Fact]
     public void Gratuito_QuandoPrecoZero_DeveRetornarTrue()
     {
-        var evento = new Evento("Evento Grátis", 50, DateTime.UtcNow.AddDays(10), 0, CpfVendedor,
+        // Arrange
+        var preco = 0;
+
+        // Act
+        var evento = new Evento("Evento Grátis", 50, DateTime.UtcNow.AddDays(10), preco, CpfVendedor,
             TipoEvento.Palestra);
 
+        // Assert
         Assert.True(evento.Gratuito);
     }
 
     [Fact]
     public void Gratuito_QuandoPrecoMaiorQueZero_DeveRetornarFalse()
     {
-        var evento = new Evento("Evento Pago", 50, DateTime.UtcNow.AddDays(10), 49.90m, CpfVendedor);
+        // Arrange
+        var preco = 49.90m;
 
+        // Act
+        var evento = new Evento("Evento Pago", 50, DateTime.UtcNow.AddDays(10), preco, CpfVendedor);
+
+        // Assert
         Assert.False(evento.Gratuito);
     }
 
     // ==================== Cancelar ====================
 
     [Fact]
-    public void Cancelar_DeveMarcarCanceladoComoTrue()
+    public void Cancelar_QuandoNaoCancelado_DeveMarcarComoTrue()
     {
+        // Arrange
         var evento = new Evento("Evento", 50, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
         Assert.False(evento.Cancelado);
 
+        // Act
         evento.Cancelar();
 
+        // Assert
         Assert.True(evento.Cancelado);
     }
 
@@ -78,11 +116,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_Palestra_DeveGerarTodosComoGeral()
     {
+        // Arrange
         var evento = new Evento("Workshop", 5, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor,
             TipoEvento.Palestra);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         Assert.Equal(5, evento.Ingressos.Count);
         Assert.All(evento.Ingressos, i => Assert.Equal("Geral", i.Setor));
         Assert.All(evento.Ingressos, i => Assert.Equal(50m, i.Preco));
@@ -91,11 +132,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_Palestra_DeveNumerarAssentosSequencialmente()
     {
+        // Arrange
         var evento = new Evento("Workshop", 3, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor,
             TipoEvento.Palestra);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         Assert.Equal("Assento 1", evento.Ingressos[0].Posicao);
         Assert.Equal("Assento 2", evento.Ingressos[1].Posicao);
         Assert.Equal("Assento 3", evento.Ingressos[2].Posicao);
@@ -104,11 +148,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_PalestraGratuito_DeveGerarComPrecoZero()
     {
+        // Arrange
         var evento = new Evento("Workshop Grátis", 3, DateTime.UtcNow.AddDays(10), 0, CpfVendedor,
             TipoEvento.Palestra);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         Assert.All(evento.Ingressos, i => Assert.Equal(0m, i.Preco));
     }
 
@@ -117,11 +164,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_Teatro_DeveGerar10PorcentoVip()
     {
+        // Arrange
         var evento = new Evento("Peça", 100, DateTime.UtcNow.AddDays(10), 100m, CpfVendedor,
             TipoEvento.Teatro);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         Assert.Equal(100, evento.Ingressos.Count);
 
         var vipCount = evento.Ingressos.Count(i => i.Setor == "VIP");
@@ -134,11 +184,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_Teatro_VipDeveTerPreco50PorcentoMaior()
     {
+        // Arrange
         var evento = new Evento("Peça", 100, DateTime.UtcNow.AddDays(10), 100m, CpfVendedor,
             TipoEvento.Teatro);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         var ingressosVip = evento.Ingressos.Where(i => i.Setor == "VIP");
         var ingressosGeral = evento.Ingressos.Where(i => i.Setor == "Geral");
 
@@ -149,11 +202,14 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_Teatro_DeveTerFilasDe20Assentos()
     {
+        // Arrange
         var evento = new Evento("Peça", 25, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor,
             TipoEvento.Teatro);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         // Fila 1 deve ter 20 assentos, Fila 2 deve ter 5
         var fila1 = evento.Ingressos.Where(i => i.Posicao.StartsWith("Fila 1")).ToList();
         var fila2 = evento.Ingressos.Where(i => i.Posicao.StartsWith("Fila 2")).ToList();
@@ -163,13 +219,16 @@ public class EventoTests
     }
 
     [Fact]
-    public void GerarLoteIngressos_Teatro_FormatoPosicaoCorreto()
+    public void GerarLoteIngressos_Teatro_DeveTerFormatoPosicaoCorreto()
     {
+        // Arrange
         var evento = new Evento("Peça", 1, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor,
             TipoEvento.Teatro);
 
+        // Act
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Assert
         Assert.Equal("Fila 1 | Assento 1", evento.Ingressos[0].Posicao);
     }
 
@@ -178,28 +237,40 @@ public class EventoTests
     [Fact]
     public void GerarLoteIngressos_ComQuantidadeZero_DeveLancarExcecao()
     {
+        // Arrange
         var evento = new Evento("Evento", 50, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
 
+        // Act
         var ex = Assert.Throws<ArgumentException>(() => evento.GerarLoteIngressos(0));
+
+        // Assert
         Assert.Contains("maior que zero", ex.Message);
     }
 
     [Fact]
     public void GerarLoteIngressos_ComQuantidadeNegativa_DeveLancarExcecao()
     {
+        // Arrange
         var evento = new Evento("Evento", 50, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
 
+        // Act
         var ex = Assert.Throws<ArgumentException>(() => evento.GerarLoteIngressos(-1));
+
+        // Assert
         Assert.Contains("maior que zero", ex.Message);
     }
 
     [Fact]
     public void GerarLoteIngressos_JaGerado_DeveLancarExcecao()
     {
+        // Arrange
         var evento = new Evento("Evento", 10, DateTime.UtcNow.AddDays(10), 50m, CpfVendedor);
         evento.GerarLoteIngressos(evento.CapacidadeTotal);
 
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => evento.GerarLoteIngressos(evento.CapacidadeTotal));
+
+        // Assert
         Assert.Contains("já foram gerados", ex.Message);
     }
 }

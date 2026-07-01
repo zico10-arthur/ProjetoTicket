@@ -22,14 +22,26 @@ public class AutoCadastroVendedorTests
     [Fact]
     public void CnpjValidator_ComCnpjValido_NaoDeveLancarExcecao()
     {
-        var ex = Record.Exception(() => CnpjValidator.Validar(CnpjValido));
+        // Arrange
+        var cnpj = CnpjValido;
+
+        // Act
+        var ex = Record.Exception(() => CnpjValidator.Validar(cnpj));
+
+        // Assert
         Assert.Null(ex);
     }
 
     [Fact]
     public void CnpjValidator_ComCnpjValidoFormatado_NaoDeveLancarExcecao()
     {
-        var ex = Record.Exception(() => CnpjValidator.Validar("11.222.333/0001-81"));
+        // Arrange
+        var cnpj = "11.222.333/0001-81";
+
+        // Act
+        var ex = Record.Exception(() => CnpjValidator.Validar(cnpj));
+
+        // Assert
         Assert.Null(ex);
     }
 
@@ -38,7 +50,14 @@ public class AutoCadastroVendedorTests
     [InlineData("   ")]
     public void CnpjValidator_ComCnpjVazio_DeveLancarCnpjInvalido(string cnpj)
     {
-        Assert.Throws<CnpjInvalido>(() => CnpjValidator.Validar(cnpj));
+        // Arrange
+        // (dados fornecidos pelo InlineData)
+
+        // Act
+        Action act = () => CnpjValidator.Validar(cnpj);
+
+        // Assert
+        Assert.Throws<CnpjInvalido>(act);
     }
 
     [Theory]
@@ -48,7 +67,14 @@ public class AutoCadastroVendedorTests
     [InlineData("abcdefghijklmn")] // letras
     public void CnpjValidator_ComCnpjInvalido_DeveLancarCnpjInvalido(string cnpj)
     {
-        Assert.Throws<CnpjInvalido>(() => CnpjValidator.Validar(cnpj));
+        // Arrange
+        // (dados fornecidos pelo InlineData)
+
+        // Act
+        Action act = () => CnpjValidator.Validar(cnpj);
+
+        // Assert
+        Assert.Throws<CnpjInvalido>(act);
     }
 
     // ==================== CriarVendedor Factory ====================
@@ -56,12 +82,15 @@ public class AutoCadastroVendedorTests
     [Fact]
     public void CriarVendedor_ComDadosValidos_DeveRetornarUsuario()
     {
+        // Arrange
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
             CnpjValido, RazaoSocialValida, NomeFantasiaValido,
             EmailValido, senhaHash, TelefoneValido);
 
+        // Assert
         Assert.NotNull(vendedor);
         Assert.Equal("11222333000181", vendedor.Cpf);
         Assert.Equal(RazaoSocialValida, vendedor.Nome);
@@ -79,12 +108,16 @@ public class AutoCadastroVendedorTests
     [Fact]
     public void CriarVendedor_ComCnpjFormatado_DeveRemoverMascara()
     {
+        // Arrange
+        var cnpjFormatado = "11.222.333/0001-81";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
-            "11.222.333/0001-81", RazaoSocialValida, NomeFantasiaValido,
+            cnpjFormatado, RazaoSocialValida, NomeFantasiaValido,
             EmailValido, senhaHash, TelefoneValido);
 
+        // Assert
         Assert.Equal("11222333000181", vendedor.Cpf);
         Assert.Equal("11222333000181", vendedor.Cnpj);
     }
@@ -92,54 +125,80 @@ public class AutoCadastroVendedorTests
     [Fact]
     public void CriarVendedor_ComCnpjInvalido_DeveLancarCnpjInvalido()
     {
+        // Arrange
+        var cnpjInvalido = "12345678000100";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
-        Assert.Throws<CnpjInvalido>(() =>
-            Usuario.CriarVendedor(
-                "12345678000100", RazaoSocialValida, NomeFantasiaValido,
-                EmailValido, senhaHash, TelefoneValido));
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            cnpjInvalido, RazaoSocialValida, NomeFantasiaValido,
+            EmailValido, senhaHash, TelefoneValido);
+
+        // Assert
+        Assert.Throws<CnpjInvalido>(act);
     }
 
     [Fact]
     public void CriarVendedor_ComRazaoSocialVazia_DeveLancarExcecao()
     {
+        // Arrange
+        var razaoSocial = "";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
-        Assert.Throws<RazaoSocialObrigatoria>(() =>
-            Usuario.CriarVendedor(
-                CnpjValido, "", NomeFantasiaValido,
-                EmailValido, senhaHash, TelefoneValido));
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            CnpjValido, razaoSocial, NomeFantasiaValido,
+            EmailValido, senhaHash, TelefoneValido);
+
+        // Assert
+        Assert.Throws<RazaoSocialObrigatoria>(act);
     }
 
     [Fact]
     public void CriarVendedor_ComNomeFantasiaVazio_DeveLancarExcecao()
     {
+        // Arrange
+        var nomeFantasia = "";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
-        Assert.Throws<NomeFantasiaObrigatorio>(() =>
-            Usuario.CriarVendedor(
-                CnpjValido, RazaoSocialValida, "",
-                EmailValido, senhaHash, TelefoneValido));
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            CnpjValido, RazaoSocialValida, nomeFantasia,
+            EmailValido, senhaHash, TelefoneValido);
+
+        // Assert
+        Assert.Throws<NomeFantasiaObrigatorio>(act);
     }
 
     [Fact]
     public void CriarVendedor_ComEmailInvalido_DeveLancarExcecao()
     {
+        // Arrange
+        var emailInvalido = "emailinvalido";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
-        Assert.Throws<EmailInvalido>(() =>
-            Usuario.CriarVendedor(
-                CnpjValido, RazaoSocialValida, NomeFantasiaValido,
-                "emailinvalido", senhaHash, TelefoneValido));
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            CnpjValido, RazaoSocialValida, NomeFantasiaValido,
+            emailInvalido, senhaHash, TelefoneValido);
+
+        // Assert
+        Assert.Throws<EmailInvalido>(act);
     }
 
     [Fact]
     public void CriarVendedor_ComSenhaHashVazia_DeveLancarExcecao()
     {
-        Assert.Throws<SenhaVazia>(() =>
-            Usuario.CriarVendedor(
-                CnpjValido, RazaoSocialValida, NomeFantasiaValido,
-                EmailValido, "", TelefoneValido));
+        // Arrange
+        var senhaHash = "";
+
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            CnpjValido, RazaoSocialValida, NomeFantasiaValido,
+            EmailValido, senhaHash, TelefoneValido);
+
+        // Assert
+        Assert.Throws<SenhaVazia>(act);
     }
 
     [Theory]
@@ -147,23 +206,31 @@ public class AutoCadastroVendedorTests
     [InlineData("1234-5678")]    // formato errado (sem DDD)
     public void CriarVendedor_ComTelefoneInvalido_DeveLancarExcecao(string telefone)
     {
+        // Arrange
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
-        Assert.Throws<TelefoneInvalido>(() =>
-            Usuario.CriarVendedor(
-                CnpjValido, RazaoSocialValida, NomeFantasiaValido,
-                EmailValido, senhaHash, telefone));
+        // Act
+        Action act = () => Usuario.CriarVendedor(
+            CnpjValido, RazaoSocialValida, NomeFantasiaValido,
+            EmailValido, senhaHash, telefone);
+
+        // Assert
+        Assert.Throws<TelefoneInvalido>(act);
     }
 
     [Fact]
     public void CriarVendedor_SemTelefone_DeveCriarNormalmente()
     {
+        // Arrange
+        var telefoneVazio = "";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
             CnpjValido, RazaoSocialValida, NomeFantasiaValido,
-            EmailValido, senhaHash, "");
+            EmailValido, senhaHash, telefoneVazio);
 
+        // Assert
         Assert.Equal("", vendedor.Telefone);
     }
 
@@ -172,60 +239,87 @@ public class AutoCadastroVendedorTests
     [Fact]
     public void BCrypt_HashPassword_DeveSerDiferenteDaSenhaOriginal()
     {
+        // Arrange
+        // (constante SenhaValida)
+
+        // Act
         var hash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
+
+        // Assert
         Assert.NotEqual(SenhaValida, hash);
     }
 
     [Fact]
     public void BCrypt_Verify_DeveValidarSenhaCorreta()
     {
+        // Arrange
         var hash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
-        Assert.True(BCrypt.Net.BCrypt.Verify(SenhaValida, hash));
+
+        // Act
+        var resultado = BCrypt.Net.BCrypt.Verify(SenhaValida, hash);
+
+        // Assert
+        Assert.True(resultado);
     }
 
     [Fact]
     public void BCrypt_Verify_DeveRejeitarSenhaErrada()
     {
+        // Arrange
         var hash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
-        Assert.False(BCrypt.Net.BCrypt.Verify("SenhaErrada1@", hash));
+
+        // Act
+        var resultado = BCrypt.Net.BCrypt.Verify("SenhaErrada1@", hash);
+
+        // Assert
+        Assert.False(resultado);
     }
 
     // ==================== PerfilId do Vendedor ====================
 
     [Fact]
-    public void CriarVendedor_DeveTerPerfilIdDeVendedor()
+    public void CriarVendedor_ComDadosValidos_DeveTerPerfilIdDeVendedor()
     {
+        // Arrange
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
             CnpjValido, RazaoSocialValida, NomeFantasiaValido,
             EmailValido, senhaHash, TelefoneValido);
 
+        // Assert
         var perfilVendedor = Guid.Parse("B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2");
         Assert.Equal(perfilVendedor, vendedor.PerfilId);
     }
 
     [Fact]
-    public void CriarVendedor_DeveTerPlanoGratuito()
+    public void CriarVendedor_ComDadosValidos_DeveTerPlanoGratuito()
     {
+        // Arrange
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
             CnpjValido, RazaoSocialValida, NomeFantasiaValido,
             EmailValido, senhaHash, TelefoneValido);
 
+        // Assert
         Assert.Equal(0, vendedor.Plano);
     }
 
     [Fact]
-    public void CriarVendedor_DeveTerAtivoTrue()
+    public void CriarVendedor_ComDadosValidos_DeveTerAtivoTrue()
     {
+        // Arrange
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(SenhaValida);
 
+        // Act
         var vendedor = Usuario.CriarVendedor(
             CnpjValido, RazaoSocialValida, NomeFantasiaValido,
             EmailValido, senhaHash, TelefoneValido);
 
+        // Assert
         Assert.True(vendedor.Ativo);
     }
 }
