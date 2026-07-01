@@ -327,7 +327,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         using var connection = _factory.CreateConnection();
 
-        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha FROM Usuarios";
+        const string sql = @"SELECT Id, Cpf, Nome, Email, PerfilId, Senha, Cnpj, NomeFantasia, Telefone, Plano, Ativo, DataCriacao FROM Usuarios";
 
         return await connection.QueryAsync<Usuario>(new CommandDefinition(sql, cancellationToken: ct));
     }

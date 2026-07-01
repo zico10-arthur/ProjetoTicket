@@ -1,12 +1,13 @@
 namespace Domain.DTOs;
 
-public record StatusCancelamentoDTO(
-    Guid EventoId,
-    string Nome,
-    bool Gratuito,
-    int TotalIngressosVendidos,
-    int TotalReservasAtivas,
-    bool ReembolsoNecessario,
-    decimal ValorTotalReembolso,
-    string Mensagem
-);
+public class StatusCancelamentoDTO
+{
+    public Guid EventoId { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public bool Gratuito { get; set; }
+    public int TotalIngressosVendidos { get; set; }
+    public int TotalReservasAtivas { get; set; }
+    public bool ReembolsoNecessario { get; set; }
+    public decimal ValorTotalReembolso { get; set; }
+    public string Mensagem { get; set; } = string.Empty;
+}

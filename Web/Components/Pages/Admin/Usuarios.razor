@@ -26,8 +26,22 @@
                 <MudItem xs="12" sm="6" md="4">
                     <MudCard Elevation="3" Class="rounded-lg" Style="border-left: 5px solid #594AE2;">
                         <MudCardContent>
-                            <MudText Typo="Typo.h6" Color="Color.Primary"><b>@user.Nome</b></MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">
+                                <b>@(NomeDoPerfil(user.PerfilId) == "Vendedor" ? user.NomeFantasia : user.Nome)</b>
+                            </MudText>
                             <MudDivider Class="my-2"/>
+                            
+                            @if (NomeDoPerfil(user.PerfilId) == "Vendedor")
+                            {
+                                <div class="d-flex align-center mb-2 mt-3">
+                                    <MudIcon Icon="@Icons.Material.Filled.Store" Size="Size.Small" Class="mr-2 text-muted" />
+                                    <MudText Typo="Typo.body2"><b>Razão Social:</b> @user.Nome</MudText>
+                                </div>
+                                <div class="d-flex align-center mb-2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Small" Class="mr-2 text-muted" />
+                                    <MudText Typo="Typo.body2">CNPJ: @user.Cnpj</MudText>
+                                </div>
+                            }
                             
                             <div class="d-flex align-center mb-2 mt-3">
                                 <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Class="mr-2 text-muted" />

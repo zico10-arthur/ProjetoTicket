@@ -117,7 +117,8 @@ public class EventoService : IEventoService
             ? $"{status.TotalIngressosVendidos} ingressos vendidos. O cancelamento exigirá reembolso de R$ {status.ValorTotalReembolso:F2}. Deseja continuar?"
             : "Nenhum ingresso vendido. O cancelamento não exige reembolso.";
 
-        return status with { Mensagem = mensagem };
+        status.Mensagem = mensagem;
+        return status;
     }
 
     /// <summary>
