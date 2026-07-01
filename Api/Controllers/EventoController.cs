@@ -26,7 +26,7 @@ public class EventoController : ControllerBase
             return Ok(eventos);
         }
         catch (KeyNotFoundException erro) { return NotFound(erro.Message); }
-        catch (Exception erro) { return StatusCode(500, $"Evento não encontrado | {erro.Message}"); }
+        catch (Exception erro) { return StatusCode(500, new { message = erro.Message }); }
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class EventoController : ControllerBase
             return Ok(evento);
         }
         catch (KeyNotFoundException erro) { return NotFound(erro.Message); }
-        catch (Exception erro) { return StatusCode(500, $"Evento não encontrado | {erro.Message}"); }
+        catch (Exception erro) { return StatusCode(500, new { message = erro.Message }); }
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class EventoController : ControllerBase
             var id = await _eventoService.CriarEventoAsync(evento, userId);
             return Ok(new { id });
         }
-        catch (Exception erro) { return BadRequest($"Erro ao criar novo evento | {erro.Message}"); }
+        catch (Exception erro) { return BadRequest(new { message = erro.Message }); }
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class EventoController : ControllerBase
         }
         catch (KeyNotFoundException erro) { return NotFound($"Evento não encontrado | {erro.Message}"); }
         catch (UnauthorizedAccessException) { return Forbid(); }
-        catch (Exception erro) { return BadRequest($"Erro ao atualizar o evento | {erro.Message}"); }
+        catch (Exception erro) { return BadRequest(new { message = erro.Message }); }
     }
 
     /// <summary>

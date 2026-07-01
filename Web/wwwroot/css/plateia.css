@@ -28,6 +28,28 @@ html, body {
     color: var(--plateia-text);
 }
 
+/* ── Main content wrapper (substitui MudContainer, com breakpoints responsivos) ── */
+.main-content-wrapper {
+    max-width: 1200px;
+    margin: 16px auto 16px;
+    padding: 0 8px;
+    animation: plateiaFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 600px) {
+    .main-content-wrapper {
+        padding: 0 16px;
+        margin-top: 24px;
+    }
+}
+
+@media (min-width: 960px) {
+    .main-content-wrapper {
+        padding: 0 24px;
+        margin-top: 32px;
+    }
+}
+
 /* ── Page transitions ── */
 .plateia-page-enter {
     animation: plateiaFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
@@ -942,7 +964,7 @@ div.plateia-feature-card:not(.mud-card) {
 .t360-legend__filters {
     display: flex;
     gap: 6px;
-    margin-left: auto;
+    flex-wrap: wrap;
 }
 
 .t360-legend__filter {
@@ -976,10 +998,14 @@ div.plateia-feature-card:not(.mud-card) {
 .t360-map__surface {
     background: linear-gradient(180deg, #E8ECF1 0%, #F4F6F9 45%, #EEF1F5 100%);
     cursor: grab;
-    height: min(480px, 68vh);
-    min-height: 340px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1.45 / 1;
+    max-height: 520px;
+    min-height: 280px;
     overflow: hidden;
     touch-action: none;
+    overscroll-behavior: contain;
 }
 
 .t360-map__surface:active { cursor: grabbing; }
@@ -1112,11 +1138,11 @@ div.plateia-feature-card:not(.mud-card) {
     font-family: inherit;
     font-size: 1.1rem;
     font-weight: 700;
-    height: 36px;
+    height: 44px;
     justify-content: center;
     line-height: 1;
     transition: background 0.15s ease;
-    width: 36px;
+    width: 44px;
 }
 
 .t360-map__tool:hover {
@@ -1134,13 +1160,20 @@ div.plateia-feature-card:not(.mud-card) {
     position: fixed;
     right: 0;
     z-index: 1200;
+    max-height: 45vh;
+    overflow-y: auto;
 }
 
 .checkout-panel__cta { font-weight: 700; letter-spacing: 0.02em; }
 
 @media (min-width: 960px) {
     .t360-seatmap { padding-bottom: 0; padding-right: 320px; }
-    .t360-map__surface { height: 520px; }
+    .t360-map__surface {
+        aspect-ratio: auto;
+        height: 520px;
+        max-height: 520px;
+        min-height: 400px;
+    }
     .checkout-panel {
         border-left: 1px solid var(--mud-palette-divider);
         border-top: none;
@@ -1151,6 +1184,63 @@ div.plateia-feature-card:not(.mud-card) {
         right: 0;
         top: 64px;
         width: 300px;
+        max-height: none;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 959px) {
+    .t360-seatmap { padding-bottom: 150px; }
+    .t360-seatmap__header {
+        margin-bottom: 8px;
+    }
+    .t360-seatmap__title {
+        font-size: 1.1rem;
+    }
+    .t360-seatmap__subtitle {
+        font-size: 0.75rem;
+    }
+    .t360-seatmap__counter {
+        padding: 6px 12px;
+        gap: 4px;
+    }
+    .t360-seatmap__counter-num {
+        font-size: 1rem;
+    }
+    .t360-seatmap__counter-label {
+        font-size: 0.7rem;
+    }
+    .t360-legend {
+        gap: 8px;
+        padding: 8px 10px;
+    }
+    .t360-legend__item {
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+    .t360-legend__swatch {
+        height: 12px;
+        width: 12px;
+    }
+    .t360-legend__filter {
+        font-size: 0.68rem;
+        padding: 4px 10px;
+    }
+    .t360-map__toolbar {
+        bottom: 8px;
+        right: 8px;
+        gap: 4px;
+    }
+    .checkout-panel {
+        padding: 12px !important;
+        gap: 8px !important;
+    }
+    .checkout-panel .mud-typography-h6 {
+        font-size: 1rem !important;
+    }
+    /* Esconde stepper em mobile - informação redundante */
+    .purchase-stepper-bar {
+        display: none;
     }
 }
 

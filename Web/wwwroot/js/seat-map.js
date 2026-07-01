@@ -53,10 +53,12 @@ window.plateiaSeatMap = {
 
         const onTouchStart = (e) => {
             if (e.touches.length === 2) {
+                e.preventDefault();
                 lastTouchDist = Math.hypot(
                     e.touches[0].clientX - e.touches[1].clientX,
                     e.touches[0].clientY - e.touches[1].clientY);
             } else if (e.touches.length === 1 && !isSeat(e.target)) {
+                e.preventDefault();
                 dragging = true;
                 startX = e.touches[0].clientX - panX;
                 startY = e.touches[0].clientY - panY;
@@ -90,7 +92,7 @@ window.plateiaSeatMap = {
         surface.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
-        surface.addEventListener('touchstart', onTouchStart, { passive: true });
+        surface.addEventListener('touchstart', onTouchStart, { passive: false });
         surface.addEventListener('touchmove', onTouchMove, { passive: false });
         surface.addEventListener('touchend', onTouchEnd);
 
