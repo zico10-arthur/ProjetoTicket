@@ -6,43 +6,41 @@
 @inject PurchaseStateService PurchaseState
 @using System.Net.Http.Headers
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-2">
-    <PurchaseStepper ActiveStep="0" />
+<PurchaseStepper ActiveStep="0" />
 
-    <div class="d-flex align-center mb-4 flex-wrap gap-2">
-        <div>
-            <MudText Typo="Typo.h5">Escolha seus assentos</MudText>
-            @if (!string.IsNullOrEmpty(_nomeEvento))
-            {
-                <MudText Typo="Typo.body2" Color="Color.Secondary">@_nomeEvento</MudText>
-            }
-        </div>
-        <MudSpacer />
-        <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/">
-            Voltar
-        </MudButton>
+<div class="d-flex align-center mb-4 flex-wrap gap-2">
+    <div>
+        <MudText Typo="Typo.h5">Escolha seus assentos</MudText>
+        @if (!string.IsNullOrEmpty(_nomeEvento))
+        {
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@_nomeEvento</MudText>
+        }
     </div>
+    <MudSpacer />
+    <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/">
+        Voltar
+    </MudButton>
+</div>
 
-    @if (_carregando)
-    {
-        <MudStack AlignItems="AlignItems.Center" Class="py-16">
-            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
-            <MudText Color="Color.Secondary" Class="mt-4">Carregando mapa de assentos...</MudText>
-        </MudStack>
-    }
-    else if (!_assentos.Any())
-    {
-        <MudAlert Severity="Severity.Info">Nenhum ingresso disponível para este evento.</MudAlert>
-    }
-    else
-    {
-        <SeatMap Title="Mapa do auditório"
-                 Subtitle="@_subtituloMapa"
-                 Seats="_assentos"
-                 ShowSectorFilter="@_mostrarFiltroSetor"
-                 OnCheckout="OnCheckout" />
-    }
-</MudContainer>
+@if (_carregando)
+{
+    <MudStack AlignItems="AlignItems.Center" Class="py-16">
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+        <MudText Color="Color.Secondary" Class="mt-4">Carregando mapa de assentos...</MudText>
+    </MudStack>
+}
+else if (!_assentos.Any())
+{
+    <MudAlert Severity="Severity.Info">Nenhum ingresso disponível para este evento.</MudAlert>
+}
+else
+{
+    <SeatMap Title="Mapa do auditório"
+             Subtitle="@_subtituloMapa"
+             Seats="_assentos"
+             ShowSectorFilter="@_mostrarFiltroSetor"
+             OnCheckout="OnCheckout" />
+}
 
 @code {
     [Parameter] public string EventoId { get; set; } = "";
