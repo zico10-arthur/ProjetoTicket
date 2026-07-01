@@ -1,25 +1,26 @@
 @namespace Web.Components.Features.SeatMap
 @inject ISnackbar Snackbar
 
-<div class="seat-map-root">
-    <MudPaper Elevation="0" Class="pa-4 mb-2">
-        <MudText Typo="Typo.h5" Class="mb-1">@Title</MudText>
-        @if (!string.IsNullOrWhiteSpace(Subtitle))
-        {
-            <MudText Typo="Typo.body2" Color="Color.Secondary">@Subtitle</MudText>
-        }
-    </MudPaper>
+<div class="t360-seatmap">
+    <div class="t360-seatmap__header">
+        <div>
+            <h2 class="t360-seatmap__title">@Title</h2>
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <p class="t360-seatmap__subtitle">@Subtitle</p>
+            }
+        </div>
+        <div class="t360-seatmap__counter">
+            <span class="t360-seatmap__counter-num">@SelectedCount</span>
+            <span class="t360-seatmap__counter-label">/ @SeatModel.MaxSelection assentos</span>
+        </div>
+    </div>
 
     <SeatMapLegend ShowSectorFilter="@ShowSectorFilter"
                    Filter="@_sectorFilter"
                    FilterChanged="OnSectorFilterChanged" />
 
-    <SeatMapControls SelectedCount="@SelectedCount"
-                     OnZoomIn="ZoomIn"
-                     OnZoomOut="ZoomOut"
-                     OnReset="ResetView" />
-
-    <MudPaper Elevation="2" Class="pa-2 mb-4 seat-map-paper">
+    <MudPaper Elevation="0" Class="t360-seatmap__card mb-4">
         <SeatMapCanvas @ref="_canvas"
                        Seats="Seats"
                        SectorFilter="@_sectorFilter"
@@ -35,8 +36,8 @@
 
 @code {
     [Parameter] public string Title { get; set; } = "Escolha seus assentos";
-    [Parameter] public string Subtitle { get; set; } = "";
-    [Parameter] public List<SeatModel> Seats { get; set; } = QuintaAuditorioSeatData.CreateDemoLayout();
+    [Parameter] public string Subtitle { get; set; } = "Clique nos assentos disponíveis. O palco fica no topo do mapa.";
+    [Parameter] public List<SeatModel> Seats { get; set; } = [];
     [Parameter] public bool ShowSectorFilter { get; set; } = true;
     [Parameter] public EventCallback<IReadOnlyList<SeatModel>> OnCheckout { get; set; }
 
@@ -89,23 +90,5 @@
         }
     }
 
-    private void OnSectorFilterChanged(string value)
-    {
-        _sectorFilter = value;
-    }
-
-    private async Task ZoomIn()
-    {
-        if (_canvas is not null) await _canvas.ZoomInAsync();
-    }
-
-    private async Task ZoomOut()
-    {
-        if (_canvas is not null) await _canvas.ZoomOutAsync();
-    }
-
-    private async Task ResetView()
-    {
-        if (_canvas is not null) await _canvas.ResetViewAsync();
-    }
+    private void OnSectorFilterChanged(string value) => _sectorFilter = value;
 }

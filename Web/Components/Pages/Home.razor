@@ -1,6 +1,6 @@
 @page "/"
 @inject HttpClient Http
-@using Web.Mock
+@inject ISnackbar Snackbar
 
 <MudStack Spacing="6">
 
@@ -178,7 +178,7 @@
             @foreach (var evento in eventos.Where(e => !e.Cancelado))
             {
                 <MudItem xs="12" sm="6" lg="4">
-                    <CartaoEvento Evento="@evento" ModoDemo="@_modoDemo" />
+                    <CartaoEvento Evento="@evento" />
                 </MudItem>
             }
         }
@@ -188,26 +188,18 @@
 
 @code {
     private List<EventoViewModel>? eventos;
-    private bool _modoDemo;
     private int? _totalEventosAtivos => eventos?.Count(e => !e.Cancelado);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento");
-            if (eventos is null || eventos.Count == 0)
-                CarregarMock();
+            eventos = await Http.GetFromJsonAsync<List<EventoViewModel>>("api/Evento") ?? [];
         }
         catch
         {
-            CarregarMock();
+            eventos = [];
+            Snackbar.Add("Não foi possível carregar os eventos. Tente novamente mais tarde.", Severity.Error);
         }
-    }
-
-    private void CarregarMock()
-    {
-        _modoDemo = true;
-        eventos = PlateiaMockData.GetEventos();
     }
 }

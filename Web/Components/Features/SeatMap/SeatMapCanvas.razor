@@ -2,45 +2,69 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-<div class="seat-map-viewport" id="@_viewportId">
-    <div class="seat-map-stage-bar">PALCO</div>
-    <div class="seat-map-transform">
-        <svg class="seat-map-svg" viewBox="@ViewBox" preserveAspectRatio="xMidYMid meet">
-            <defs>
-                <linearGradient id="stageGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#334155" />
-                    <stop offset="100%" stop-color="#1E293B" />
-                </linearGradient>
-                <linearGradient id="stageSpotlight" x1="0.5" y1="0" x2="0.5" y2="1">
-                    <stop offset="0%" stop-color="rgba(201,169,98,0.35)" />
-                    <stop offset="100%" stop-color="rgba(201,169,98,0)" />
-                </linearGradient>
-                <linearGradient id="seatGradientGeral" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2DD4BF" />
-                    <stop offset="100%" stop-color="#0D9488" />
-                </linearGradient>
-                <linearGradient id="seatGradientVip" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#A78BFA" />
-                    <stop offset="100%" stop-color="#6B21A8" />
-                </linearGradient>
-                <linearGradient id="seatGradientSelected" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#E8C97A" />
-                    <stop offset="100%" stop-color="#C9A962" />
-                </linearGradient>
-            </defs>
+<div class="t360-map" id="@_viewportId">
+    <div class="t360-map__surface">
+        <div class="t360-map__transform">
+            <svg class="t360-map__svg"
+                 viewBox="@ViewBox"
+                 preserveAspectRatio="xMidYMid meet"
+                 xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="@_gradStage" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#374151" />
+                        <stop offset="100%" stop-color="#111827" />
+                    </linearGradient>
+                    <filter id="@_shadowStage" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.25" />
+                    </filter>
+                </defs>
 
-            <rect x="@(_layout.StageX)" y="8" width="@(_layout.StageWidth)" height="32" rx="8" fill="url(#stageGradient)" />
-            <rect x="@(_layout.StageX + _layout.StageWidth * 0.2)" y="8" width="@(_layout.StageWidth * 0.6)" height="32" rx="4" fill="url(#stageSpotlight)" opacity="0.6" />
+                <rect class="t360-map__floor" x="0" y="0" width="@_layout.Width" height="@_layout.Height" />
 
-            @foreach (var item in _renderItems)
-            {
-                <SeatSvg Seat="item.Seat"
-                         X="item.X"
-                         Y="item.Y"
-                         Size="_layout.SeatSize"
-                         OnToggle="OnToggle" />
-            }
-        </svg>
+                <path class="t360-map__stage-fill"
+                      d="@SeatLayoutEngine.StagePath(_layout.Stage)"
+                      fill="@($"url(#{_gradStage})")"
+                      filter="@($"url(#{_shadowStage})")" />
+                <path class="t360-map__stage-edge"
+                      d="@SeatLayoutEngine.StageFrontLine(_layout.Stage)"
+                      fill="none" />
+
+                @foreach (var label in _layout.Labels)
+                {
+                    <svg:text x="@Fmt(label.X)"
+                              y="@Fmt(label.Y)"
+                              text-anchor="@label.Anchor"
+                              class="@label.CssClass">@label.Text</svg:text>
+                }
+
+                @if (_aisle is not null)
+                {
+                    <rect class="t360-map__aisle"
+                          x="@Fmt(_aisle.Value.X)"
+                          y="@Fmt(_aisle.Value.Y)"
+                          width="@Fmt(_aisle.Value.W)"
+                          height="@Fmt(_aisle.Value.H)"
+                          rx="3" />
+                }
+
+                @foreach (var item in _layout.Seats)
+                {
+                    <SeatSvg Seat="item.Seat" X="item.X" Y="item.Y" OnToggle="OnToggle" />
+                }
+            </svg>
+        </div>
+    </div>
+
+    <div class="t360-map__toolbar">
+        <button type="button" class="t360-map__tool" @onclick="ZoomOutAsync" aria-label="Diminuir zoom">
+            <span>−</span>
+        </button>
+        <button type="button" class="t360-map__tool" @onclick="ResetViewAsync" aria-label="Centralizar">
+            <span>◎</span>
+        </button>
+        <button type="button" class="t360-map__tool" @onclick="ZoomInAsync" aria-label="Aumentar zoom">
+            <span>+</span>
+        </button>
     </div>
 </div>
 
@@ -49,108 +73,55 @@
     [Parameter] public string SectorFilter { get; set; } = "Todos";
     [Parameter] public EventCallback<int> OnToggle { get; set; }
 
-    private readonly string _viewportId = $"seat-map-{Guid.NewGuid():N}";
-    private SeatLayoutMetrics _layout = new();
-    private List<SeatRenderItem> _renderItems = [];
+    private readonly string _viewportId = $"t360-{Guid.NewGuid():N}";
+    private readonly string _gradStage = $"gs-{Guid.NewGuid():N}"[..10];
+    private readonly string _shadowStage = $"ss-{Guid.NewGuid():N}"[..10];
+
+    private SeatLayoutEngine.Layout _layout = SeatLayoutEngine.Build([], "Todos");
+    private (double X, double Y, double W, double H)? _aisle;
     private string ViewBox => $"0 0 {_layout.Width} {_layout.Height}";
-    private bool _jsInitialized;
+    private bool _jsReady;
 
     protected override void OnParametersSet()
     {
-        _layout = SeatLayoutMetrics.Compute(Seats);
-        _renderItems = BuildRenderItems();
+        _layout = SeatLayoutEngine.Build(Seats, SectorFilter);
+        _aisle = BuildAisle();
     }
+
+    private (double X, double Y, double W, double H)? BuildAisle()
+    {
+        if (_layout.Seats.Count == 0) return null;
+
+        var left = _layout.Seats.Where(s => s.Seat.Block == SeatBlock.Left).ToList();
+        var right = _layout.Seats.Where(s => s.Seat.Block == SeatBlock.Right).ToList();
+        if (left.Count == 0 || right.Count == 0) return null;
+
+        var leftMax = left.Max(s => s.X + SeatLayoutEngine.SeatSize);
+        var rightMin = right.Min(s => s.X);
+        var h = Seats.Select(s => s.RowLabel).Distinct().Count()
+              * (SeatLayoutEngine.SeatSize + SeatLayoutEngine.RowGap)
+              - SeatLayoutEngine.RowGap
+              + SeatLayoutEngine.ColHeaderHeight;
+
+        return (leftMax + 3, _layout.GridTop + SeatLayoutEngine.ColHeaderHeight - 2, rightMin - leftMax - 6, h + 4);
+    }
+
+    private static string Fmt(double v) => v.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_jsInitialized) return;
-        await JS.InvokeVoidAsync("plateiaSeatMap.init", _viewportId, DotNetObjectReference.Create(this));
-        _jsInitialized = true;
+        if (_jsReady) return;
+        await JS.InvokeVoidAsync("plateiaSeatMap.init", _viewportId);
+        _jsReady = true;
     }
 
-    private List<SeatRenderItem> BuildRenderItems()
-    {
-        var items = new List<SeatRenderItem>();
-        var rows = Seats
-            .GroupBy(s => s.RowLabel)
-            .OrderBy(g => g.Key)
-            .Select((g, index) => (Key: g.Key, Index: index, Seats: g.ToList()))
-            .ToList();
-
-        foreach (var row in rows)
-        {
-            var rowY = _layout.RowStartY + row.Index * _layout.RowGap;
-
-            var xLeft = _layout.LeftBlockX;
-            foreach (var seat in row.Seats.Where(s => s.Block == SeatBlock.Left).OrderBy(s => s.SeatNumber))
-            {
-                if (MatchesFilter(seat))
-                {
-                    items.Add(new SeatRenderItem(seat, xLeft, rowY));
-                    xLeft += _layout.SeatSize + _layout.SeatGap;
-                }
-            }
-
-            var xRight = _layout.RightBlockX;
-            foreach (var seat in row.Seats.Where(s => s.Block == SeatBlock.Right).OrderBy(s => s.SeatNumber))
-            {
-                if (MatchesFilter(seat))
-                {
-                    items.Add(new SeatRenderItem(seat, xRight, rowY));
-                    xRight += _layout.SeatSize + _layout.SeatGap;
-                }
-            }
-        }
-
-        return items;
-    }
-
-    private bool MatchesFilter(SeatModel seat) =>
-        SectorFilter == "Todos" || seat.Setor.Equals(SectorFilter, StringComparison.OrdinalIgnoreCase);
-
-    public async Task ZoomInAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.zoomIn", _viewportId);
-    public async Task ZoomOutAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.zoomOut", _viewportId);
-    public async Task ResetViewAsync() => await JS.InvokeVoidAsync("plateiaSeatMap.reset", _viewportId);
+    public Task ZoomInAsync() => JS.InvokeVoidAsync("plateiaSeatMap.zoomIn", _viewportId).AsTask();
+    public Task ZoomOutAsync() => JS.InvokeVoidAsync("plateiaSeatMap.zoomOut", _viewportId).AsTask();
+    public Task ResetViewAsync() => JS.InvokeVoidAsync("plateiaSeatMap.reset", _viewportId).AsTask();
 
     public async ValueTask DisposeAsync()
     {
-        if (_jsInitialized)
+        if (_jsReady)
             await JS.InvokeVoidAsync("plateiaSeatMap.dispose", _viewportId);
-    }
-
-    private sealed record SeatRenderItem(SeatModel Seat, double X, double Y);
-
-    private sealed class SeatLayoutMetrics
-    {
-        public double Width { get; init; }
-        public double Height { get; init; }
-        public double StageX { get; init; }
-        public double StageWidth { get; init; }
-        public double RowStartY { get; init; }
-        public double RowGap { get; init; }
-        public double SeatSize { get; init; } = 32;
-        public double SeatGap { get; init; } = 8;
-        public double LeftBlockX { get; init; }
-        public double RightBlockX { get; init; }
-
-        public static SeatLayoutMetrics Compute(List<SeatModel> seats)
-        {
-            var rowCount = seats.Select(s => s.RowLabel).Distinct().Count();
-            if (rowCount == 0) rowCount = 8;
-
-            var width = 520;
-            var height = 64 + rowCount * 44 + 32;
-            return new SeatLayoutMetrics
-            {
-                Width = width,
-                Height = height,
-                StageX = 80,
-                StageWidth = width - 160,
-                RowStartY = 64,
-                RowGap = 44,
-                LeftBlockX = 48,
-                RightBlockX = width / 2 + 24,
-            };
-        }
     }
 }

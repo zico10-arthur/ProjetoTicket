@@ -88,16 +88,36 @@ public class PagamentoService : IPagamentoService
     public async Task<IEnumerable<PagamentoAdminDTO>> ListarTodosAdmin(CancellationToken ct)
     {
         var pagamentos = await _pagamentoRepo.ListarTodosAdmin(ct);
+        var nomesPorEvento = new Dictionary<Guid, string>();
+        var resultado = new List<PagamentoAdminDTO>();
 
-        return pagamentos.Select(p => new PagamentoAdminDTO(
-            p.Id,
-            p.ReservaId,
-            p.Reserva?.UsuarioId.ToString() ?? "",
-            p.Reserva?.EventoId.ToString() ?? "",
-            p.ValorPago,
-            p.Status.ToString(),
-            p.Metodo,
-            p.DataPagamento
-        ));
+        foreach (var p in pagamentos)
+        {
+            var eventoId = p.Reserva?.EventoId ?? Guid.Empty;
+            var eventoNome = "";
+
+            if (eventoId != Guid.Empty)
+            {
+                if (!nomesPorEvento.TryGetValue(eventoId, out eventoNome!))
+                {
+                    var evento = await _eventoRepo.GetByIdAsync(eventoId);
+                    eventoNome = evento?.Nome ?? eventoId.ToString();
+                    nomesPorEvento[eventoId] = eventoNome;
+                }
+            }
+
+            resultado.Add(new PagamentoAdminDTO(
+                p.Id,
+                p.ReservaId,
+                p.Reserva?.UsuarioId.ToString() ?? "",
+                eventoNome,
+                p.ValorPago,
+                p.Status.ToString(),
+                p.Metodo,
+                p.DataPagamento
+            ));
+        }
+
+        return resultado;
     }
 }

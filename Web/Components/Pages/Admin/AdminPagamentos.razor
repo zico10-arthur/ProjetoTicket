@@ -1,0 +1,106 @@
+@page "/admin/pagamentos"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
+    <MudText Typo="Typo.h4" Class="mb-2">Pagamentos</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+        Histórico de pagamentos confirmados na plataforma.
+    </MudText>
+
+    @if (_carregando)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+    }
+    else if (!_pagamentos.Any())
+    {
+        <MudAlert Severity="Severity.Info">Nenhum pagamento registrado.</MudAlert>
+    }
+    else
+    {
+        <MudPaper Elevation="2" Class="pa-2">
+            <MudTable Items="@_pagamentos" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true">
+                <HeaderContent>
+                    <MudTh>Data</MudTh>
+                    <MudTh>Evento</MudTh>
+                    <MudTh>Valor</MudTh>
+                    <MudTh>Método</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Reserva</MudTh>
+                    <MudTh>Comprador</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Data">@context.DataPagamento.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudTd>
+                    <MudTd DataLabel="Evento"><b>@context.EventoNome</b></MudTd>
+                    <MudTd DataLabel="Valor">@context.ValorPago.ToString("C")</MudTd>
+                    <MudTd DataLabel="Método">@context.Metodo</MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Size="Size.Small" Color="@ObterCorStatus(context.Status)">@context.Status</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Reserva">
+                        <MudText Typo="Typo.caption">@context.ReservaId.ToString()[..8]…</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Comprador">
+                        <MudText Typo="Typo.caption">@context.UsuarioId[..Math.Min(8, context.UsuarioId.Length)]…</MudText>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+
+        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-4">
+            Total: @_pagamentos.Count pagamento(s) · @_pagamentos.Sum(p => p.ValorPago).ToString("C")
+        </MudText>
+    }
+</MudContainer>
+
+@code {
+    private bool _carregando = true;
+    private List<PagamentoAdminViewModel> _pagamentos = [];
+
+    private class PagamentoAdminViewModel
+    {
+        public Guid PagamentoId { get; set; }
+        public Guid ReservaId { get; set; }
+        public string UsuarioId { get; set; } = "";
+        public string EventoNome { get; set; } = "";
+        public decimal ValorPago { get; set; }
+        public string Status { get; set; } = "";
+        public string Metodo { get; set; } = "";
+        public DateTime DataPagamento { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync("api/pagamento/admin/todos");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _pagamentos = await response.Content.ReadFromJsonAsync<List<PagamentoAdminViewModel>>() ?? [];
+            }
+            else
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Falha ao carregar pagamentos: {erro}", Severity.Error);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Erro ao conectar com a API.", Severity.Error);
+        }
+        finally
+        {
+            _carregando = false;
+        }
+    }
+
+    private static Color ObterCorStatus(string status) => status switch
+    {
+        "Confirmado" or "Pago" => Color.Success,
+        "Reembolsado" => Color.Warning,
+        "Cancelado" or "Falhou" => Color.Error,
+        _ => Color.Default
+    };
+}

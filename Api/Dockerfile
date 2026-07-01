@@ -19,6 +19,7 @@ RUN dotnet publish Api/Api.csproj -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app .
+ENV ASPNETCORE_URLS=http://+:5007
 EXPOSE 5007
 
 # DbUp scripts como embedded resources precisam estar na DLL

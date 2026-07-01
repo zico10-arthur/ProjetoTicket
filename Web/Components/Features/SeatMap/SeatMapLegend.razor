@@ -1,30 +1,35 @@
 @namespace Web.Components.Features.SeatMap
 
-<div class="seat-map-legend d-flex flex-wrap gap-4 mb-4 align-center">
-    <div class="d-flex align-center gap-2">
-        <span class="seat-map-legend-dot seat-map-legend-dot--geral"></span>
-        <MudText Typo="Typo.caption">Geral</MudText>
+<div class="t360-legend">
+    <div class="t360-legend__item">
+        <span class="t360-legend__swatch t360-legend__swatch--open"></span>
+        <span>Disponível</span>
     </div>
-    <div class="d-flex align-center gap-2">
-        <span class="seat-map-legend-dot seat-map-legend-dot--vip"></span>
-        <MudText Typo="Typo.caption">VIP</MudText>
+    <div class="t360-legend__item">
+        <span class="t360-legend__swatch t360-legend__swatch--vip"></span>
+        <span>VIP</span>
     </div>
-    <div class="d-flex align-center gap-2">
-        <span class="seat-map-legend-dot seat-map-legend-dot--selected"></span>
-        <MudText Typo="Typo.caption">Selecionado</MudText>
+    <div class="t360-legend__item">
+        <span class="t360-legend__swatch t360-legend__swatch--picked"></span>
+        <span>Selecionado</span>
     </div>
-    <div class="d-flex align-center gap-2">
-        <span class="seat-map-legend-dot seat-map-legend-dot--occupied"></span>
-        <MudText Typo="Typo.caption">Ocupado</MudText>
+    <div class="t360-legend__item">
+        <span class="t360-legend__swatch t360-legend__swatch--sold"></span>
+        <span>Vendido</span>
     </div>
+
     @if (ShowSectorFilter)
     {
-        <MudSpacer />
-        <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-            <MudButton Color="@(_filter == "Todos" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("Todos")'>Todos</MudButton>
-            <MudButton Color="@(_filter == "VIP" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("VIP")'>VIP</MudButton>
-            <MudButton Color="@(_filter == "Geral" ? Color.Primary : Color.Default)" OnClick='() => SetFilter("Geral")'>Geral</MudButton>
-        </MudButtonGroup>
+        <div class="t360-legend__filters">
+            @foreach (var option in _options)
+            {
+                <button type="button"
+                        class="t360-legend__filter @(Filter == option ? "t360-legend__filter--active" : "")"
+                        @onclick="() => SetFilter(option)">
+                    @option
+                </button>
+            }
+        </div>
     }
 </div>
 
@@ -33,16 +38,7 @@
     [Parameter] public string Filter { get; set; } = "Todos";
     [Parameter] public EventCallback<string> FilterChanged { get; set; }
 
-    private string _filter = "Todos";
+    private readonly string[] _options = ["Todos", "VIP", "Geral"];
 
-    protected override void OnParametersSet()
-    {
-        _filter = Filter;
-    }
-
-    private async Task SetFilter(string value)
-    {
-        _filter = value;
-        await FilterChanged.InvokeAsync(value);
-    }
+    private async Task SetFilter(string value) => await FilterChanged.InvokeAsync(value);
 }

@@ -1,56 +1,51 @@
 @namespace Web.Components.Features.SeatMap
 
-<g class="seat-svg-group @(IsOccupied ? "seat-svg-group--occupied" : "")" transform="translate(@X, @Y)">
+<g class="t360-seat @StateClass @(IsOccupied ? "t360-seat--disabled" : "")"
+   transform="translate(@Fx, @Fy)"
+   @onclick="HandleClick"
+   @onclick:stopPropagation="true"
+   role="button"
+   aria-label="@AriaLabel">
     <title>@TooltipText</title>
-    <g class="seat-svg @CssClass" @onclick="HandleClick" @onclick:stopPropagation="true">
-        <!-- Encosto -->
-        <path class="seat-back"
-              d="M @(_pad + 2),@(_h * 0.08)
-                 Q @(_w / 2),@(_h * 0.02) @(_w - _pad - 2),@(_h * 0.08)
-                 L @(_w - _pad),@(_h * 0.38)
-                 Q @(_w / 2),@(_h * 0.32) @(_pad),@(_h * 0.38) Z" />
-        <!-- Assento (cushion) -->
-        <path class="seat-cushion"
-              d="M @(_pad),@(_h * 0.36)
-                 L @(_w - _pad),@(_h * 0.36)
-                 Q @(_w - 2),@(_h * 0.5) @(_w - _pad),@(_h * 0.72)
-                 L @(_pad),@(_h * 0.72)
-                 Q 2,@(_h * 0.5) @(_pad),@(_h * 0.36) Z" />
-        <!-- Braços -->
-        <rect class="seat-arm seat-arm--left"
-              x="0" y="@(_h * 0.3)" width="@(_pad + 1)" height="@(_h * 0.42)" rx="2"
-              opacity="0.7" />
-        <rect class="seat-arm seat-arm--right"
-              x="@(_w - _pad - 1)" y="@(_h * 0.3)" width="@(_pad + 1)" height="@(_h * 0.42)" rx="2"
-              opacity="0.7" />
-        <!-- Número -->
-        <text x="@(_w / 2)" y="@(_h * 0.58)" text-anchor="middle" class="seat-svg-label">@Seat.SeatNumber</text>
-    </g>
+    <rect class="t360-seat__hit" x="0" y="0" width="@S" height="@S" rx="5" />
+    <rect class="t360-seat__shape" x="1" y="1" width="@Inner" height="@Inner" rx="4" />
+    @if (IsSelected)
+    {
+        <rect class="t360-seat__ring" x="0" y="0" width="@S" height="@S" rx="5" fill="none" />
+    }
+    <svg:text x="@Half" y="@TextY" text-anchor="middle" class="t360-seat__num">@Seat.GlobalSeatNumber</svg:text>
 </g>
 
 @code {
     [Parameter, EditorRequired] public SeatModel Seat { get; set; } = null!;
     [Parameter] public double X { get; set; }
     [Parameter] public double Y { get; set; }
-    [Parameter] public double Size { get; set; } = 32;
     [Parameter] public EventCallback<int> OnToggle { get; set; }
 
-    private double _w => Size;
-    private double _h => Size * 1.15;
-    private double _pad => Size * 0.12;
+    private const double S = SeatLayoutEngine.SeatSize;
+    private double Inner => S - 2;
+    private double Half => S / 2;
+    private double TextY => S - 6;
+
+    private string Fx => X.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+    private string Fy => Y.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
 
     private bool IsOccupied => Seat.Status == SeatStatus.Occupied;
     private bool IsSelected => Seat.Status == SeatStatus.Selected;
 
-    private string CssClass => IsOccupied
-        ? "seat-svg--occupied"
+    private string StateClass => IsOccupied
+        ? "t360-seat--sold"
         : IsSelected
-            ? "seat-svg--selected"
-            : Seat.IsVip ? "seat-svg--vip" : "seat-svg--geral";
+            ? "t360-seat--picked"
+            : Seat.IsVip
+                ? "t360-seat--vip"
+                : "t360-seat--open";
 
     private string TooltipText => IsOccupied
-        ? $"{Seat.DisplayLabel} · {Seat.Setor} — Ocupado"
-        : $"{Seat.DisplayLabel} · {Seat.Setor} — {Seat.Price:C}";
+        ? $"{Seat.DisplayLabel} · {Seat.Setor} — Vendido"
+        : $"{Seat.DisplayLabel} · {Seat.Setor} · {Seat.Price:C}";
+
+    private string AriaLabel => TooltipText;
 
     private async Task HandleClick()
     {

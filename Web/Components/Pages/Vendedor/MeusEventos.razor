@@ -93,7 +93,7 @@
                                     <MudButton Size="Size.Small" Href="@($"/eventos/{evento.Id}/ingressos")">Ingressos</MudButton>
                                     @if (!evento.Cancelado)
                                     {
-                                        <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => AbrirCancelamento(evento.Id, evento.Nome)">
+                                        <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => AbrirCancelamento(evento.Id)">
                                             Cancelar evento
                                         </MudButton>
                                     }
@@ -164,13 +164,57 @@
         <MudText Typo="Typo.h6">Cancelar evento</MudText>
     </TitleContent>
     <DialogContent>
-        <MudText>
-            Deseja cancelar <b>@_eventoNomeCancelar</b>? Compradores com reservas pagas receberão reembolso quando o backend ST-06 estiver ativo.
-        </MudText>
+        @if (_carregandoStatus)
+        {
+            <MudStack AlignItems="AlignItems.Center" Class="py-4">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Small" />
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Consultando impacto do cancelamento…</MudText>
+            </MudStack>
+        }
+        else if (!string.IsNullOrEmpty(_erroStatus))
+        {
+            <MudAlert Severity="Severity.Error">@_erroStatus</MudAlert>
+        }
+        else if (_statusCancelamento is not null)
+        {
+            <MudText Class="mb-3">
+                Deseja cancelar <b>@_statusCancelamento.Nome</b>?
+            </MudText>
+            <MudAlert Severity="@(_statusCancelamento.ReembolsoNecessario ? Severity.Warning : Severity.Info)" Dense="true" Class="mb-3">
+                @_statusCancelamento.Mensagem
+            </MudAlert>
+            <MudGrid Spacing="2">
+                <MudItem xs="6">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Ingressos vendidos</MudText>
+                    <MudText Typo="Typo.body2"><b>@_statusCancelamento.TotalIngressosVendidos</b></MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Reservas ativas</MudText>
+                    <MudText Typo="Typo.body2"><b>@_statusCancelamento.TotalReservasAtivas</b></MudText>
+                </MudItem>
+                @if (_statusCancelamento.ReembolsoNecessario)
+                {
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Valor total de reembolso</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Warning"><b>@_statusCancelamento.ValorTotalReembolso.ToString("C")</b></MudText>
+                    </MudItem>
+                }
+                @if (_statusCancelamento.Gratuito)
+                {
+                    <MudItem xs="12">
+                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary">Evento gratuito</MudChip>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="() => _dialogCancelar = false">Voltar</MudButton>
-        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="ExecutarCancelamento">Confirmar cancelamento</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   Disabled="_carregandoStatus || _statusCancelamento is null || !string.IsNullOrEmpty(_erroStatus)"
+                   OnClick="ExecutarCancelamento">
+            Confirmar cancelamento
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -179,9 +223,23 @@
     private List<ReservaVendedorDTO> _vendas = [];
     private bool _carregando = true;
     private bool _dialogCancelar;
+    private bool _carregandoStatus;
     private Guid _eventoParaCancelar;
-    private string _eventoNomeCancelar = "";
+    private string? _erroStatus;
+    private StatusCancelamentoViewModel? _statusCancelamento;
     private readonly DialogOptions _dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    private class StatusCancelamentoViewModel
+    {
+        public Guid EventoId { get; set; }
+        public string Nome { get; set; } = "";
+        public bool Gratuito { get; set; }
+        public int TotalIngressosVendidos { get; set; }
+        public int TotalReservasAtivas { get; set; }
+        public bool ReembolsoNecessario { get; set; }
+        public decimal ValorTotalReembolso { get; set; }
+        public string Mensagem { get; set; } = "";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,20 +269,44 @@
         }
     }
 
-    private void AbrirCancelamento(Guid id, string nome)
+    private async Task AbrirCancelamento(Guid id)
     {
         _eventoParaCancelar = id;
-        _eventoNomeCancelar = nome;
+        _statusCancelamento = null;
+        _erroStatus = null;
+        _carregandoStatus = true;
         _dialogCancelar = true;
+
+        try
+        {
+            var response = await Http.GetAsync($"api/Evento/{id}/status-cancelamento");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _statusCancelamento = await response.Content.ReadFromJsonAsync<StatusCancelamentoViewModel>();
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                _erroStatus = doc.RootElement.TryGetProperty("message", out var msg)
+                    ? msg.GetString()
+                    : "Não foi possível consultar o status do cancelamento.";
+            }
+        }
+        catch
+        {
+            _erroStatus = "Erro ao conectar com a API.";
+        }
+        finally
+        {
+            _carregandoStatus = false;
+        }
     }
 
     private async Task ExecutarCancelamento()
     {
         _dialogCancelar = false;
-
-        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
-        Http.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
 
         var response = await Http.DeleteAsync($"api/Evento/{_eventoParaCancelar}");
 

@@ -14,6 +14,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 // 3. Configura o HttpClient para falar com a API (401 → logout + /login)
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"]
+    ?? throw new InvalidOperationException(
+        "ApiBaseUrl não configurada. Defina em appsettings.json ou via variável de ambiente ApiBaseUrl.");
+
 builder.Services.AddScoped<AuthHttpMessageHandler>();
 builder.Services.AddScoped(sp =>
 {
@@ -25,7 +29,7 @@ builder.Services.AddScoped(sp =>
 
     return new HttpClient(authHandler)
     {
-        BaseAddress = new Uri("http://localhost:5007/")
+        BaseAddress = new Uri(apiBaseUrl.TrimEnd('/') + "/")
     };
 });
 

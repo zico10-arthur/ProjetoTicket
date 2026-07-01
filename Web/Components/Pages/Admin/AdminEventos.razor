@@ -2,8 +2,6 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject HttpClient Http
 @inject ISnackbar Snackbar
-@inject IDialogService DialogService
-@inject IJSRuntime JS
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
     <MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-6"><b>🎟️ Gestão de Eventos</b></MudText>
@@ -24,15 +22,24 @@
                 <MudItem xs="12" sm="6" md="4">
                     <MudCard Elevation="3">
                         <MudCardContent>
+                            <MudStack Row="true" Spacing="1" Class="mb-2">
+                                @if (evento.Cancelado)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Error">Cancelado</MudChip>
+                                }
+                            </MudStack>
                             <MudText Typo="Typo.h6"><b>@evento.Nome</b></MudText>
                             <MudText>Data: @evento.DataEvento.ToString("dd/MM/yyyy HH:mm")</MudText>
                             <MudText>Capacidade: @evento.CapacidadeTotal pessoas</MudText>
                             <MudText Color="Color.Primary"><b>@evento.PrecoPadrao.ToString("C")</b></MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => ConfirmarDelecao(evento.Id)">
-                                Excluir
-                            </MudButton>
+                            @if (!evento.Cancelado)
+                            {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => AbrirCancelamento(evento.Id)">
+                                    Cancelar evento
+                                </MudButton>
+                            }
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -41,8 +48,79 @@
     }
 </MudContainer>
 
+<MudDialog @bind-Visible="_dialogCancelar" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Cancelar evento</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_carregandoStatus)
+        {
+            <MudStack AlignItems="AlignItems.Center" Class="py-4">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Small" />
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Consultando impacto do cancelamento…</MudText>
+            </MudStack>
+        }
+        else if (!string.IsNullOrEmpty(_erroStatus))
+        {
+            <MudAlert Severity="Severity.Error">@_erroStatus</MudAlert>
+        }
+        else if (_statusCancelamento is not null)
+        {
+            <MudText Class="mb-3">
+                Deseja cancelar <b>@_statusCancelamento.Nome</b>?
+            </MudText>
+            <MudAlert Severity="@(_statusCancelamento.ReembolsoNecessario ? Severity.Warning : Severity.Info)" Dense="true" Class="mb-3">
+                @_statusCancelamento.Mensagem
+            </MudAlert>
+            <MudGrid Spacing="2">
+                <MudItem xs="6">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Ingressos vendidos</MudText>
+                    <MudText Typo="Typo.body2"><b>@_statusCancelamento.TotalIngressosVendidos</b></MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Reservas ativas</MudText>
+                    <MudText Typo="Typo.body2"><b>@_statusCancelamento.TotalReservasAtivas</b></MudText>
+                </MudItem>
+                @if (_statusCancelamento.ReembolsoNecessario)
+                {
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Valor total de reembolso</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Warning"><b>@_statusCancelamento.ValorTotalReembolso.ToString("C")</b></MudText>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => _dialogCancelar = false">Voltar</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   Disabled="_carregandoStatus || _statusCancelamento is null || !string.IsNullOrEmpty(_erroStatus)"
+                   OnClick="ExecutarCancelamento">
+            Confirmar cancelamento
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     private List<EventoViewModel>? eventos;
+    private bool _dialogCancelar;
+    private bool _carregandoStatus;
+    private Guid _eventoParaCancelar;
+    private string? _erroStatus;
+    private StatusCancelamentoViewModel? _statusCancelamento;
+    private readonly DialogOptions _dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    private class StatusCancelamentoViewModel
+    {
+        public Guid EventoId { get; set; }
+        public string Nome { get; set; } = "";
+        public bool Gratuito { get; set; }
+        public int TotalIngressosVendidos { get; set; }
+        public int TotalReservasAtivas { get; set; }
+        public bool ReembolsoNecessario { get; set; }
+        public decimal ValorTotalReembolso { get; set; }
+        public string Mensagem { get; set; } = "";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,35 +140,57 @@
         }
     }
 
-    private async Task ConfirmarDelecao(Guid id)
+    private async Task AbrirCancelamento(Guid id)
     {
-        bool? confirmou = await DialogService.ShowMessageBoxAsync(
-            "Atenção",
-            "Deseja realmente excluir este evento?",
-            yesText: "Excluir", cancelText: "Cancelar");
+        _eventoParaCancelar = id;
+        _statusCancelamento = null;
+        _erroStatus = null;
+        _carregandoStatus = true;
+        _dialogCancelar = true;
 
-        if (confirmou == true)
-            await Deletar(id);
+        try
+        {
+            var response = await Http.GetAsync($"api/Evento/{id}/status-cancelamento");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _statusCancelamento = await response.Content.ReadFromJsonAsync<StatusCancelamentoViewModel>();
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                _erroStatus = doc.RootElement.TryGetProperty("message", out var msg)
+                    ? msg.GetString()
+                    : "Não foi possível consultar o status do cancelamento.";
+            }
+        }
+        catch
+        {
+            _erroStatus = "Erro ao conectar com a API.";
+        }
+        finally
+        {
+            _carregandoStatus = false;
+        }
     }
 
-    private async Task Deletar(Guid id)
+    private async Task ExecutarCancelamento()
     {
-        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "authToken");
-        Http.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token!);
+        _dialogCancelar = false;
 
-        var response = await Http.DeleteAsync($"api/Evento/{id}");
+        var response = await Http.DeleteAsync($"api/Evento/{_eventoParaCancelar}");
 
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add("Evento excluído.", Severity.Success);
+            Snackbar.Add("Evento cancelado.", Severity.Success);
             await CarregarEventos();
         }
         else
         {
             var json = await response.Content.ReadAsStringAsync();
             var doc = System.Text.Json.JsonDocument.Parse(json);
-            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao excluir evento.";
+            var mensagem = doc.RootElement.TryGetProperty("message", out var msg) ? msg.GetString() : "Erro ao cancelar evento.";
             Snackbar.Add(mensagem, Severity.Error);
         }
     }

@@ -24,6 +24,7 @@ public static class SeatMapMapper
                 IngressoId = ingresso.Id,
                 RowLabel = row,
                 SeatNumber = seatInBlock,
+                GlobalNumber = seatNum,
                 Block = block,
                 Setor = string.IsNullOrWhiteSpace(ingresso.Setor) ? "Geral" : ingresso.Setor,
                 Price = ingresso.Preco,
