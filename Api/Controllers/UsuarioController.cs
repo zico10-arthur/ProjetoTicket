@@ -42,7 +42,7 @@ public class UsuarioController : ControllerBase
     }
     catch (Exception ex)
     {
-        return BadRequest(ex.ToString());
+        return BadRequest(new { message = ex.Message });
     }
     }
 

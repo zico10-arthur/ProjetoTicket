@@ -10,7 +10,7 @@ public class Usuario
     /// </summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public string Cpf {get; private set;} = string.Empty;
+    public string? Cpf {get; private set;}
 
     public string Nome{get; private set;} = string.Empty;
 
@@ -81,7 +81,7 @@ public class Usuario
         var usuario = new Usuario
         {
             Id = Guid.NewGuid(),
-            Cpf = string.Empty,
+            Cpf = null,
             Nome = razaoSocial.Trim(),
             Email = email,
             PerfilId = Guid.Parse("B2B2B2B2-B2B2-B2B2-B2B2-B2B2B2B2B2B2"),

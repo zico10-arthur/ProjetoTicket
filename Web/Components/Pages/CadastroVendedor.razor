@@ -54,9 +54,16 @@
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var doc = JsonDocument.Parse(json);
-            var msg = doc.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Erro ao cadastrar.";
-            Snackbar.Add(msg ?? "Erro ao cadastrar.", Severity.Error);
+            try
+            {
+                var doc = JsonDocument.Parse(json);
+                var msg = doc.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Erro ao cadastrar.";
+                Snackbar.Add(msg ?? "Erro ao cadastrar.", Severity.Error);
+            }
+            catch
+            {
+                Snackbar.Add(json ?? "Erro ao cadastrar.", Severity.Error);
+            }
         }
         catch
         {
