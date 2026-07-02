@@ -116,27 +116,47 @@ public class ReservaRepository : IReservaRepository
 
     public async Task DeletarReservasNaoPagasExpiradas(int minutosExpiracao, CancellationToken ct)
     {
-        using var connection = _factory.CreateConnection();
+        using var connection = (SqlConnection)_factory.CreateConnection();
+        await connection.OpenAsync(ct);
+        using var transaction = connection.BeginTransaction();
 
-        const string sql = @"
-            UPDATE i SET i.Status = 0
-            FROM Ingressos i
-            INNER JOIN ItensReserva ir ON ir.IngressoId = i.Id
-            INNER JOIN Reservas r ON r.Id = ir.ReservaId
-            WHERE i.Status = 1 AND r.DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());
+        try
+        {
+            const string sql = @"
+                UPDATE i SET i.Status = 0
+                FROM Ingressos i
+                INNER JOIN ItensReserva ir ON ir.IngressoId = i.Id
+                INNER JOIN Reservas r ON r.Id = ir.ReservaId
+                WHERE i.Status = 1
+                  AND r.Pago = 0
+                  AND r.DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());
 
-            DELETE FROM ItensReserva
-            WHERE ReservaId IN (
-                SELECT Id FROM Reservas
-                WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
+                DELETE FROM Pagamentos
+                WHERE ReservaId IN (
+                    SELECT Id FROM Reservas
+                    WHERE Pago = 0 AND DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
+                );
+
+                DELETE FROM ItensReserva
+                WHERE ReservaId IN (
+                    SELECT Id FROM Reservas
+                    WHERE Pago = 0 AND DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE())
+                );
+
+                DELETE FROM Reservas
+                WHERE Pago = 0 AND DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());";
+
+            await connection.ExecuteAsync(
+                new CommandDefinition(sql, new { Minutos = minutosExpiracao }, transaction, cancellationToken: ct)
             );
 
-            DELETE FROM Reservas
-            WHERE DataBloqueio <= DATEADD(minute, -@Minutos, GETDATE());";
-
-        await connection.ExecuteAsync(
-            new CommandDefinition(sql, new { Minutos = minutosExpiracao }, cancellationToken: ct)
-        );
+            await transaction.CommitAsync(ct);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
     }
 
     /// <summary>
