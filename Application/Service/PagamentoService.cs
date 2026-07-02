@@ -3,7 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interface;
-using Infraestructure.Email;
+using Application.Email;
 
 namespace Application.Service;
 

@@ -46,9 +46,12 @@ public class EmailBackgroundWorker : BackgroundService, IEmailSender
             {
                 using var scope = _scopeFactory.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<SmtpEmailSender>();
-                await sender.EnviarAsync(email, ct);
-                _logger.LogInformation("E-mail enviado para {Destinatario}: {Assunto}",
-                    email.Destinatario, email.Assunto);
+                var enviado = await sender.EnviarAsync(email, ct);
+                if (enviado)
+                {
+                    _logger.LogInformation("E-mail enviado para {Destinatario}: {Assunto}",
+                        email.Destinatario, email.Assunto);
+                }
                 return;
             }
             catch (Exception ex) when (i < tentativas - 1)

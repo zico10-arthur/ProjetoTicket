@@ -22,12 +22,16 @@ public class SmtpEmailSender
         !string.IsNullOrWhiteSpace(_settings.Host) &&
         !string.IsNullOrWhiteSpace(_settings.FromAddress);
 
-    public async Task EnviarAsync(EmailMessage email, CancellationToken ct)
+    /// <summary>
+    /// Envia o e-mail via SMTP.
+    /// </summary>
+    /// <returns>true se o e-mail foi enviado com sucesso; false se foi descartado (SMTP não configurado).</returns>
+    public async Task<bool> EnviarAsync(EmailMessage email, CancellationToken ct)
     {
         if (!Configurado)
         {
             _logger.LogWarning("SMTP não configurado. E-mail descartado para {Destinatario}", email.Destinatario);
-            return;
+            return false;
         }
 
         var message = new MimeMessage();
@@ -51,5 +55,6 @@ public class SmtpEmailSender
 
         await client.SendAsync(message, ct);
         await client.DisconnectAsync(true, ct);
+        return true;
     }
 }

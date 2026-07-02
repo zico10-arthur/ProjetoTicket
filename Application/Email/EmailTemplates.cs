@@ -1,6 +1,6 @@
 using Domain.ValueObjects;
 
-namespace Infraestructure.Email;
+namespace Application.Email;
 
 public static class EmailTemplates
 {
@@ -85,7 +85,7 @@ public static class EmailTemplates
 <p>Olá, {System.Net.WebUtility.HtmlEncode(nome)}!</p>
 <p>Recebemos uma solicitação para redefinir sua senha no <strong>SoldOut Tickets</strong>.</p>
 <p>Clique no link abaixo para criar uma nova senha:</p>
-<p><a href=""{System.Net.WebUtility.HtmlEncode(link)}"">{System.Net.WebUtility.HtmlEncode(link)}</a></p>
+<p><a href=""{link}"">{System.Net.WebUtility.HtmlEncode(link)}</a></p>
 <p><strong>Este link é válido por 15 minutos.</strong></p>
 <p>Se você não solicitou esta redefinição, ignore este e-mail.</p>
 <p>— Equipe SoldOut Tickets</p>";

@@ -5,7 +5,7 @@ using Application.Exceptions;
 using Domain.Entities;
 using Domain.Validators;
 using AutoMapper;
-using Infraestructure.Email;
+using Application.Email;
 using Microsoft.Extensions.Configuration;
 namespace Application.Service;
 

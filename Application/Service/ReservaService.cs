@@ -5,7 +5,7 @@ using Domain.Entities;
 using Domain.Interface;
 using Domain.Validators;
 using Domain.DTOs;
-using Infraestructure.Email;
+using Application.Email;
 
 namespace Application.Service;
 
