@@ -198,12 +198,8 @@ ProjetoTicket/
 
 ## 👤 Autores
 
-- Arthur Rezende de Oliveira — 06010228
-- Eduardo Leal — 06013706
-- Erick Lopes dos Santos Carvalho — 06010632
-- Ian Carlos de Oliveira Leite — 06012992
-- Yuri Domingues — 06010142
-
-## 📫 Contato
-
-Erick Lopes — [LinkedIn](https://www.linkedin.com/in/erick-lopes-2k02/) · [GitHub](https://github.com/ErickLopesSC)
+- **Arthur Rezende de Oliveira** — [@zico10-arthur](https://github.com/zico10-arthur)
+- **Eduardo Leal** — [@dudu4leal](https://github.com/dudu4leal)
+- **Erick Lopes dos Santos Carvalho** — [@ErickLopesSC](https://github.com/ErickLopesSC)
+- **Ian Carlos de Oliveira Leite** — [@Ianclrs](https://github.com/Ianclrs)
+- **Yuri Domingues** — [@yuridomingues](https://github.com/yuridomingues)
