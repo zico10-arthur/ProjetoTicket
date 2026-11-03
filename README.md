@@ -1,31 +1,68 @@
-# ARTHUR REZENDE DE OLIVEIRA - 06010228
-# EDUARDO LEAL - 06013706
-# ERICK LOPES DOS SANTOS CARVALHO - 06010632
-# IAN CARLOS DE OLIVEIRA LEITE - 06012992
-# YURI DOMINGUES - 06010142
+<div align="center">
 
-# SoldOut Tickets
+# ProjetoTicket — SoldOut Tickets
 
-Sistema de venda de ingressos para eventos, desenvolvido com ASP.NET Core, Blazor Server e SQL Server.
+**E-commerce de ingressos para eventos: cadastro de eventos, perfis de acesso e compra com controle de disponibilidade.**
 
-## Pré-requisitos
+![.NET](https://img.shields.io/badge/.NET%209-512BD4?style=flat-square&logo=dotnet&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-512BD4?style=flat-square&logo=csharp&logoColor=white)
+![Blazor](https://img.shields.io/badge/Blazor%20Server-512BD4?style=flat-square&logo=blazor&logoColor=white)
+![MudBlazor](https://img.shields.io/badge/MudBlazor-594AE2?style=flat-square&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- SQL Server ou SQL Server Express
+</div>
 
-## Configuração do Banco de Dados
+---
 
-Abra o arquivo `Api/appsettings.json` e configure a connection string:
+## 📌 Sobre o projeto
 
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=ProjetoTicketDB;Trusted_Connection=True;TrustServerCertificate=True;"
-}
-```
+Sistema de venda de ingressos para eventos, construído para **modernizar uma plataforma legada**. O projeto cobre o fluxo completo: o vendedor cadastra o evento, o comprador reserva o ingresso e o sistema controla a disponibilidade em tempo real, com autenticação e autorização por perfil.
 
-> O banco e todas as tabelas são criados automaticamente ao rodar a API pela primeira vez.
+### Funcionalidades
 
-## Rodando com Docker (recomendado)
+- Autenticação e autorização por perfil (Admin, Vendedor, Comprador)
+- Cadastro e gestão de eventos
+- Reserva/compra de ingressos com controle de disponibilidade
+- Cupons de desconto
+- API REST documentada via Swagger
+- Dashboard administrativo com Hangfire
+- Testes automatizados com xUnit
+
+---
+
+## 🏗️ Arquitetura
+
+Organização em camadas, com separação de responsabilidades:
+
+| Camada | Responsabilidade |
+|---|---|
+| `Api` | Controllers, middlewares e configuração da aplicação |
+| `Application` | Services, DTOs, interfaces e mappings |
+| `Domain` | Entidades, exceções e contratos de domínio |
+| `Infraestructure` | Repositórios, migrations e acesso ao banco |
+| `Web` | Frontend Blazor Server com componentes MudBlazor |
+| `tests` | Testes automatizados (xUnit) |
+| `db` | Scripts SQL |
+| `docs` | Requisitos, arquitetura e operação |
+
+---
+
+## 🧰 Stack
+
+| Área | Tecnologia |
+|---|---|
+| Plataforma | .NET 9 · ASP.NET Core |
+| Frontend | Blazor Server · MudBlazor |
+| Banco de dados | SQL Server (criação automática do schema na primeira execução) |
+| Containerização | Docker · Docker Compose |
+| Tarefas em background | Hangfire |
+| Testes | xUnit |
+| Documentação de API | Swagger |
+
+---
+
+## 🚀 Rodando com Docker (recomendado)
 
 ```bash
 # Subir ambiente completo (API + Web + SQL Server)
@@ -46,47 +83,60 @@ docker-compose down -v && docker-compose up -d
 - **Frontend:** `http://localhost:5057`
 - **Dashboard Hangfire (Admin):** `http://localhost:5007/hangfire`
 
-## Rodando localmente (sem Docker)
+---
 
-### Rodando a API
+## ⚙️ Rodando localmente (sem Docker)
+
+**Pré-requisitos**
+
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- SQL Server ou SQL Server Express
+
+**Banco de dados** — configure a connection string em `Api/appsettings.json`:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=ProjetoTicketDB;Trusted_Connection=True;TrustServerCertificate=True;"
+}
+```
+
+> O banco e as tabelas são criados automaticamente na primeira execução da API.
+
+**API**
 
 ```bash
 cd Api
 dotnet run
 ```
 
-A API estará disponível em: `http://localhost:5007`  
-Swagger disponível em: `http://localhost:5007/swagger`
+Disponível em `http://localhost:5007` — Swagger em `http://localhost:5007/swagger`.
 
-### Rodando o Frontend
+**Frontend**
 
 ```bash
 cd Web
 dotnet run
 ```
 
-O frontend estará disponível em: `http://localhost:5057`
+Disponível em `http://localhost:5057`.
 
-## Rodando os Testes
+**Testes**
 
 ```bash
 cd tests
 dotnet test
 ```
 
-## Restaurando dependências
+**Build**
 
 ```bash
 dotnet restore
-```
-
-## Compilando o projeto
-
-```bash
 dotnet build
 ```
 
-## Deploy com Docker
+---
+
+## 🐳 Deploy com Docker
 
 O projeto inclui configuração completa para containerização:
 
@@ -96,11 +146,7 @@ O projeto inclui configuração completa para containerização:
 | `Web/Dockerfile` | Imagem do Frontend Blazor Server (.NET 9, multi-stage build) |
 | `docker-compose.yml` | Orquestração: SQL Server + API + Web |
 
-### Pré-requisitos Docker
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) ou Docker Engine (Linux)
-
-### Comandos úteis
+**Pré-requisitos:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) ou Docker Engine (Linux).
 
 ```bash
 # Subir tudo
@@ -122,9 +168,21 @@ docker-compose down
 docker-compose down -v
 ```
 
-## Estrutura do Projeto
+---
 
-```
+## 👥 Perfis de usuário
+
+| Perfil | Permissões |
+|---|---|
+| Admin | Gerenciar usuários, eventos e cupons |
+| Vendedor | Criar e gerenciar seus próprios eventos |
+| Comprador | Visualizar eventos e realizar reservas |
+
+---
+
+## 📁 Estrutura do repositório
+
+```text
 ProjetoTicket/
 ├── Api/              → Controllers, Middlewares, Program.cs
 ├── Application/      → Services, DTOs, Interfaces, Mappings
@@ -136,10 +194,16 @@ ProjetoTicket/
 └── tests/            → Testes automatizados xUnit
 ```
 
-## Perfis de Usuário
+---
 
-| Perfil | Permissões |
-|---|---|
-| Admin | Gerenciar usuários, eventos e cupons |
-| Vendedor | Criar e gerenciar seus próprios eventos |
-| Comprador | Visualizar eventos e realizar reservas |
+## 👤 Autores
+
+- Arthur Rezende de Oliveira — 06010228
+- Eduardo Leal — 06013706
+- Erick Lopes dos Santos Carvalho — 06010632
+- Ian Carlos de Oliveira Leite — 06012992
+- Yuri Domingues — 06010142
+
+## 📫 Contato
+
+Erick Lopes — [LinkedIn](https://www.linkedin.com/in/erick-lopes-2k02/) · [GitHub](https://github.com/ErickLopesSC)
